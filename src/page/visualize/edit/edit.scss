@@ -1,0 +1,16 @@
+@charset "utf-8";
+$content-padding: 30px;
+div.edit{
+  height: 100%;
+  display: flex;
+  p{
+  	height: 60px;
+  	line-height: 60px;
+  	padding-left: 20px;
+  	border-bottom: 1px solid #ccc;
+  	font-size: 16px;
+  }
+  .edit-content{
+    flex: 1;
+  }
+}
