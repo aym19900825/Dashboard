@@ -136,46 +136,50 @@ export default {
     	tabSwitch(index){
 			this.tabIndex = index;
 		},
-    	initEchart(){
-			var myChart = this.$echarts.init(document.getElementById('echart-box'));
-			myChart.clear();
-			var param = this.lineParam;
-			var option = {
-				title: {
-					text: param.title.text,
-					textStyle: {
-						color: param.title.textStyle.color,
-						fontSize: param.title.textStyle.fontSize
-					}
-				},
-				legend: {
-					show: false,
-					orient: 'horizontal', //图例水平或者垂直
-					left: 'auto',
-					top: 'auto',
-					bottom: 'auto',
-					right: 'auto',
-			        data: ['邮件营销']
-			    },
-			    tooltip: {
-	   				show: param.tooltip.show,
-	   			},
-			    xAxis: {
-			        type: 'category',
-			        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-			    },
-			    yAxis: {
-			        type: 'value'
-			    },
-			    series: [{
-			        data: [820, 932, 901, 934, 1290, 1330, 1320],
-			        name: '邮件营销',
-			        type: 'line',
-			        smooth: true
-			    }]
-			};
-			myChart.setOption(option);
-		},
+		initEchart(echartId){
+	      var myChart = this.$echarts.init(document.getElementById(echartId));
+	      myChart.clear();
+	      var option = {
+	          backgroundColor: '#fff',
+	          color: ['#3398DB'],
+	          tooltip : {
+	              trigger: 'axis',
+	              axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+	                  type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+	              }
+	          },
+	          grid: {
+	              left: '3%',
+	              right: '4%',
+	              bottom: '3%',
+	              containLabel: true
+	          },
+	          xAxis : [
+	              {
+	                  type : 'category',
+	                  data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+	                  axisTick: {
+	                      alignWithLabel: true
+	                  }
+	              }
+	          ],
+	          yAxis : [
+	              {
+	                  type : 'value'
+	              }
+	          ],
+	          series : [
+	              {
+	                  name:'直接访问',
+	                  type:'bar',
+	                  barWidth: '60%',
+	                  data:[10, 52, 200, 334, 390, 330, 220]
+	              }
+	          ]
+	      };
+	      myChart.setOption(option);
+	      myChart.resize();
+	    },
 		requestData(){
 			var url = '/api/show/visualize';
 			this.$axios.post(url,{
@@ -193,17 +197,17 @@ export default {
 	        })
 		},
 		run(){
-			this.initEchart();
+			this.initEchart('echart-box');
 		}
     },
     mounted(){
     	this.requestData();
-		this.initEchart();
+		this.initEchart('echart-box');
     }
 }
 </script>
 
 <style lang="scss" scoped>
-  @import './line';
+  @import './bar';
 </style>
 

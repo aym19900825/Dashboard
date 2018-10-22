@@ -10,10 +10,19 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+        '/api': {
+            // target: 'http://192.168.1.140:8090/',//设置你调用的接口域名和端口号 别忘了加http
+            target: 'http://203.93.173.179:8665/',//设置你调用的接口域名和端口号 别忘了加http
+            changeOrigin: true,
+            pathRewrite: {
+              '^/api': '/Dashboard/'
+            }
+        }
+    },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '0.0.0.0', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
@@ -33,7 +42,8 @@ module.exports = {
     // https://vue-loader.vuejs.org/en/options.html#cachebusting
     cacheBusting: true,
 
-    cssSourceMap: true
+    cssSourceMap: true,
+    
   },
 
   build: {

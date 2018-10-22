@@ -4,16 +4,19 @@ import Lines from '@/components/line/line'
 import List from '@/page/visualize/list/list'
 import DashboardList from '@/page/dashboard/list/list'
 import Detail from '@/page/visualize/detail/detail'
-import Edit from '@/page/visualize/edit/edit'
+import EditLine from '@/page/visualize/edit/edit'
+import EditBar from '@/page/visualize/edit/bar'
+import EditPie from '@/page/visualize/edit/pie'
 import DashboardEdit from '@/page/dashboard/edit/edit'
+import Login from '@/page/login/login'
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/line',
-      name: 'Lines',
-      component: Lines
+      path: '/',
+      name: 'Login',
+      component: Login
     },
     {
       path: '/',
@@ -26,9 +29,19 @@ export default new Router({
 	  component: Detail
 	},
 	{
-	  path: '/edit',
-	  name: 'Edit',
-	  component: Edit
+	  path: '/editline',
+	  name: 'EditLine',
+	  component: EditLine
+	},
+	{
+	  path: '/editbar',
+	  name: 'EditBar',
+	  component: EditBar
+	},
+	{
+	  path: '/editpie',
+	  name: 'EditPie',
+	  component: EditPie
 	},
 	{
 	  path: '/dashboardList',

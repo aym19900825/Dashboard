@@ -25,6 +25,11 @@ div.list{
     .table-box{
     	width: 90%;
     	margin: 0 auto;
+      table{
+        tr{
+          cursor: pointer;
+        }
+      }
     	p{
 	    	margin-top: 20px;
 	    	background: #fff;
@@ -40,6 +45,7 @@ div.list{
     	.pagination-box{
     		text-align: right;
     		margin-top: 25px;
+        margin-bottom: 25px;
     	}
     }
   }

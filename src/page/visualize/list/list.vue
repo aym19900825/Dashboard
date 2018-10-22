@@ -10,31 +10,71 @@
        <div class="table-box">
           <p>
             <span>视图列表</span>
-            <el-button type="danger" icon="el-icon-delete" size="small" style="margin-right: 10px; margin-left: 6px;"></el-button>
+            <!-- <el-button type="danger" icon="el-icon-delete" size="small" style="margin-right: 10px; margin-left: 6px;"></el-button> -->
             <el-button type="success" icon="el-icon-plus" size="small" @click="choose"></el-button>
           </p>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="tit" label="名称"  show-overflow-tooltip>
+          style="width: 100%">
+          <!-- <el-table-column type="selection" width="55"></el-table-column> -->
+          <el-table-column prop="visualizename" label="名称"  show-overflow-tooltip>
           </el-table-column>
           <el-table-column prop="type" label="类型" width="150">
+          </el-table-column>
+          <el-table-column label="操作" width="160">
+            <template slot-scope="scope">
+              <el-button size="mini" type="danger" @click="delVisual(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
+            </template>
           </el-table-column>
         </el-table>
         <div class="pagination-box">
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="currentPage4"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="400">
+            :current-page="page.currentPage"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="page.pageSize"
+            layout="total, sizes, prev, pager, next"
+            :total="page.totalCount">
           </el-pagination>
         </div>
        </div>
     </div>
+    <el-dialog title="visualize" :visible.sync="visualizeForm" width="560px" :before-close="resetVisual">
+      <el-form :model="newVisualize"  label-position="top" label-width="120px">
+        <el-form-item label="名称">
+          <el-input v-model="newVisualize.visualizename"></el-input>
+        </el-form-item>
+        <el-form-item label="类型">
+          <el-select v-model="newVisualize.type" placeholder="请选择活动区域" width="100%">
+            <el-option label="折线图" value="line"></el-option>
+            <el-option label="饼图" value="pie"></el-option>
+            <el-option label="柱状图" value="bar"></el-option>
+          </el-select>
+        </el-form-item>
+         <el-form-item label="y轴数据类型">
+          <el-select v-model="newVisualize.ytype" placeholder="y轴数据类型">
+            <el-option label="double" value="double"></el-option>
+            <el-option label="float" value="float"></el-option>
+            <el-option label="int" value="int"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="业务场景">
+          <el-select v-model="newVisualize.businesscategory" filterable allow-create default-first-option
+            placeholder="请选择或输入业务场景">
+            <el-option
+              v-for="item in Businesscategorys"
+              :label="item"
+              :value="item">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetVisual">取 消</el-button>
+        <el-button type="primary" @click="addVisual">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -44,24 +84,143 @@ export default {
   name: 'list',
   data () {
     return {
-      list: [
-        {
-          tit: '上映电影---top50',
-          type: 'line'
-        },{
-          tit: '上映电影---top100',
-          type: 'line'
-        }
-      ]
+      page:{
+        currentPage: 0,
+        pageSize: 10,
+        totalCount: 0,
+      },
+      list: [],
+
+      visualizeForm: false,
+      newVisualize: {
+        visualizename: '',
+        type: '',
+        ytype: '',
+        businesscategory: '',
+      },
+      Businesscategorys: []
     }
   },
   methods: {
+    handleSizeChange(val) {
+      this.page.pageSize = val;
+      this.requestData();
+    },
+    handleCurrentChange(val) {
+      this.page.currentPage = val;
+      this.requestData();
+    },
     choose(){
-      this.$router.replace('/detail');
+      this.visualizeForm = true;
+
+      // this.$router.replace('/detail');
+    },
+    edit(index,row){
+      var url = '';
+      console.log(row.type);
+      switch(row.type){
+        case  'line':
+          url = '/editline';
+          break;
+        case  'pie':
+          url = '/editpie';
+          break;
+        default:
+          url = '/editbar';
+          break;
+      }
+      this.$router.push({
+        path: url, 
+        query: { 
+          vid: row.vid
+        }
+      })
+    },
+    delVisual(index,row){
+      var _this = this;
+      var url = '/api/show/visualize/'+row.vid;
+      _this.$axios.delete(url,{}).then((res) => {
+          if(res.data.code != 1){
+            _this.$message({
+              type: 'error',
+              message: '删除失败，请重试',
+              showClose: true
+            })
+          }
+          _this.requestData();
+      }).catch((err) => {
+          _this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    requestData(){
+      var _this = this;
+      var url = '/api/show/visualizeList';
+      this.$axios.post(url,{
+        'page': _this.page.currentPage,
+        'size': _this.page.pageSize
+      }).then((res) => {
+          if(res.data.totalPages == 0){
+            $('.empty-content').show();
+            _this.page.totalCount = res.data.totalPages;
+            _this.Businesscategorys = res.data.distinctBusinesscategory;
+          }else{
+            $('.table-box').show();
+            _this.page.totalCount = res.data.totalPages;
+            _this.list = JSON.parse(JSON.stringify(res.data.visualizeList));
+            _this.Businesscategorys = res.data.distinctBusinesscategory;
+          }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    resetVisual(){
+      this.visualizeForm = false;
+      this.newVisualize = {
+        visualizename: '',
+        type: '',
+        ytype: '',
+        businesscategory: '',
+      };
+    },
+    addVisual(){
+      var url = '/api/show/visualizeAdd';
+      this.$axios.post(url,{
+        "type": this.newVisualize.type,
+        "visualizename": this.newVisualize.visualizename,
+        "ytype" : this.newVisualize.ytype,
+        "businesscategory" : this.newVisualize.businesscategory
+      }).then((res) => {
+          if(res.data.code != 1){
+              this.$message({
+                  type: 'error',
+                  message: '新增失败',
+                  showClose: true
+              })
+          }
+          this.resetVisual();
+          this.requestData();
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
     }
   },
   components: {
     'v-nav': Nav
+  },
+  mounted(){
+    this.requestData();
   }
 }
 </script>
