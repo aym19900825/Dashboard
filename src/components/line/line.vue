@@ -1,43 +1,63 @@
 <template>
   <div>
      <header>
-     	<span>{{visualizename}}</span>
-		<el-button type="warning" size="small">取消</el-button>
-		<el-button type="primary" size="small">保存</el-button>
+     	<span>{{visualParam.visualizename}}</span>
+		<el-button type="warning" size="small" @click="reset">取消</el-button>
+		<el-button type="primary" size="small" @click="save">保存</el-button>
      </header>
 		<div id="content">
 			<div class="left">
 				<h4>table表名</h4>
 				<ul class="tab-list">
-					<li @click="tabSwitch(0)" :class=" tabIndex == 0 ? 'selected' : '' ">数据选择</li>
+					<li @click="tabSwitch(0)" :class=" tabIndex == 0 ? 'selected' : '' ">视图设置</li>
 					<li @click="tabSwitch(1)" :class=" tabIndex == 1 ? 'selected' : '' ">表盘设置</li>
 					<span class="run" @click="run"></span>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-content-one" v-show="tabIndex == 0">
 						<div class="metrics">
-							<el-form ref="option-set" :model="lineParam" label-width="80px">
-							 	<el-form-item label="业务场景">
-							    	<el-select v-model="lineParam.dataTalbe" placeholder="请选择图例位置">
-								    	<el-option
-									      v-for="item in tables"
-									      :key="item.visualizename"
-									      :label="item.visualizename"
-									      :value="item.visualizename">
-									    </el-option>
-							    	</el-select>
-							    </el-form-item>
+							<el-form ref="option-set" :model="visualParam" label-width="100px">
+								<el-form-item label="名称">
+						          <el-input v-model="visualParam.visualizename"></el-input>
+						        </el-form-item>
+						        <el-form-item label="类型">
+						          <el-select disabled v-model="visualParam.type" placeholder="请选择活动区域" width="100%">
+						            <el-option label="折线图" value="line"></el-option>
+						            <el-option label="饼图" value="pie"></el-option>
+						            <el-option label="柱状图" value="bar"></el-option>
+						          </el-select>
+						        </el-form-item>
+						        <el-form-item label="y轴数据类型">
+						          <el-select disabled v-model="visualParam.ytype" placeholder="y轴数据类型">
+						            <el-option label="double" value="double"></el-option>
+						            <el-option label="float" value="float"></el-option>
+						            <el-option label="int" value="int"></el-option>
+						          </el-select>
+						        </el-form-item>
+						        <el-form-item label="业务场景">
+						          <el-select v-model="visualParam.businesscategory" filterable allow-create default-first-option
+						            placeholder="请选择或输入业务场景">
+						            <el-option
+						              v-for="item in businessCats"
+						              :label="item"
+						              :value="item">
+						            </el-option>
+						          </el-select>
+						        </el-form-item>
 							</el-form>
 						</div>
 					</div>
 					<div class="tab-content-two" v-show="tabIndex == 1">
 						<div class="panl-setting">
-							<el-form ref="option-set" :model="lineParam" label-width="80px">
+							<el-form ref="option-set" :model="visualParam" label-width="80px">
 							  	<el-form-item label="标题">
-							   		 <el-input v-model="lineParam.title.text"></el-input>
+							   		 <el-input v-model="visualParam.echarttitle"></el-input>
 							 	</el-form-item>
-							 	<el-form-item label="图例位置">
-							    	<el-select v-model="lineParam.legend.left" placeholder="请选择图例位置">
+							 	<el-form-item label="显示图例">
+							    	<el-switch v-model="visualParam.legendShow"></el-switch>
+							    </el-form-item>
+							 	<el-form-item label="图例位置" v-if="visualParam.legendShow">
+							    	<el-select v-model="visualParam.legendPos" placeholder="请选择图例位置">
 								    	<el-option
 									      v-for="item in legendPos"
 									      :key="item.value"
@@ -46,8 +66,8 @@
 									    </el-option>
 							    	</el-select>
 							    </el-form-item>
-							    <el-form-item label="图例布局">
-							    	<el-select v-model="lineParam.legend.orient" placeholder="请选择图例布局">
+							    <el-form-item label="图例布局" v-if="visualParam.legendShow">
+							    	<el-select v-model="visualParam.legendOrient" placeholder="请选择图例布局">
 								    	<el-option
 									      v-for="item in legendOpt"
 									      :key="item.value"
@@ -56,8 +76,8 @@
 									    </el-option>
 							    	</el-select>
 							    </el-form-item>
-							    <el-form-item label="是否提示">
-							    	<el-switch v-model="lineParam.tooltip.show"></el-switch>
+							    <el-form-item label="显示提示">
+							    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
 							    </el-form-item>
 							</el-form>
 						</div>
@@ -74,18 +94,11 @@
 <script>
 export default {
   	name: 'line',
-  	props: ['vid'],
+  	props: ['vid','businessCats'],
  	data(){
    		return {
    			visualizename: '',
-   			tables: [
-   				{
-   					visualizename: '业务名称1'
-   				},
-   				{
-   					visualizename: '业务名称2'
-   				}
-   			],
+   			tabIndex: '0',
    			legendOpt:[
    				{
    					txt: '水平',
@@ -97,38 +110,34 @@ export default {
    			],
    			legendPos: [
 				{
-   					txt: '水平',
-   					value: 'horizontal'
+   					txt: '上中',
+   					value: 'topCenter'
    				},{
-					txt: '垂直',
-   					value: 'vertical'
+					txt: '上右',
+   					value: 'topRight'
+   				},{
+					txt: '上左',
+   					value: 'topLeft'
+   				},{
+   					txt: '下中',
+   					value: 'bottomCenter'
+   				},{
+					txt: '下左',
+   					value: 'bottomLeft'
+   				},{
+					txt: '下右',
+   					value: 'bottomRight'
    				}
+
    			],
 
-   			tabIndex: '0',
-      		lineParam: {
-      			dataTalbe: '',
-      			//标题设置
-				title: {
-					text: '',
-					textStyle: {
-						color: '#000',
-						fontSize: 18
-					}
-				},
-				//图例设置
-				legend: {
-					show: true,
-					orient: 'horizontal', //图例水平或者垂直
-					left: 'auto',
-					top: 'auto',
-					bottom: 'auto',
-					right: 'auto'
-				},
-				//提示框设置
-	   			tooltip: {
-	   				show: true	
-	   			}
+      		visualParam: {},
+      		echartData: {},
+      		dealPos: {
+      			top: 'auto',
+      			left: 'auto',
+      			right: 'auto',
+      			bottom: 'auto',
       		},
     	}
     },
@@ -136,40 +145,90 @@ export default {
     	tabSwitch(index){
 			this.tabIndex = index;
 		},
+		dealLegendPos(){
+			switch(this.visualParam.legendPos){
+				case 'topCenter':
+					this.dealPos = {
+						top: 'auto',
+				        left: 'auto',
+				        bottom: 'auto',
+				        right: 'auto'
+					};
+					break;
+				case 'topRight':
+					this.dealPos = {
+						top: 'auto',
+				        left: 'auto',
+				        bottom: 'auto',
+				        right: '0'
+					};
+					break;
+				case 'topLeft':
+					this.dealPos = {
+						top: 'auto',
+				        left: '0',
+				        bottom: 'auto',
+				        right: 'auto'
+					};
+					break;
+				case 'bottomCenter':
+					this.dealPos = {
+						top: 'auto',
+				        left: 'auto',
+				        bottom: '0',
+				        right: 'auto'
+					};
+					break;
+				case 'bottomLeft':
+					this.dealPos = {
+						top: 'auto',
+				        left: '0',
+				        bottom: '0',
+				        right: 'auto'
+					};
+					break;
+				default:
+					this.dealPos = {
+						top: 'auto',
+				        left: 'auto',
+				        bottom: '0',
+				        right: '0'
+					};
+					break;
+			}
+		},
     	initEchart(){
 			var myChart = this.$echarts.init(document.getElementById('echart-box'));
+			var param = this.visualParam;
+			var echartData = this.echartData;
+			this.dealLegendPos();
 			myChart.clear();
-			var param = this.lineParam;
 			var option = {
 				title: {
-					text: param.title.text,
-					textStyle: {
-						color: param.title.textStyle.color,
-						fontSize: param.title.textStyle.fontSize
-					}
+					text: param.echarttitle,
 				},
 				legend: {
-					show: false,
-					orient: 'horizontal', //图例水平或者垂直
-					left: 'auto',
-					top: 'auto',
-					bottom: 'auto',
-					right: 'auto',
-			        data: ['邮件营销']
+					show: param.legendShow,
+					orient: param.legendOrient, //图例水平或者垂直
+					left: this.dealPos.left,
+					top: this.dealPos.top,
+					bottom: this.dealPos.bottom,
+					right: this.dealPos.right,
+			        data: echartData.xname
 			    },
 			    tooltip: {
-	   				show: param.tooltip.show,
+	   				show: param.tooltipShow,
 	   			},
 			    xAxis: {
 			        type: 'category',
-			        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+			        data: echartData.showKey
 			    },
 			    yAxis: {
 			        type: 'value'
 			    },
 			    series: [{
-			        data: [820, 932, 901, 934, 1290, 1330, 1320],
-			        name: '邮件营销',
+			        data: echartData.showValue,
+			        name: echartData.xname,
 			        type: 'line',
 			        smooth: true
 			    }]
@@ -182,8 +241,20 @@ export default {
 	            integerId: this.vid,
 	        }).then((res) => {
 	        	var data = res.data;
-	            this.lineParam.title.text = data.visualizeshowname;
-	            this.visualizename = data.visualizename;
+	        	this.visualParam = JSON.parse(JSON.stringify(data));
+	        }).catch((err) => {
+	            this.$message({
+	                type: 'error',
+	                message: '网络错误，请重试',
+	                showClose: true
+	            })
+	        });
+	        var url1 = '/api/show/visualizeData';
+	        this.$axios.post(url1,{
+	            integerId: this.vid,
+	        }).then((res) => {
+	        	var data = res.data;
+	        	this.echartData = JSON.parse(JSON.stringify(data));
 	        }).catch((err) => {
 	            this.$message({
 	                type: 'error',
@@ -194,11 +265,48 @@ export default {
 		},
 		run(){
 			this.initEchart();
+		},
+		save(){
+			var url = '/api/show/visualize?vid='+this.vid;
+			this.$axios.put(url,this.visualParam
+	        ).then((res) => {
+	        	if(res.data.code == 1){
+	        		this.$message({
+		                type: 'success',
+		                message: '保存成功！',
+		                showClose: true
+		            })
+		            this.$router.push({
+				        path: '/visualizeList'
+				    })
+	        	}else{
+	        		this.$message({
+		                type: 'error',
+		                message: '网络错误，请重试',
+		                showClose: true
+		            })
+	        	}
+	        }).catch((err) => {
+	            this.$message({
+	                type: 'error',
+	                message: '网络错误，请重试',
+	                showClose: true
+	            })
+	        })
+		},
+		reset(){
+			this.$router.push({
+		        path: '/visualizeList'
+		    })
 		}
     },
     mounted(){
+    	var _this = this;
     	this.requestData();
-		this.initEchart();
+    	setTimeout(function(){
+			_this.initEchart();
+    	},1000);
+		console.log(this.businessCats);
     }
 }
 </script>

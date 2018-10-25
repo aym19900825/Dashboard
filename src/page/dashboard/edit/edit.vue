@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <v-nav></v-nav>
+    <v-nav showItem="dashboard"></v-nav>
     <div class="list-content">
         <header>
             <span>{{dashboardshowname}}</span>
@@ -68,12 +68,6 @@
 
 <script>
 import Nav from '../../../components/common/nav/nav.vue'
-var testLayout = [
-      {"x":0,"y":0,"w":6,"h":4,"i":"0","echartId":"echartId0"},
-      {"x":6,"y":0,"w":6,"h":4,"i":"1","echartId":"echartId1"},
-      {"x":0,"y":0,"w":6,"h":4,"i":"2","echartId":"echartId2"},
-      {"x":6,"y":0,"w":6,"h":4,"i":"3","echartId":"echartId3"},
-];
 export default {
   name: 'edit',
   data () {
@@ -363,8 +357,6 @@ export default {
             data.forEach(function(item){
               var id = item.echartId;
               var h = $("#"+id).parent('.vue-grid-item').height();
-              console.log('--------'+id);
-              console.log('--------'+h);
               $("#"+id).height(h)
               switch(item.type){
                 case  'line':

@@ -1,6 +1,6 @@
 <template>
   <div class="edit">
-    <v-nav></v-nav>
+    <v-nav showItem="visualize"></v-nav>
     <div class="edit-content">
       <v-pie :vid="vid" ref="lines"></v-pie>
     </div>

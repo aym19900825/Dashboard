@@ -1,8 +1,8 @@
 <template>
   <div class="edit">
-    <v-nav></v-nav>
+    <v-nav showItem="visualize"></v-nav>
     <div class="edit-content">
-      <v-line :vid="vid" ref="lines"></v-line>
+      <v-line :vid="vid" ref="lines" :businessCats="businessCats"></v-line>
     </div>
   </div>
 </template>
@@ -14,7 +14,8 @@ export default {
   name: 'edit',
   data () {
     return {
-      vid: ''
+      vid: '',
+      businessCats: [],
     }
   },
   methods: {
@@ -26,6 +27,7 @@ export default {
   },
   created(){
     this.vid = this.$route.query.vid;
+    this.businessCats = this.$route.query.businesscategorys;
   }
 }
 </script>

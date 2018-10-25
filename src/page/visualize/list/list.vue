@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <v-nav></v-nav>
+    <v-nav showItem="visualize"></v-nav>
     <div class="list-content">
        <p>视图</p>
        <div class="empty-content" style="display: none;">
@@ -132,7 +132,8 @@ export default {
       this.$router.push({
         path: url, 
         query: { 
-          vid: row.vid
+          vid: row.vid,
+          businesscategorys: this.Businesscategorys
         }
       })
     },
@@ -144,6 +145,12 @@ export default {
             _this.$message({
               type: 'error',
               message: '删除失败，请重试',
+              showClose: true
+            })
+          }else{
+            _this.$message({
+              type: 'success',
+              message: '删除成功',
               showClose: true
             })
           }

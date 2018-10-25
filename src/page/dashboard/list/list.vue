@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <v-nav></v-nav>
+    <v-nav showItem="dashboard"></v-nav>
     <div class="list-content">
        <p>仪表板</p>
        <div class="empty-content" style="display: none;">
