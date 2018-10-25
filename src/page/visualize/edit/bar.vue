@@ -2,7 +2,7 @@
   <div class="edit">
     <v-nav showItem="visualize"></v-nav>
     <div class="edit-content">
-      <v-bar :vid="vid" ref="lines" :businessCats="businessCats"></v-bar>
+      <v-bar :vid="vid" :businessCats="businessCats"></v-bar>
     </div>
   </div>
 </template>

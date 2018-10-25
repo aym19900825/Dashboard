@@ -65,7 +65,8 @@
             <el-option
               v-for="item in Businesscategorys"
               :label="item"
-              :value="item">
+              :value="item"
+              :key="item">
             </el-option>
           </el-select>
         </el-form-item>
@@ -129,6 +130,7 @@ export default {
           url = '/editbar';
           break;
       }
+      console.log(url);
       this.$router.push({
         path: url, 
         query: { 

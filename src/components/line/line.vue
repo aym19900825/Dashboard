@@ -40,7 +40,8 @@
 						            <el-option
 						              v-for="item in businessCats"
 						              :label="item"
-						              :value="item">
+						              :value="item"
+						              :key="item">
 						            </el-option>
 						          </el-select>
 						        </el-form-item>
