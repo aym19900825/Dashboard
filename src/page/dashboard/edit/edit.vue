@@ -4,6 +4,7 @@
     <div class="list-content">
         <header>
             <span>{{dashboardshowname}}</span>
+            <el-button type="warning" size="small" @click="editInfo">修改信息</el-button>
             <el-button type="warning" size="small" @click="save">保存</el-button>
             <el-button type="primary" size="small" @click="showVisualize">新加视图</el-button>
         </header>
@@ -60,9 +61,33 @@
                 </el-dropdown>
             </grid-item>
           </grid-layout>
-        </div>
-        
+        </div> 
     </div>
+    <el-dialog title="dashboard" :visible.sync="dashboardForm" width="560px" :before-close="resetDashboard">
+      <el-form :model="newDashboard" label-width="120">
+        <el-form-item label="名称">
+          <el-input v-model="newDashboard.dashboardname"></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="newDashboard.dashboarddescription"></el-input>
+        </el-form-item>
+        <el-form-item label="业务场景">
+          <el-select v-model="newDashboard.businesscategory" filterable allow-create default-first-option
+          placeholder="请选择或输入业务场景">
+            <el-option
+              v-for="item in businesscategorys"
+              :label="item"
+              :value="item"
+              :key="item">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetDashboard">取 消</el-button>
+        <el-button type="primary" @click="editDashboard">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -84,10 +109,50 @@ export default {
       },
       list: [],
       layout: [],
-      dashboardshowname: ''
+      dashboardshowname: '',
+
+      newDashboard: {
+        dashboardname: '',
+        dashboardshowname: '',
+        businesscategory: '',
+        dashboarddescription: '',
+        bid: '',
+        type: ''
+      },
+      businesscategorys: [],
+      dashboardForm: false
     }
   },
   methods: {
+    editDashboard(){
+      var url = '/api/show/dashboard/?bid=' + this.bid ;
+      this.$axios.put(url,this.newDashboard).then((res) => {
+        if(res.data.code == 1){
+          this.$message({
+              type: 'error',
+              message: '保存成功',
+              showClose: true
+          });
+          this.dashboardForm = false;
+        }else{
+          this.$message({
+              type: 'error',
+              message: '保存失败，请重试',
+              showClose: true
+          })
+        }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+      
+    },
+    resetDashboard(){
+      this.dashboardForm = false;
+    },
     save(){
       var url = '/api/show/dashboardVisualize'
       this.$axios.post(url,{
@@ -339,6 +404,23 @@ export default {
     },
     getParam(){
       this.bid = this.$route.query.bid;
+      this.businesscategorys = this.$route.query.businesscategorys;
+    },
+    editInfo(){
+      var url = '/api/show/dashboard/'+ this.bid;
+      this.$axios.post(url,{
+        
+      }).then((res) => {
+        this.newDashboard = res.data;
+        this.dashboardForm = true;
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+
     },
     getDashboardData(){
       var _this = this;

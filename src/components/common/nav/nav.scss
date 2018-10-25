@@ -34,6 +34,18 @@ nav{
             a:hover{
                 background: #0079A5;
             }
+            ul{
+                li{
+                    color: #fff;
+                    font-size: 14px;
+                    text-align: center;
+                    cursor: pointer;
+                    a{
+                        display: block;
+                        padding-left: 40px;
+                    }
+                }
+            }
         }
     }
 }

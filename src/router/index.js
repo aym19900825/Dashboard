@@ -9,6 +9,8 @@ import EditBar from '@/page/visualize/edit/bar'
 import EditPie from '@/page/visualize/edit/pie'
 import DashboardEdit from '@/page/dashboard/edit/edit'
 import Login from '@/page/login/login'
+import User from '@/page/sys/user/user'
+import Role from '@/page/sys/role/role'
 Vue.use(Router)
 
 export default new Router({
@@ -19,9 +21,14 @@ export default new Router({
       component: Login
     },
     {
-      path: '/',
-      name: 'List',
-      component: List,
+      path: '/user',
+      name: 'User',
+      component: User
+    },
+    {
+      path: '/role',
+      name: 'Role',
+      component: Role
     },
     {
 	  path: '/detail',
