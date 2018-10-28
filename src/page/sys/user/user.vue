@@ -27,7 +27,7 @@
           <el-table-column label="操作" width="260">
             <template slot-scope="scope">
               <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)">删除</el-button>
-              <el-button size="mini" type="success" @click="set(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置角色</el-button>
+              <el-button size="mini" type="success" @click="showSet(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置角色</el-button>
               <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
             </template>
           </el-table-column>
@@ -62,17 +62,6 @@
         <el-form-item label="用户状态">
           <el-input v-model="user.userstatus" autocomplete="off"></el-input>
         </el-form-item>
-       <!--  <el-form-item label="用户角色">
-          <el-select
-            v-model="userroles" multiple filterable default-first-option placeholder="请配置用户角色">
-            <el-option
-              v-for="item in roles"
-              :key="item.roleid"
-              :label="item.roledesc"
-              :value="item.roleid">
-            </el-option>
-          </el-select>
-        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="resetUser">取 消</el-button>
@@ -120,7 +109,7 @@ export default {
       list: [],
 
       isSet: false,
-      roleDailog: true,
+      roleDailog: false,
 
       userDailog: false,
       isEditUser: false,
@@ -185,9 +174,9 @@ export default {
           })
       })
     },
-    set(){
-      this.isSet = true;
-    },
+    // set(){
+    //   this.roleDailog = true;
+    // },
     showUser(){
       this.userDailog = true;
     },

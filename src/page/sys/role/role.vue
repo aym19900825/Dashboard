@@ -55,6 +55,29 @@
         <el-button type="primary" @click="add">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="角色模块信息" :visible.sync="modelDailog"  width="500px" :before-close="resetRole">
+      <el-form :model="modelRole"  label-width="80px">
+        <el-form-item label="角色">
+          <el-input v-model="modelRole.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="配置模块">
+         <el-select
+           v-model="modelRole.modelroles" multiple filterable default-first-option placeholder="请配置用户角色">
+           <el-option
+             v-for="item in modelList"
+             :key="item.modelid"
+             :label="item.modelname"
+             :value="item.modelid"
+             >
+           </el-option>
+         </el-select>
+       </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetRole">取 消</el-button>
+        <el-button type="primary" @click="saveSet">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -75,10 +98,13 @@ export default {
       isEditRole: true,
       editRoleId: '',
 
-      role: {
-        "roledesc": "",
-        "rolename": "",
-        "rolestatus": "",
+      isSet: false,
+      modelDailog: false,
+      modelRole: {
+        name: '',
+        modelroles: []
+      },
+      modelList: {
       },
     }
   },
@@ -210,6 +236,82 @@ export default {
           })
       })
     },
+    // set(){
+    //   this.modelDailog = true;
+    // },
+    showSet(index, row){
+      var url = '/api/system/userRoleList';
+      this.$axios.put(url,{
+        integerId: row.roleid
+      }).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            this.modelDailog = true;
+            this.modelRole.modelroles= res.data;
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    saveSet(){
+      var url = '/api/system/roleModels';
+      this.$axios.put(url,{
+        "roleid": 1,
+        "modelDtoList": [
+            {
+            "rolemodelid":"",
+            "roleid":1,
+            "modelid":1
+            },
+            {
+            "rolemodelid":"",
+            "roleid":1,
+            "modelid":2
+            },
+            {
+            "rolemodelid":"",
+            "roleid":1,
+            "modelid":3
+            }]
+        }).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            this.$message({
+              type: 'success',
+              message: '配置成功！',
+              showClose: true
+            });
+            this.resetRole();
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    resetRole(){
+      this.modelRole = {
+        name: '',
+        modelroles: []
+      };
+      this.modelDailog = false;
+    },
     reset(){
       this.role = {
         "roledesc": "",
@@ -235,15 +337,13 @@ export default {
           })
       })
     },
-    getRoles(){
+    getModels(){
       var _this = this;
-      var url = '/api/system/roleList?page=' + this.page.currentPage + '&' + this.page.pageSize;
+      var url = '/api/system/modelList?page=' + this.page.currentPage + '&' + this.page.pageSize;
       this.$axios.post(url,{
-        'name': 'admin',
-        'username': '管'
+        "modelname": "工具"
       }).then((res) => {
-          this.list = res.data.userList;
-          this.page.totalCount = res.data.totalPages;
+          this.modelList = res.data.modelList;
       }).catch((err) => {
           this.$message({
               type: 'error',
@@ -258,6 +358,7 @@ export default {
   },
   mounted(){
     this.requestData();
+    this.getModels();
   }
 }
 </script>
