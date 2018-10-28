@@ -19,8 +19,8 @@
           </el-table-column>
           <el-table-column label="操作" width="260">
             <template slot-scope="scope">
-              <el-button size="mini" type="danger" @click="delVisual(scope.$index, scope.row)">删除</el-button>
-              <el-button size="mini" type="success" @click="setRole(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置模块</el-button>
+              <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" type="success" @click="set(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置模块</el-button>
               <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
             </template>
           </el-table-column>
@@ -70,7 +70,11 @@ export default {
         totalCount: 0,
       },
       list: [],
+
       dailog: false,
+      isEditRole: true,
+      editRoleId: '',
+
       role: {
         "roledesc": "",
         "rolename": "",
@@ -86,6 +90,31 @@ export default {
     handleCurrentChange(val) {
       this.page.currentPage = val;
       this.requestData();
+    },
+    del(index, row){
+      var url = '/api/system/role/' + row.roleid;
+      this.$axios.post(url,{}).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            this.$message({
+                type: 'success',
+                message: '删除成功',
+                showClose: true
+            });
+            this.requestData();
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
     },
     show(){
       this.dailog = true;
@@ -111,6 +140,76 @@ export default {
           })
       })
     },
+    edit(index, row){
+      var url = '/api/system/roleData';
+      this.$axios.post(url,{
+        "integerId": row.roleid
+        }).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            this.role.roledesc = res.data.roledesc;
+            this.role.rolename = res.data.rolename;
+            this.role.rolestatus = res.data.rolestatus;
+           
+            this.dailog = true;
+            this.isEditRole = true;
+            this.editRoleId = res.data.roleid;
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    saveEdit(){
+      var url = '/api/system/role?roleid=' + this.editRoleId;
+      this.$axios.put(url,this.role).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            if(res.data.code != 1){
+              if(res.data.message == 'Already exists!'){
+                this.$message({
+                  type: 'error',
+                  message: '角色名已经存在！',
+                  showClose: true
+                 })
+              }else{
+                this.$message({
+                  type: 'error',
+                  message: '网络错误，请重试',
+                  showClose: true
+                });
+              }
+            }else{
+              this.$message({
+                type: 'success',
+                message: '修改成功！',
+                showClose: true
+              });
+              this.reset();
+              this.requestData();
+            }
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
     reset(){
       this.role = {
         "roledesc": "",
@@ -118,6 +217,7 @@ export default {
         "rolestatus": "",
       },
       this.dailog = false;
+      this.isEditRole = false;
     },
     requestData(){
       var _this = this;

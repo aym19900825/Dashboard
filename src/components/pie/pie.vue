@@ -210,14 +210,11 @@ export default {
 				  text: param.echarttitle,
 			  },
 	          tooltip: {
+	          	  show: param.tooltipShow,
 	              trigger: 'item',
 	              formatter: "{a} <br/>{b}: {c} ({d}%)"
 	          },
-	          legend: {
-	              orient: 'vertical',
-	              x: 'left',
-	              data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
-	          },
+	          
 	          legend: {
 					show: param.legendShow,
 					orient: param.legendOrient, //图例水平或者垂直
@@ -225,7 +222,7 @@ export default {
 					top: this.dealPos.top,
 					bottom: this.dealPos.bottom,
 					right: this.dealPos.right,
-			        data: echartData.xname
+			        data: echartData.showKey
 			    },
 	          series: [
 	              {
@@ -251,13 +248,7 @@ export default {
 	                          show: false
 	                      }
 	                  },
-	                  data:[
-	                      {value:335, name:'直接访问'},
-	                      {value:310, name:'邮件营销'},
-	                      {value:234, name:'联盟广告'},
-	                      {value:135, name:'视频广告'},
-	                      {value:1548, name:'搜索引擎'}
-	                  ]
+	                  data: echartData.showValue
 	              }
 	          ]
 	      };

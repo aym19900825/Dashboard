@@ -10,7 +10,7 @@
         </header>
         <div class="visualizeList" v-if="isAddVisual">
           <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark"style="width: 95%;margin: 20px auto 20px auto;"  @selection-change="SelectVisual">
-            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column type="selection" width="55" disabled></el-table-column>
             <el-table-column prop="visualizename" label="名称"  show-overflow-tooltip>
             </el-table-column>
             <el-table-column prop="type" label="类型" width="150">
@@ -55,8 +55,8 @@
                     <i class="icon iconfont db--set"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="a" @click="edit">编辑</el-dropdown-item>
-                    <el-dropdown-item command="b" @click="del">删除</el-dropdown-item>
+                    <el-dropdown-item command="a" @click="editVisual(item.vid,item.type)">编辑</el-dropdown-item>
+                    <el-dropdown-item command="b" @click="del(item.vid)">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
             </grid-item>
@@ -187,6 +187,7 @@ export default {
       this.$refs.visualizeTable.clearSelection();
     },
     showVisualize(){
+      this.getVisualList();
       this.isAddVisual = true;
     },
     addVisual(){
@@ -195,6 +196,7 @@ export default {
       var list = this.selVisuaList;
       for(let i=0; i< list.length; i++){
         var vid = list[i].vid;
+        var type = list[i].type;
         this.layout.push({
           "x":0,
           "y":0,
@@ -210,172 +212,256 @@ export default {
           let h = $("#"+echartId).parent(".vue-grid-item").height();
           $("#"+echartId).height(h);
           switch(list[i].type){
-            case  'line':
-              _this.initLine(echartId);
-              break;
             case  'pie':
-              _this.initPie(echartId);
+              _this.initPie(echartId,vid); 
               break;
             default:
-              _this.initBar(echartId);
+              _this.initLine(echartId,vid,type);
               break;
           }
         }, 500);
         
       }
     },
-    edit(){
-
+    editVisual(vid,type){
+      var url = '';
+      switch(type){
+        case  'line':
+          url = '/editline';
+          break;
+        case  'pie':
+          url = '/editpie';
+          break;
+        default:
+          url = '/editbar';
+          break;
+      }
+      this.$router.push({
+        path: url, 
+        query: { 
+          vid: vid,
+          businesscategorys: this.Businesscategorys
+        }
+      })
     },
     del(){
 
     },
-    initLine(echartId){
-      var myChart = this.$echarts.init(document.getElementById(echartId));
-      myChart.clear();
-      var option = {
-        backgroundColor: '#fff',
-        title: {
-          text: '',
-        },
-        legend: {
-          show: false,
-          orient: 'horizontal', //图例水平或者垂直
-          left: 'auto',
-          top: 'auto',
-          bottom: 'auto',
-          right: 'auto',
-              data: ['邮件营销']
-          },
-          xAxis: {
-              type: 'category',
-              data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-          },
-          yAxis: {
-              type: 'value'
-          },
-          series: [{
-              data: [820, 932, 901, 934, 1290, 1330, 1320],
-              name: '邮件营销',
-              type: 'line',
-              smooth: true
-          }]
-      };
-      myChart.setOption(option);
-      myChart.resize();
+
+    dealLegendPos(legendPos){
+      switch(legendPos){
+        case 'topCenter':
+          return {
+            top: 'auto',
+            left: 'auto',
+            bottom: 'auto',
+            right: 'auto'
+          };
+          break;
+        case 'topRight':
+          return {
+            top: 'auto',
+            left: 'auto',
+            bottom: 'auto',
+            right: '0'
+          };
+          break;
+        case 'topLeft':
+          return {
+            top: 'auto',
+            left: '0',
+            bottom: 'auto',
+            right: 'auto'
+          };
+          break;
+        case 'bottomCenter':
+          return {
+            top: 'auto',
+            left: 'auto',
+            bottom: '0',
+            right: 'auto'
+          };
+          break;
+        case 'bottomLeft':
+          return {
+            top: 'auto',
+            left: '0',
+            bottom: '0',
+            right: 'auto'
+          };
+          break;
+        default:
+          return {
+            top: 'auto',
+            left: 'auto',
+            bottom: '0',
+            right: '0'
+          };
+          break;
+        }
     },
-    initBar(echartId){
-      var myChart = this.$echarts.init(document.getElementById(echartId));
-      myChart.clear();
-      var option = {
-          backgroundColor: '#fff',
-          color: ['#3398DB'],
-          tooltip : {
-              trigger: 'axis',
-              axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                  type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-              }
-          },
-          grid: {
-              left: '3%',
-              right: '4%',
-              bottom: '3%',
-              containLabel: true
-          },
-          xAxis : [
-              {
-                  type : 'category',
-                  data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                  axisTick: {
-                      alignWithLabel: true
-                  }
-              }
-          ],
-          yAxis : [
-              {
-                  type : 'value'
-              }
-          ],
-          series : [
-              {
-                  name:'直接访问',
-                  type:'bar',
-                  barWidth: '60%',
-                  data:[10, 52, 200, 334, 390, 330, 220]
-              }
-          ]
-      };
-      myChart.setOption(option);
-      myChart.resize();
-    },
-    initPie(echartId){
+    initPie(echartId,vid,echartData){
+      //如果对象是空对象
+      if(JSON.stringify(echartData) == "{}"){
+        var url1 = '/api/show/visualizeData';
+        this.$axios.post(url1,{
+            integerId: vid,
+        }).then((res) => {
+          echartData = res.data;
+        }).catch((err) => {
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+        })
+      }
+      var url = '/api/show/visualize';
+      this.$axios.post(url,{
+          integerId: vid,
+      }).then((res) => {
+        var param = res.data;
         var myChart = this.$echarts.init(document.getElementById(echartId));
+        myChart.clear();
+        var dealPos = this.dealLegendPos(param.legendPos);
         myChart.clear();
         var option = {
           backgroundColor: '#fff',
+          title: {
+           text: param.echarttitle,
+          },
           tooltip: {
+              show: param.tooltipShow,
               trigger: 'item',
               formatter: "{a} <br/>{b}: {c} ({d}%)"
           },
           legend: {
-              orient: 'vertical',
-              x: 'left',
-              data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+            show: param.legendShow,
+            orient: param.legendOrient, //图例水平或者垂直
+            left: dealPos.left,
+            top: dealPos.top,
+            bottom: dealPos.bottom,
+            right: dealPos.right,
+            data: echartData.showKey
           },
           series: [
-              {
-                  name:'访问来源',
-                  type:'pie',
-                  radius: ['50%', '70%'],
-                  avoidLabelOverlap: false,
-                  label: {
-                      normal: {
-                          show: false,
-                          position: 'center'
-                      },
-                      emphasis: {
-                          show: true,
-                          textStyle: {
-                              fontSize: '30',
-                              fontWeight: 'bold'
-                          }
-                      }
+            {
+              name:'访问来源',
+              type:'pie',
+              radius: ['50%', '70%'],
+              avoidLabelOverlap: false,
+              label: {
+                  normal: {
+                      show: false,
+                      position: 'center'
                   },
-                  labelLine: {
-                      normal: {
-                          show: false
+                  emphasis: {
+                      show: true,
+                      textStyle: {
+                          fontSize: '30',
+                          fontWeight: 'bold'
                       }
-                  },
-                  data:[
-                      {value:335, name:'直接访问'},
-                      {value:310, name:'邮件营销'},
-                      {value:234, name:'联盟广告'},
-                      {value:135, name:'视频广告'},
-                      {value:1548, name:'搜索引擎'}
-                  ]
-              }
+                  }
+              },
+              labelLine: {
+                  normal: {
+                      show: false
+                  }
+              },
+              data: echartData.showValue
+            }
           ]
-      };
-      myChart.setOption(option);
-      myChart.resize();
+        };
+        myChart.setOption(option);
+        myChart.resize();
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      });
+    },
+    
+    initLine(echartId,vid,type,echartData){
+        echartData = echartData || {};
+        //如果对象是空对象
+        if(JSON.stringify(echartData) == "{}"){
+          var url1 = '/api/show/visualizeData';
+          this.$axios.post(url1,{
+              integerId: vid,
+          }).then((res) => {
+            echartData = JSON.parse(JSON.stringify(res.data));
+          }).catch((err) => {
+              this.$message({
+                  type: 'error',
+                  message: '网络错误，请重试',
+                  showClose: true
+              })
+          })
+        }
+        var url = '/api/show/visualize';
+        this.$axios.post(url,{
+            integerId: vid,
+        }).then((res) => {
+          var param = res.data;
+          var myChart = this.$echarts.init(document.getElementById(echartId));
+          var dealPos = this.dealLegendPos(param.legendPos);
+          myChart.clear();
+          var option = {
+            backgroundColor: '#fff',
+            title: {
+              text: param.echarttitle,
+            },
+            legend: {
+              show: param.legendShow,
+              orient: param.legendOrient, //图例水平或者垂直
+              left: dealPos.left,
+              top: dealPos.top,
+              bottom: dealPos.bottom,
+              right: dealPos.right,
+              data: echartData.xname
+            },
+            tooltip: {
+              show: param.tooltipShow,
+            },
+            xAxis: {
+                type: 'category',
+                data: echartData.showKey
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: echartData.showValue,
+                name: echartData.xname,
+                type: type,
+                smooth: true
+            }]
+          };
+          myChart.setOption(option);
+          myChart.resize();
+        }).catch((err) => {
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+        });
     },
     resizedEvent: function(i, newH, newW, newHPx, newWPx){
       var data = this.layout.filter(function(item){
            return item.i == i; 
       });
       var selData = data[0];
-      console.log(selData);
       $("#"+selData.echartId).height(newHPx);
       $("#"+selData.echartId).width(newWPx);
       switch(selData.type){
-        case  'line':
-          this.initLine(selData.echartId);
-          break;
         case  'pie':
-          this.initPie(selData.echartId);
+          this.initPie(selData.echartId,selData.vid);
           break;
         default:
-          this.initBar(selData.echartId);
+          this.initLine(selData.echartId,selData.vid,selData.type);
           break;
       }
     },
@@ -392,7 +478,16 @@ export default {
           }else{
             $('.table-box').show();
             _this.page.totalCount = res.data.totalPages;
-            _this.visualizeList = JSON.parse(JSON.stringify(res.data.visualizeList));
+            var listData = res.data.visualizeList;
+            for(var i=0; i<listData.length; i++){
+              for(var j=0; j<this.layout.length; j++){
+                if(listData[i].vid==this.layout[j].vid){
+                  listData.splice(i,1);
+                  i--;
+                }
+              }
+            }
+            _this.visualizeList = JSON.parse(JSON.stringify(listData));
           }
       }).catch((err) => {
           this.$message({
@@ -438,21 +533,25 @@ export default {
           setTimeout(function(){
             data.forEach(function(item){
               var id = item.echartId;
+              var vid = item.vid;
+              var echartData = {
+                showkey: item.showKey,
+                showValue: item.showValue,
+                xname: item.xname,
+                yname: item.yname
+              };
               var h = $("#"+id).parent('.vue-grid-item').height();
               $("#"+id).height(h)
               switch(item.type){
-                case  'line':
-                  _this.initLine(id);
-                  break;
                 case  'pie':
-                  _this.initPie(id);
+                  _this.initPie(id,vid,echartData);
                   break;
                 default:
-                  _this.initBar(id);
+                  _this.initLine(id,vid,item.type,echartData);
                   break;
               }
             });
-          },1000);
+          },4000);
           
       }).catch((err) => {
           this.$message({

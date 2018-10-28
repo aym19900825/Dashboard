@@ -26,10 +26,9 @@
           </el-table-column>
           <el-table-column label="操作" width="260">
             <template slot-scope="scope">
-              <el-button size="mini" type="danger" @click="delVisual(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)">删除</el-button>
               <el-button size="mini" type="success" @click="setRole(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置角色</el-button>
               <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
-              
             </template>
           </el-table-column>
         </el-table>
@@ -77,7 +76,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="resetUser">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
+        <el-button type="primary" @click="add">确 定</el-button>
+        <el-button type="primary" @click="saveEdit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -96,6 +96,8 @@ export default {
       },
       list: [],
       userDailog: false,
+      isEditUser: false,
+      editUserId: '',
       user: {
         name: "",
         address: "",
@@ -128,10 +130,35 @@ export default {
       this.page.currentPage = val;
       this.requestData();
     },
+    del(index, row){
+      var url = '/api/system/user/' + row.userid;
+      this.$axios.post(url,{}).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            this.$message({
+                type: 'success',
+                message: '删除成功',
+                showClose: true
+            });
+            this.requestData();
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
     showUser(){
       this.userDailog = true;
     },
-    addUser(){
+    add(){
       var url = '/api/system/userAdd';
       this.$axios.post(url,this.user).then((res) => {
          if(res.data.code != 1){
@@ -143,6 +170,82 @@ export default {
          }else{
             this.resetUser();
             this.requestData();
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    edit(index, row){
+      var url = '/api/system/userData';
+      this.$axios.post(url,{
+        "integerId": row.userid
+        }).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            this.user.name = res.data.name;
+            this.user.address = res.data.address;
+            this.user.describe = res.data.describe;
+            this.user.email = res.data.email;
+            this.user.mobile = res.data.mobile;
+            this.user.sex = res.data.sex;
+            this.user.username = res.data.username;
+            this.user.userstatus = res.data.userstatus;
+            this.user.department = res.data.department;
+            this.user.userroles = "";
+            this.userDailog = true;
+            this.isEditUser = true;
+            this.editUserId = res.data.userid;
+         }
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    saveEdit(){
+      var url = '/api/system/user?userid=' + this.editUserId;
+      this.$axios.put(url,this.user).then((res) => {
+         if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+         }else{
+            if(res.data.code != 1){
+              if(res.data.message == 'Already exists!'){
+                this.$message({
+                  type: 'error',
+                  message: '用户名已经存在！',
+                  showClose: true
+                 })
+              }else{
+                this.$message({
+                  type: 'error',
+                  message: '网络错误，请重试',
+                  showClose: true
+                });
+              }
+            }else{
+              this.$message({
+                type: 'success',
+                message: '修改成功！',
+                showClose: true
+              });
+              this.resetUser();
+              this.requestData();
+            }
          }
       }).catch((err) => {
           this.$message({
@@ -166,14 +269,12 @@ export default {
         userroles: ""
       };
       this.userDailog = false;
+      this.isEditUser = false;
     },
     requestData(){
       var _this = this;
       var url = '/api/system/userList?page=' + this.page.currentPage + '&' + this.page.pageSize;
-      this.$axios.post(url,{
-        'name': 'admin',
-        'username': '管'
-      }).then((res) => {
+      this.$axios.post(url,{}).then((res) => {
           this.list = res.data.userList;
           this.page.totalCount = res.data.totalPages;
       }).catch((err) => {
