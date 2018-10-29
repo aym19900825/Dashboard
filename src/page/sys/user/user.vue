@@ -72,11 +72,11 @@
     <el-dialog title="配置角色" :visible.sync="roleDailog"  width="500px" :before-close="resetRole">
       <el-form :model="userRole"  label-width="80px">
         <el-form-item label="用户名">
-          <el-input v-model="userRole.username" autocomplete="off"></el-input>
+          <el-input v-model="userRole.username" autocomplete="off" disabled></el-input>
         </el-form-item>
         <el-form-item label="配置角色">
          <el-select
-           v-model="userroles" multiple filterable default-first-option placeholder="请配置用户角色">
+           v-model="userRole.userroles" multiple filterable default-first-option placeholder="请配置用户角色">
            <el-option
              v-for="item in rolelist"
              :key="item.roleid"
@@ -130,8 +130,10 @@ export default {
 
       userRole: {
         username: '',
-        userroles: []
+        userroles: [],
+        userid: 0
       },
+      selInitRole: [],
       rolelist: [
         // 'roleid': 3,
         // 'roledesc': "管理员hk1",
@@ -275,7 +277,12 @@ export default {
         integerId: row.userid
       }).then((res) => {
         this.roleDailog = true;
-        this.userRole.userroles = res.data;
+        this.userRole.username = row.name;
+        this.userRole.userid = row.userid;
+        for(var i=0; i<res.data.length; i++){
+          this.userRole.userroles.push(res.data[i].roleid);
+          this.selInitRole.push(res.data[i]);
+        }
       }).catch((err) => {
           this.$message({
               type: 'error',
@@ -286,21 +293,47 @@ export default {
     },
     saveSet(){
       var url = '/api/system/userRoles';
-      this.$axios.put(url,{
-        userid: "1",
-        roleList: [
-          {
-            "userroleid":"",
-            "roleid":1,
-            "userid":1
-          },
-          {
-            "userroleid":"",
-            "roleid":3,
-            "userid":1
+      var userid = this.userRole.userid;
+      var param = {
+        userid: userid,
+        roleList: [],
+      };
+      var selRole = this.selInitRole;
+      var roleList = this.userRole.userroles;
+      console.log(selRole);
+      var tmpSelRole = JSON.parse(JSON.stringify(this.selInitRole));;
+      for(var i=0; i<roleList.length; i++ ){
+        var flag = true;
+        for(var j=0; j<selRole.length; j++){
+          if(selRole[j].roleid == roleList[i]){
+            param.roleList.push({
+              "userroleid": selRole[j].userroleid,
+              "roleid": roleList[i],
+              "userid": userid
+            });
+            tmpSelRole = tmpSelRole.filter(function(item){
+              return item.roleid != roleList[i]
+            });
+            flag = false;
           }
-        ]
-      }).then((res) => {
+        }
+        if(flag){
+          param.roleList.push({
+            "userroleid": "",
+            "roleid": roleList[i],
+            "userid": userid
+          });
+        }
+      }
+
+      if(tmpSelRole.length){
+        param.deleteList = [];
+        for(var k=0; k<tmpSelRole.length; k++){
+          param.deleteList.push(tmpSelRole[k].roleid);
+        }
+      }
+
+      this.$axios.post(url,param).then((res) => {
          if(res.data.code != 1){
             this.$message({
                 type: 'error',
@@ -326,8 +359,10 @@ export default {
     resetRole(){
       this.userRole = {
         username: '',
-        userroles: []
+        userroles: [],
+        userid: 0
       };
+      this.selInitRole = [];
       this.roleDailog = false;
     },
     resetUser(){
@@ -349,9 +384,7 @@ export default {
     getRoleList(){
       var url = '/api/system/roleList?page=0&size=10';
       this.$axios.post(url,{}).then((res) => {
-          if(res.data.code == 1){
-            this.rolelist = res.data.userList;
-          }
+          this.rolelist = res.data.roleList;
       }).catch((err) => {
           this.$message({
               type: 'error',
