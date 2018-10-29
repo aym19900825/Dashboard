@@ -113,6 +113,7 @@ export default {
       },
       list: [],
       layout: [],
+      deleteList: [],
       dashboardshowname: '',
 
       newDashboard: {
@@ -158,11 +159,21 @@ export default {
       this.dashboardForm = false;
     },
     save(){
+      var param = {};
+      if(this.deleteList.length > 0){
+        param = {
+          'bid': this.bid,
+          'locationList': this.layout,
+          'deleteList': this.deleteList
+        };
+      }else{
+        param = {
+          'bid': this.bid,
+          'locationList': this.layout
+        };
+      }
       var url = '/api/show/dashboardVisualize'
-      this.$axios.post(url,{
-        "bid": this.bid,
-        "locationList": this.layout
-      }).then((res) => {
+      this.$axios.post(url, param).then((res) => {
         if(res.data.code == 1){
           this.$router.replace('/dashboardList');
         }else{
@@ -200,8 +211,8 @@ export default {
 
       var list = this.selVisuaList.filter(function(item){
         var flag = true;
-        for(var m=0; m<this.layout.length; m++){
-          if(item.vid == this.layout[m].vid){
+        for(var m=0; m<_this.layout.length; m++){
+          if(item.vid == _this.layout[m].vid){
             flag = false;
           };
         }
@@ -260,7 +271,16 @@ export default {
       })
     },
     del(visualize){
-      visualize.vid;
+      var index = 0;
+      if(visualize.did){
+        this.deleteList.push(visualize.did);
+      }
+      for(var i = 0; i < this.layout.length; i++){
+          if(this.layout[i].vid == visualize.vid){
+            index = i;
+          }
+      }
+      this.layout.splice(index,1);
     },
 
     dealLegendPos(legendPos){

@@ -10,7 +10,7 @@
           </p>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
           style="width: 100%">
-          <el-table-column prop="username" label="名称">
+          <el-table-column prop="name" label="名称">
           </el-table-column>
           <el-table-column prop="department" label="部门">
           </el-table-column>
@@ -69,7 +69,7 @@
         <el-button type="primary" @click="saveEdit" v-show="isEditUser">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="用户角色信息" :visible.sync="roleDailog"  width="500px" :before-close="resetRole">
+    <el-dialog title="配置角色" :visible.sync="roleDailog"  width="500px" :before-close="resetRole">
       <el-form :model="userRole"  label-width="80px">
         <el-form-item label="用户名">
           <el-input v-model="userRole.username" autocomplete="off"></el-input>
@@ -151,7 +151,7 @@ export default {
     },
     del(index, row){
       var url = '/api/system/user/' + row.userid;
-      this.$axios.post(url,{}).then((res) => {
+      this.$axios.delete(url,{}).then((res) => {
          if(res.data.code != 1){
             this.$message({
                 type: 'error',
@@ -206,27 +206,19 @@ export default {
       this.$axios.post(url,{
         "integerId": row.userid
         }).then((res) => {
-         if(res.data.code != 1){
-            this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-            })
-         }else{
-            this.user.name = res.data.name;
-            this.user.address = res.data.address;
-            this.user.describe = res.data.describe;
-            this.user.email = res.data.email;
-            this.user.mobile = res.data.mobile;
-            this.user.sex = res.data.sex;
-            this.user.username = res.data.username;
-            this.user.userstatus = res.data.userstatus;
-            this.user.department = res.data.department;
-            this.user.userroles = "";
-            this.userDailog = true;
-            this.isEditUser = true;
-            this.editUserId = res.data.userid;
-         }
+          this.user.name = res.data.name;
+          this.user.address = res.data.address;
+          this.user.describe = res.data.describe;
+          this.user.email = res.data.email;
+          this.user.mobile = res.data.mobile;
+          this.user.sex = res.data.sex;
+          this.user.username = res.data.username;
+          this.user.userstatus = res.data.userstatus;
+          this.user.department = res.data.department;
+          this.user.userroles = [];
+          this.userDailog = true;
+          this.isEditUser = true;
+          this.editUserId = res.data.userid;
       }).catch((err) => {
           this.$message({
               type: 'error',
@@ -279,19 +271,11 @@ export default {
     },
     showSet(index, row){
       var url = '/api/system/userRoleList';
-      this.$axios.put(url,{
+      this.$axios.post(url,{
         integerId: row.userid
       }).then((res) => {
-         if(res.data.code != 1){
-            this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-            })
-         }else{
-            this.roleDailog = true;
-            this.userRole.userroles = res.data;
-         }
+        this.roleDailog = true;
+        this.userRole.userroles = res.data;
       }).catch((err) => {
           this.$message({
               type: 'error',
@@ -357,7 +341,7 @@ export default {
         username: "",
         userstatus: "",
         department: "",
-        userroles: ""
+        userroles: []
       };
       this.userDailog = false;
       this.isEditUser = false;
