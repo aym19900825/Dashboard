@@ -9,14 +9,14 @@
             <el-button type="primary" size="small" @click="showVisualize">新加视图</el-button>
         </header>
         <div class="visualizeList" v-if="isAddVisual">
-          <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark"style="width: 95%;margin: 20px auto 20px auto;"  @selection-change="SelectVisual">
+          <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark"style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
             <el-table-column type="selection" width="55" disabled></el-table-column>
             <el-table-column prop="visualizename" label="名称"  show-overflow-tooltip>
             </el-table-column>
             <el-table-column prop="type" label="类型" width="150">
             </el-table-column>
           </el-table>
-          <div class="pagination-box">
+          <!-- <div class="pagination-box">
             <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -26,7 +26,7 @@
               layout="total, sizes, prev, pager, next"
               :total="page.totalCount">
             </el-pagination>
-          </div>
+          </div> -->
           <el-row>
             <el-button type="primary" @click="addVisual">完成</el-button>
             <el-button type="danger" style="margin-right: -23%;" @click="reset">取消</el-button>
@@ -55,8 +55,12 @@
                     <i class="icon iconfont db--set"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="a" @click="editVisual(item.vid,item.type)">编辑</el-dropdown-item>
-                    <el-dropdown-item command="b" @click="del(item.vid)">删除</el-dropdown-item>
+                    <el-dropdown-item command="a">
+                      <span  @click="editVisual(item.vid,item.type)">编辑</span> 
+                    </el-dropdown-item>
+                    <el-dropdown-item command="b">
+                      <span  @click="del(item)">删除</span> 
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
             </grid-item>
@@ -179,7 +183,7 @@ export default {
     choose(){
       this.$router.replace('/detail');
     },
-    SelectVisual(val){
+    selectVisual(val){
       this.selVisuaList = val;
     },
     reset(){
@@ -193,7 +197,18 @@ export default {
     addVisual(){
       this.isAddVisual = false;
       var _this = this;
-      var list = this.selVisuaList;
+
+      var list = this.selVisuaList.filter(function(item){
+        var flag = true;
+        for(var m=0; m<this.layout.length; m++){
+          if(item.vid == this.layout[m].vid){
+            flag = false;
+          };
+        }
+        if(flag){
+          return item;
+        }
+      });
       for(let i=0; i< list.length; i++){
         var vid = list[i].vid;
         var type = list[i].type;
@@ -240,12 +255,12 @@ export default {
         path: url, 
         query: { 
           vid: vid,
-          businesscategorys: this.Businesscategorys
+          businesscategorys: this.businesscategorys
         }
       })
     },
-    del(){
-
+    del(visualize){
+      visualize.vid;
     },
 
     dealLegendPos(legendPos){
@@ -479,15 +494,16 @@ export default {
             $('.table-box').show();
             _this.page.totalCount = res.data.totalPages;
             var listData = res.data.visualizeList;
-            for(var i=0; i<listData.length; i++){
-              for(var j=0; j<this.layout.length; j++){
-                if(listData[i].vid==this.layout[j].vid){
-                  listData.splice(i,1);
-                  i--;
+            _this.visualizeList = JSON.parse(JSON.stringify(listData));
+            _this.toggleSelection([_this.visualizeList[0]]);
+
+            for(var i=0; i<_this.visualizeList.length; i++){
+              for(var j=0; j<_this.layout.length; j++){
+                if(listData[i].vid == _this.layout[j].vid){
+                  _this.selVisuaList.push(_this.visualizeList[i]);
                 }
               }
             }
-            _this.visualizeList = JSON.parse(JSON.stringify(listData));
           }
       }).catch((err) => {
           this.$message({
@@ -496,6 +512,17 @@ export default {
               showClose: true
           })
       })
+    },
+    toggleSelection() {
+      var rows = this.selVisuaList;
+      console.log("rows:"+rows);
+      if(rows) {
+        this.$nextTick(function () {
+          rows.forEach(row => {
+            this.$refs.visualizeTable.toggleRowSelection(row,true);
+          });
+        });
+      }
     },
     getParam(){
       this.bid = this.$route.query.bid;
@@ -566,7 +593,6 @@ export default {
       var _this = this;
       _this.getParam();
       _this.getDashboardData();
-      _this.getVisualList();
   },
   components: {
     'v-nav': Nav
