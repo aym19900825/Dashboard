@@ -13,7 +13,7 @@
         </li>
 				<li :style="{background: showItem == 'model' ? '#0079A5' : '#005571'}">
           <i class="icon iconfont db--view-dashboard"></i>
-          <router-link :to="{path:'/dashboardList'}" >模块</router-link>
+          <router-link :to="{path:'/model'}" >模块</router-link>
 				</li>
         <li :style="{background: showItem == 'system' ? '#0079A5' : '#005571'}">
           <i class="icon iconfont db--view-dashboard"></i>

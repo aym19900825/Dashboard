@@ -11,12 +11,17 @@ import DashboardEdit from '@/page/dashboard/edit/edit'
 import Login from '@/page/login/login'
 import User from '@/page/sys/user/user'
 import Role from '@/page/sys/role/role'
+import Model from '@/page/sys/model/model'
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
       path: '/',
+      name: 'Login',
+      component: Login
+    },{
+      path: '/login',
       name: 'Login',
       component: Login
     },
@@ -29,6 +34,11 @@ export default new Router({
       path: '/role',
       name: 'Role',
       component: Role
+    },
+    {
+      path: '/model',
+      name: 'Model',
+      component: Model
     },
     {
 	  path: '/detail',

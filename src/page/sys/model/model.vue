@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <v-nav showItem="user"></v-nav>
+    <v-nav showItem="model"></v-nav>
     <div class="list-content">
        <p>模块</p>
        <div class="table-box">
@@ -10,17 +10,17 @@
           </p>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
           style="width: 100%">
-          <el-table-column prop="modelname" label="">
+          <el-table-column prop="modelname" label="名称">
           </el-table-column>
           <el-table-column prop="modeldesc" label="描述">
           </el-table-column>         
           <el-table-column prop="modelstatus" label="状态">
           </el-table-column>
           </el-table-column>
-          <el-table-column label="操作" width="260">
+          <el-table-column label="操作" width="360">
             <template slot-scope="scope">
               <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)">删除</el-button>
-              <el-button size="mini" type="success" @click="showSet(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置dashboard</el-button>
+              <el-button size="mini" type="success" @click="showSet(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">配置Dashboard</el-button>
               <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
             </template>
           </el-table-column>
@@ -102,7 +102,7 @@ export default {
       },
 
       isSet: false,
-      dashboardDailog: true,
+      dashboardDailog: false,
       modelDb: {
         name: '',
         modelDbs: []
@@ -127,7 +127,7 @@ export default {
     },
     del(index, row){
       var url = '/api/system/model/' + row.modelid;
-      this.$axios.post(url,{}).then((res) => {
+      this.$axios.delete(url,{}).then((res) => {
          if(res.data.code != 1){
             this.$message({
                 type: 'error',
@@ -187,20 +187,12 @@ export default {
       this.$axios.post(url,{
         integerId: row.modelid
       }).then((res) => {
-         if(res.data.code != 1){
-            this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-            })
-         }else{
-            this.model.modelname = res.data.modelname;
-            this.model.modeldes = res.data.modeldesc;
+        this.model.modelname = res.data.modelname;
+        this.model.modeldes = res.data.modeldesc;
 
-            this.modelDailog = true;
-            this.isEdit = true;
-            this.editId = res.data.modelid;
-         }
+        this.modelDailog = true;
+        this.isEdit = true;
+        this.editId = res.data.modelid;
       }).catch((err) => {
           this.$message({
               type: 'error',

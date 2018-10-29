@@ -52,7 +52,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="reset">取 消</el-button>
-        <el-button type="primary" @click="add">确 定</el-button>
+        <el-button type="primary" @click="add" v-if="!isEditRole">确 定</el-button>
+        <el-button type="primary" @click="saveEdit" v-if="isEditRole">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog title="角色模块信息" :visible.sync="modelDailog"  width="500px" :before-close="resetRole">
@@ -62,7 +63,7 @@
         </el-form-item>
         <el-form-item label="配置模块">
          <el-select
-           v-model="modelRole.modelroles" multiple filterable default-first-option placeholder="请配置用户角色">
+           v-model="modelRole.modelroles" multiple filterable default-first-option placeholder="请配置魔模块">
            <el-option
              v-for="item in modelList"
              :key="item.modelid"
@@ -98,6 +99,11 @@ export default {
       isEditRole: true,
       editRoleId: '',
 
+      role: {
+        rolename: '',
+        rolestatus: '',
+        roledesc: '',
+      },
       isSet: false,
       modelDailog: false,
       modelRole: {
@@ -119,7 +125,7 @@ export default {
     },
     del(index, row){
       var url = '/api/system/role/' + row.roleid;
-      this.$axios.post(url,{}).then((res) => {
+      this.$axios.delete(url,{}).then((res) => {
          if(res.data.code != 1){
             this.$message({
                 type: 'error',
@@ -155,6 +161,11 @@ export default {
                 showClose: true
             })
          }else{
+            this.$message({
+                type: 'success',
+                message: '新增成功',
+                showClose: true
+            });
             this.reset();
             this.requestData();
          }
@@ -171,21 +182,13 @@ export default {
       this.$axios.post(url,{
         "integerId": row.roleid
         }).then((res) => {
-         if(res.data.code != 1){
-            this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-            })
-         }else{
-            this.role.roledesc = res.data.roledesc;
+         this.role.roledesc = res.data.roledesc;
             this.role.rolename = res.data.rolename;
             this.role.rolestatus = res.data.rolestatus;
            
             this.dailog = true;
             this.isEditRole = true;
             this.editRoleId = res.data.roleid;
-         }
       }).catch((err) => {
           this.$message({
               type: 'error',
