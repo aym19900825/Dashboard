@@ -300,7 +300,6 @@ export default {
       };
       var selRole = this.selInitRole;
       var roleList = this.userRole.userroles;
-      console.log(selRole);
       var tmpSelRole = JSON.parse(JSON.stringify(this.selInitRole));;
       for(var i=0; i<roleList.length; i++ ){
         var flag = true;
@@ -329,7 +328,7 @@ export default {
       if(tmpSelRole.length){
         param.deleteList = [];
         for(var k=0; k<tmpSelRole.length; k++){
-          param.deleteList.push(tmpSelRole[k].roleid);
+          param.deleteList.push(tmpSelRole[k].userroleid);
         }
       }
 

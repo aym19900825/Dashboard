@@ -11,7 +11,7 @@
           <i class="icon iconfont db--dashboard"></i>
           <router-link :to="{path:'/dashboardList'}" >仪表板</router-link>
         </li>
-				<li :style="{background: showItem == 'model' ? '#0079A5' : '#005571'}">
+				<!-- <li :style="{background: showItem == 'model' ? '#0079A5' : '#005571'}">
           <i class="icon iconfont db--view-dashboard"></i>
           <router-link :to="{path:'/model'}" >模块</router-link>
 				</li>
@@ -26,7 +26,7 @@
               <router-link :to="{path:'/role'}" >角色管理</router-link>
             </li>
           </ul>
-        </li>
+        </li> -->
 			</ul>
 		</nav>
   </div>

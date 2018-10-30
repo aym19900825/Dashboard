@@ -10,6 +10,8 @@ import './assets/icon/iconfont.css'
 import $ from 'jquery'
 import axios from 'axios'
 import vueGridLayout from 'vue-grid-layout';
+//引用vue-color中的某一个组件
+import { Photoshop } from 'vue-color'
 
 
 Vue.config.productionTip = false
@@ -22,6 +24,9 @@ Vue.use(vueGridLayout);
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: { 
+  	App ,
+  	'photoshop-picker': Photoshop
+  },
   template: '<App/>'
 })

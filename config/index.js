@@ -12,8 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
         '/api': {
-            // target: 'http://192.168.1.140:8090/',//设置你调用的接口域名和端口号 别忘了加http
-            target: 'http://203.93.173.179:8665/Dashboard/',//设置你调用的接口域名和端口号 别忘了加http
+            target: 'http://192.168.1.140:8090/',//设置你调用的接口域名和端口号 别忘了加http
+            // target: 'http://203.93.173.179:8665/Dashboard/',//设置你调用的接口域名和端口号 别忘了加http
             // target: 'http://spark2:8090/',//设置你调用的接口域名和端口号 别忘了加http
             changeOrigin: true,
             pathRewrite: {

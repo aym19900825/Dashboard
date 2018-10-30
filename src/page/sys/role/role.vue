@@ -328,7 +328,6 @@ export default {
       var _this = this;
       var url = '/api/system/roleList?page=' + this.page.currentPage + '&' + this.page.pageSize;
       this.$axios.post(url,{
-        'rolename': 'ad',
       }).then((res) => {
           this.list = res.data.roleList;
           this.page.totalCount = res.data.totalPages;

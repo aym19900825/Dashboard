@@ -52,7 +52,7 @@
 						<div class="panl-setting">
 							<el-form ref="option-set" :model="visualParam" label-width="80px">
 							  	<el-form-item label="标题">
-							   		 <el-input v-model="visualParam.echarttitle"></el-input>
+							   		<el-input v-model="visualParam.echarttitle"></el-input>
 							 	</el-form-item>
 							 	<el-form-item label="显示图例">
 							    	<el-switch v-model="visualParam.legendShow"></el-switch>
@@ -80,6 +80,10 @@
 							    <el-form-item label="显示提示">
 							    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
 							    </el-form-item>
+							    <el-form-item label="表盘颜色">
+							    	<el-input v-model="testColors" @focus = "colorSet=!colorSet;"></el-input>
+						            <photoshop-picker v-model="testColors" v-show="colorSet" @input="updateColor"/>
+						        </el-form-item>
 							</el-form>
 						</div>
 					</div>
@@ -93,11 +97,14 @@
 </template>
 
 <script>
+import { Chrome } from 'vue-color'
 export default {
   	name: 'line',
   	props: ['vid','businessCats'],
  	data(){
    		return {
+   			colorSet: false,
+   			testColors: '#194d33',
    			visualizename: '',
    			tabIndex: '0',
    			legendOpt:[
@@ -143,6 +150,9 @@ export default {
     	}
     },
     methods: {
+    	updateColor(value){
+    		this.testColors = value.hex;
+    	},
     	tabSwitch(index){
 			this.tabIndex = index;
 		},
@@ -301,13 +311,15 @@ export default {
 		    })
 		}
     },
+    components: {
+   		'photoshop-picker': Chrome
+ 	},
     mounted(){
     	var _this = this;
     	this.requestData();
     	setTimeout(function(){
 			_this.initEchart();
     	},1000);
-		console.log(this.businessCats);
     }
 }
 </script>
