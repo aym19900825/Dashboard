@@ -223,26 +223,27 @@ export default {
       for(let i=0; i< list.length; i++){
         var vid = list[i].vid;
         var type = list[i].type;
-        this.layout.push({
-          "x":0,
-          "y":0,
-          "w":6,
-          "h":4,
-          "i": vid,
-          "vid": vid,
-          "type": list[i].type,
-          "echartId": "echart"+vid
-        });
+        var param = list[i];
+        var obj = JSON.parse(JSON.stringify(list[i]));
+        obj.x = 0;
+        obj.y = 0;
+        obj.w = 6;
+        obj.h = 4;
+        obj.i = vid;
+        obj.vid = vid;
+        obj.type = type;
+        obj.echartId = "echart"+vid;
+        this.layout.push(obj);
         setTimeout(function(){
           let echartId = "echart"+vid;
           let h = $("#"+echartId).parent(".vue-grid-item").height();
           $("#"+echartId).height(h);
-          switch(list[i].type){
+          switch(type){
             case  'pie':
-              _this.initPie(echartId,vid); 
+              _this.initPie(echartId,vid,param); 
               break;
             default:
-              _this.initLine(echartId,vid,type);
+              _this.initLine(echartId,vid,type,param);
               break;
           }
         }, 500);
@@ -335,7 +336,8 @@ export default {
           break;
         }
     },
-    initPie(echartId,vid,echartData){
+    initPie(echartId,vid,param,echartData){
+      echartData = echartData || {};
       //如果对象是空对象
       if(JSON.stringify(echartData) == "{}"){
         var url1 = '/api/show/visualizeData';
@@ -343,6 +345,60 @@ export default {
             integerId: vid,
         }).then((res) => {
           echartData = res.data;
+          var myChart = this.$echarts.init(document.getElementById(echartId));
+          myChart.clear();
+          var dealPos = this.dealLegendPos(param.legendPos);
+          myChart.clear();
+          var option = {
+            backgroundColor: '#fff',
+            title: {
+             text: param.echarttitle,
+            },
+            tooltip: {
+                show: param.tooltipShow,
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+              show: param.legendShow,
+              orient: param.legendOrient, //图例水平或者垂直
+              left: dealPos.left,
+              top: dealPos.top,
+              bottom: dealPos.bottom,
+              right: dealPos.right,
+              data: echartData.showKey
+            },
+            series: [
+              {
+                name:'访问来源',
+                type:'pie',
+                radius: ['50%', '70%'],
+                avoidLabelOverlap: false,
+                label: {
+                    normal: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '30',
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                data: echartData.showValue
+              }
+            ]
+          };
+          myChart.setOption(option);
+          myChart.resize();
+
         }).catch((err) => {
             this.$message({
                 type: 'error',
@@ -350,12 +406,7 @@ export default {
                 showClose: true
             })
         })
-      }
-      var url = '/api/show/visualize';
-      this.$axios.post(url,{
-          integerId: vid,
-      }).then((res) => {
-        var param = res.data;
+      }else{
         var myChart = this.$echarts.init(document.getElementById(echartId));
         myChart.clear();
         var dealPos = this.dealLegendPos(param.legendPos);
@@ -409,16 +460,9 @@ export default {
         };
         myChart.setOption(option);
         myChart.resize();
-      }).catch((err) => {
-          this.$message({
-              type: 'error',
-              message: '网络错误，请重试',
-              showClose: true
-          })
-      });
+      }
     },
-    
-    initLine(echartId,vid,type,echartData){
+    initLine(echartId,vid,type,param,echartData){
         echartData = echartData || {};
         //如果对象是空对象
         if(JSON.stringify(echartData) == "{}"){
@@ -427,6 +471,42 @@ export default {
               integerId: vid,
           }).then((res) => {
             echartData = JSON.parse(JSON.stringify(res.data));
+            var myChart = this.$echarts.init(document.getElementById(echartId));
+            var dealPos = this.dealLegendPos(param.legendPos);
+            myChart.clear();
+            var option = {
+              backgroundColor: '#fff',
+              title: {
+                text: param.echarttitle,
+              },
+              legend: {
+                show: param.legendShow,
+                orient: param.legendOrient, //图例水平或者垂直
+                left: dealPos.left,
+                top: dealPos.top,
+                bottom: dealPos.bottom,
+                right: dealPos.right,
+                data: echartData.xname
+              },
+              tooltip: {
+                show: param.tooltipShow,
+              },
+              xAxis: {
+                  type: 'category',
+                  data: echartData.showKey
+              },
+              yAxis: {
+                  type: 'value'
+              },
+              series: [{
+                  data: echartData.showValue,
+                  name: echartData.xname,
+                  type: type,
+                  smooth: true
+              }]
+            };
+            myChart.setOption(option);
+            myChart.resize();
           }).catch((err) => {
               this.$message({
                   type: 'error',
@@ -434,12 +514,7 @@ export default {
                   showClose: true
               })
           })
-        }
-        var url = '/api/show/visualize';
-        this.$axios.post(url,{
-            integerId: vid,
-        }).then((res) => {
-          var param = res.data;
+        }else{
           var myChart = this.$echarts.init(document.getElementById(echartId));
           var dealPos = this.dealLegendPos(param.legendPos);
           myChart.clear();
@@ -476,27 +551,29 @@ export default {
           };
           myChart.setOption(option);
           myChart.resize();
-        }).catch((err) => {
-            this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-            })
-        });
+        }
     },
     resizedEvent: function(i, newH, newW, newHPx, newWPx){
       var data = this.layout.filter(function(item){
            return item.i == i; 
       });
       var selData = data[0];
+      if(selData.showKey){
+        var echartData = {
+          showkey: selData.showKey,
+          showValue: selData.showValue,
+          xname: selData.xname,
+          yname: selData.yname
+        };
+      }
       $("#"+selData.echartId).height(newHPx);
       $("#"+selData.echartId).width(newWPx);
       switch(selData.type){
         case  'pie':
-          this.initPie(selData.echartId,selData.vid);
+          this.initPie(selData.echartId,selData.vid,selData,echartData);
           break;
         default:
-          this.initLine(selData.echartId,selData.vid,selData.type);
+          this.initLine(selData.echartId,selData.vid,selData.type,selData,echartData);
           break;
       }
     },
@@ -591,14 +668,14 @@ export default {
               $("#"+id).height(h)
               switch(item.type){
                 case  'pie':
-                  _this.initPie(id,vid,echartData);
+                  _this.initPie(id,vid,item,echartData);
                   break;
                 default:
-                  _this.initLine(id,vid,item.type,echartData);
+                  _this.initLine(id,vid,item.type,item,echartData);
                   break;
               }
             });
-          },4000);
+          },1000);
           
       }).catch((err) => {
           this.$message({
