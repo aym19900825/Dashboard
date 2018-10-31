@@ -190,18 +190,16 @@ export default {
       var page =  _this.page.currentPage - 1;
       var url = '/api/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
       this.$axios.post(url,_this.searchData).then((res) => {
-          if(res.data.totalPages == 0){
+          if(res.data.totalPages == 0 && _this.searchData.visualizename == '' && _this.searchData.type == ''){
             $('.empty-content').show();
             $('.table-box').hide();
-            _this.page.totalCount = res.data.total;
-            _this.Businesscategorys = res.data.distinctBusinesscategory;
           }else{
             $('.table-box').show();
             $('.empty-content').hide();
-            _this.page.totalCount = res.data.total;
             _this.list = JSON.parse(JSON.stringify(res.data.visualizeList));
-            _this.Businesscategorys = res.data.distinctBusinesscategory;
           }
+          _this.page.totalCount = res.data.total;
+          _this.Businesscategorys = res.data.distinctBusinesscategory;
       }).catch((err) => {
           this.$message({
               type: 'error',

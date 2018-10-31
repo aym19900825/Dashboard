@@ -195,7 +195,7 @@ export default {
       var page = _this.page.currentPage - 1;
       var url = '/api/show/dashboardList2?page=' + page + '&size=' + _this.page.pageSize;
       this.$axios.post(url,this.searchData).then((res) => {
-          if(res.data.totalPages == 0){
+          if(res.data.totalPages == 0 && _this.searchData.dashboardname == '' && _this.searchData.dashboarddescription == ''){
             $('.empty-content').show();
             $('.table-box').hide();
             _this.page.totalCount = res.data.total;
