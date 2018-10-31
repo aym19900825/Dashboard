@@ -1,15 +1,18 @@
 <template>
   <div class="list">
-    <v-nav showItem="dashboard"></v-nav>
+    <v-nav showItem="dashboard" v-show="!isPreview"></v-nav>
     <div class="list-content">
-        <header>
+        <header v-if="!isPreview">
             <span>{{dashboardshowname}}</span>
+            <el-button type="warning" size="small" @click="exportPage">导出</el-button>
+            <el-button type="warning" size="small" @click="preview">预览</el-button>
             <el-button type="warning" size="small" @click="editInfo">修改信息</el-button>
             <el-button type="warning" size="small" @click="save">保存</el-button>
             <el-button type="primary" size="small" @click="showVisualize">配置视图</el-button>
         </header>
-        <div class="visualizeList" v-if="isAddVisual">
-          <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark"style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
+        <el-button size="small" @click="returnEdit" v-if="isPreview" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
+        <div class="visualizeList" v-if="isAddVisual && !isPreview" >
+          <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark" style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
             <el-table-column type="selection" width="55" disabled></el-table-column>
             <el-table-column prop="visualizename" label="名称"  show-overflow-tooltip>
             </el-table-column>
@@ -37,8 +40,8 @@
             :layout="layout"
             :col-num="12"
             :row-height="30"
-            :is-draggable="true"
-            :is-resizable="true"
+            :is-draggable="gridDraggable"
+            :is-resizable="griRresizable"
             :vertical-compact="true"
             :margin="[10, 10]"
             :use-css-transforms="true">
@@ -50,7 +53,7 @@
                        :i="item.vid"
                        @resized="resizedEvent">
                 <div :id="item.echartId" class="echart-box"></div>
-                <el-dropdown>
+                <el-dropdown v-show="!isPreview">
                   <span class="el-dropdown-link">
                     <i class="icon iconfont db--set"></i>
                   </span>
@@ -101,6 +104,7 @@ export default {
   name: 'edit',
   data () {
     return {
+      isPreview: true,
       visualizeList: [],
       bid: '',
       isAddVisual: false,
@@ -112,7 +116,11 @@ export default {
         totalCount: 0,
       },
       list: [],
+
       layout: [],
+      gridDraggable: true,
+      griRresizable: true,
+
       deleteList: [],
       dashboardshowname: '',
 
@@ -646,6 +654,53 @@ export default {
               showClose: true
           })
       })
+
+    },
+    rerenderEchart(pageState){
+      var _this = this;
+      var data = this.layout;
+      setTimeout(function(){
+        data.forEach(function(item){
+          var id = item.echartId;
+          var vid = item.vid;
+          if(item.showKey){
+            var echartData = {
+              showkey: item.showKey,
+              showValue: item.showValue,
+              xname: item.xname,
+              yname: item.yname
+            };
+          }
+          var h = $("#"+id).parent('.vue-grid-item').height();
+          $("#"+id).height(h);
+          switch(item.type){
+            case  'pie':
+              _this.initPie(id,vid,item,echartData);
+              break;
+            default:
+              _this.initLine(id,vid,item.type,item,echartData);
+              break;
+          }
+        });
+        if(pageState == 'preview'){
+          _this.gridDraggable = false;
+          _this.griRresizable = false;
+        }else{
+          _this.gridDraggable = true;
+          _this.griRresizable = true;
+        }
+      },100);
+
+    },
+    preview(){
+      this.isPreview = true;
+      this.rerenderEchart('preview');
+    },
+    returnEdit(){
+      this.isPreview = false;
+      this.rerenderEchart('edit');
+    },
+    exportPage(){
 
     },
     getDashboardData(){

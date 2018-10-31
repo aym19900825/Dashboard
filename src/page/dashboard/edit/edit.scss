@@ -1,11 +1,42 @@
 @charset "utf-8";
 $content-padding: 30px;
+@mixin keyframes($animationName) { 
+  @-webkit-keyframes #{$animationName} {
+    @content; 
+  } 
+  @-moz-keyframes #{$animationName} { 
+    @content; 
+  } 
+  @-o-keyframes #{$animationName} { 
+    @content; 
+  } 
+  @keyframes #{$animationName} { 
+    @content; 
+  } 
+}
 div.list{
   height: 100%;
   display: flex;
   width: 100%;
   .list-content{
     flex: 1;
+    .returnBtn{
+      cursor: pointer;
+      -webkit-animation: hover 5s;
+      animation: hover  5s;
+      @include keyframes(hover) { 
+        0% { 
+          display: block; 
+        } 
+        100% { 
+          display: none;
+        } 
+      };
+      position: fixed;
+      top: 10px; 
+      left: 10px; 
+      z-index: 10001;
+    }
     header{
       width: 100%;
       height: 40px;
