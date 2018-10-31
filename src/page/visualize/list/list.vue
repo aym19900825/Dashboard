@@ -2,7 +2,7 @@
   <div class="list">
     <v-nav showItem="visualize"></v-nav>
     <div class="list-content">
-       <p>视图</p>
+       <!-- <p>视图</p> -->
        <div class="empty-content" style="display: none;">
           <span>您还没有创建任何视图哦！</span>
           <el-button type="success" icon="el-icon-plus" @click="choose">新建</el-button>
@@ -13,6 +13,17 @@
             <!-- <el-button type="danger" icon="el-icon-delete" size="small" style="margin-right: 10px; margin-left: 6px;"></el-button> -->
             <el-button type="success" icon="el-icon-plus" size="small" @click="choose"></el-button>
           </p>
+          <el-row :gutter="20" style="display: flex;align-items:center;border-bottom: 1px solid #ccc; margin-left: 0px;margin-right: 0px;height: 60px;">
+            <el-col :span="12"> 
+              <el-input placeholder="请选择名称" v-model="searchData.visualizename"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-input placeholder="请选择类型" v-model="searchData.type"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-button icon="el-icon-search" @click="requestData"></el-button>
+            </el-col>
+          </el-row>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
           style="width: 100%">
           <!-- <el-table-column type="selection" width="55"></el-table-column> -->
@@ -99,7 +110,12 @@ export default {
         ytype: '',
         businesscategory: '',
       },
-      Businesscategorys: []
+      Businesscategorys: [],
+
+      searchData: {
+        "type": "",
+        "visualizename": ""
+      }
     }
   },
   methods: {
@@ -167,18 +183,18 @@ export default {
     },
     requestData(){
       var _this = this;
-      var url = '/api/show/visualizeList';
-      this.$axios.post(url,{
-        'page': _this.page.currentPage,
-        'size': _this.page.pageSize
-      }).then((res) => {
+      console.log(_this.searchData);
+      var url = '/api/show/visualizeList2?page=' +  _this.page.currentPage +'&size=' + _this.page.pageSize;
+      this.$axios.post(url,_this.searchData).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
-            _this.page.totalCount = res.data.totalPages;
+            $('.table-box').hide();
+            _this.page.totalCount = res.data.total;
             _this.Businesscategorys = res.data.distinctBusinesscategory;
           }else{
             $('.table-box').show();
-            _this.page.totalCount = res.data.totalPages;
+            $('.empty-content').hide();
+            _this.page.totalCount = res.data.total;
             _this.list = JSON.parse(JSON.stringify(res.data.visualizeList));
             _this.Businesscategorys = res.data.distinctBusinesscategory;
           }

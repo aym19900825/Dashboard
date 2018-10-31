@@ -2,7 +2,7 @@
   <div class="list">
     <v-nav showItem="dashboard"></v-nav>
     <div class="list-content">
-       <p>仪表板</p>
+       <!-- <p>仪表板</p> -->
        <div class="empty-content" style="display: none;">
           <span>您还没有创建任何仪表板哦！</span>
           <el-button type="success" icon="el-icon-plus" @click="choose">新建</el-button>
@@ -13,6 +13,17 @@
             <!-- <el-button type="danger" icon="el-icon-delete" size="small" style="margin-right: 10px; margin-left: 6px;"></el-button> -->
             <el-button type="success" icon="el-icon-plus" size="small" @click="choose"></el-button>
           </p>
+          <el-row :gutter="20" style="display: flex;align-items:center;border-bottom: 1px solid #ccc; margin-left: 0px;margin-right: 0px;height: 60px;">
+            <el-col :span="12"> 
+              <el-input placeholder="请选择名称" v-model="searchData.dashboardname"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-input placeholder="请选择描述" v-model="searchData.dashboarddescription"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-button icon="el-icon-search" @click="requestData"></el-button>
+            </el-col>
+          </el-row>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
           style="width: 100%">
           <!-- @selection-change="handleSelectionChange"> -->
@@ -87,7 +98,11 @@ export default {
         "dashboardshowname": "",
         "businesscategory": ""
       },
-      list: []
+      list: [],
+      searchData: {
+        "dashboardname": "",
+        "dashboarddescription": ""
+      }
     }
   },
   methods: {
@@ -173,17 +188,16 @@ export default {
     },
     requestData(){
       var _this = this;
-      var url = '/api/show/dashboardList';
-      this.$axios.post(url,{
-        'page': _this.page.currentPage,
-        'size': _this.page.pageSize
-      }).then((res) => {
+      var url = '/api/show/dashboardList2?page=' +  _this.page.currentPage + '&size=' + _this.page.pageSize;
+      this.$axios.post(url,this.searchData).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
-            _this.page.totalCount = res.data.totalPages;
+            $('.table-box').hide();
+            _this.page.totalCount = res.data.total;
           }else{
             $('.table-box').show();
-            _this.page.totalCount = res.data.totalPages;
+            $('.empty-content').hide();
+            _this.page.totalCount = res.data.total;
             _this.businesscategorys = res.data.distinctBusinesscategory;
             _this.list = JSON.parse(JSON.stringify(res.data.visualizeList));
           }

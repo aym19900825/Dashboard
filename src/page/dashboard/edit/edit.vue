@@ -6,7 +6,7 @@
             <span>{{dashboardshowname}}</span>
             <el-button type="warning" size="small" @click="editInfo">修改信息</el-button>
             <el-button type="warning" size="small" @click="save">保存</el-button>
-            <el-button type="primary" size="small" @click="showVisualize">新加视图</el-button>
+            <el-button type="primary" size="small" @click="showVisualize">配置视图</el-button>
         </header>
         <div class="visualizeList" v-if="isAddVisual">
           <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark"style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
@@ -175,6 +175,11 @@ export default {
       var url = '/api/show/dashboardVisualize'
       this.$axios.post(url, param).then((res) => {
         if(res.data.code == 1){
+          this.$message({
+              type: 'success',
+              message: '保存成功！',
+              showClose: true
+          })
           this.$router.replace('/dashboardList');
         }else{
           this.$message({
@@ -272,11 +277,13 @@ export default {
       })
     },
     del(visualize){
-      var index = 0;
+      var index;
       if(visualize.did){
         this.deleteList.push(visualize.did);
       }
+      console.log(visualize.vid);
       for(var i = 0; i < this.layout.length; i++){
+          console.log(this.layout[i].vid);
           if(this.layout[i].vid == visualize.vid){
             index = i;
           }

@@ -25,6 +25,7 @@ div.list{
     .table-box{
     	width: 90%;
     	margin: 0 auto;
+      display: none;
       table{
         tr{
           cursor: pointer;
@@ -37,7 +38,6 @@ div.list{
 	    }
     	button{
     		float: right;
-    		margin-top: 13px;
     		&:nth-child(1){
     			margin-right: 8px;
     		}

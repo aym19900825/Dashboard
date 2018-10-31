@@ -54,6 +54,20 @@
 							  	<el-form-item label="标题">
 							   		<el-input v-model="visualParam.echarttitle"></el-input>
 							 	</el-form-item>
+							 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
+							 		<el-select v-model="visualParam.legendPos" placeholder="请选择标题位置">
+								    	<el-option
+									      v-for="item in legendPos"
+									      :key="item.value"
+									      :label="item.txt"
+									      :value="item.value">
+									    </el-option>
+							    	</el-select>
+							 	</el-form-item>
+							 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle">
+							 		<el-input v-model="testColors" @focus = "colorSet=!colorSet;"></el-input>
+							   		<photoshop-picker v-model="testColors1" v-show="colorSet1" @input="updateColor"/>
+							 	</el-form-item>
 							 	<el-form-item label="显示图例">
 							    	<el-switch v-model="visualParam.legendShow"></el-switch>
 							    </el-form-item>
@@ -105,6 +119,7 @@ export default {
    		return {
    			colorSet: false,
    			testColors: '#194d33',
+   			testColors1: '#194d33',
    			visualizename: '',
    			tabIndex: '0',
    			legendOpt:[
