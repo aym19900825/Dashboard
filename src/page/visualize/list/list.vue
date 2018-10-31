@@ -21,7 +21,7 @@
               <el-input placeholder="请选择类型" v-model="searchData.type"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-button icon="el-icon-search" @click="requestData"></el-button>
+              <el-button icon="el-icon-search" @click="search"></el-button>
             </el-col>
           </el-row>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
@@ -97,7 +97,7 @@ export default {
   data () {
     return {
       page:{
-        currentPage: 0,
+        currentPage: 1,
         pageSize: 10,
         totalCount: 0,
       },
@@ -181,10 +181,14 @@ export default {
           })
       })
     },
+    search(){
+      this.page.currentPage = 1;
+      this.requestData();
+    },
     requestData(){
       var _this = this;
-      console.log(_this.searchData);
-      var url = '/api/show/visualizeList2?page=' +  _this.page.currentPage +'&size=' + _this.page.pageSize;
+      var page =  _this.page.currentPage - 1;
+      var url = '/api/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
       this.$axios.post(url,_this.searchData).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
