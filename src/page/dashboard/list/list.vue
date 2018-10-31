@@ -40,7 +40,7 @@
           </el-table-column>
         </el-table>
         <div class="pagination-box">
-          <el-pagination
+         <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="page.currentPage"

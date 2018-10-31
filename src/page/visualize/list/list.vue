@@ -129,7 +129,6 @@ export default {
     },
     choose(){
       this.visualizeForm = true;
-
       // this.$router.replace('/detail');
     },
     edit(index,row){

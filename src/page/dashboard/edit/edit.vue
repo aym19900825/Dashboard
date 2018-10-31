@@ -1,17 +1,27 @@
 <template>
   <div class="list">
     <v-nav showItem="dashboard" v-show="!isPreview"></v-nav>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="page.currentPage"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="page.pageSize"
+      layout="total, sizes, prev, pager, next"
+      :total="page.totalCount" style="position: absolute; right: 10px;
+      z-index: 10003; display: none;">
+    </el-pagination>
     <div class="list-content">
         <header v-if="!isPreview">
             <span>{{dashboardshowname}}</span>
-            <el-button type="warning" size="small" @click="exportPage">导出</el-button>
+            <el-button type="warning" size="small" @click="exportPage">共享</el-button>
             <el-button type="warning" size="small" @click="preview">预览</el-button>
             <el-button type="warning" size="small" @click="editInfo">修改信息</el-button>
             <el-button type="warning" size="small" @click="save">保存</el-button>
             <el-button type="primary" size="small" @click="showVisualize">配置视图</el-button>
         </header>
         <el-button size="small" @click="returnEdit" v-if="isPreview" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
-        <div class="visualizeList" v-if="isAddVisual && !isPreview" >
+        <div class="visualizeList" v-show="isAddVisual && !isPreview" >
           <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark" style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
             <el-table-column type="selection" width="55" disabled></el-table-column>
             <el-table-column prop="visualizename" label="名称"  show-overflow-tooltip>
@@ -19,17 +29,6 @@
             <el-table-column prop="type" label="类型" width="150">
             </el-table-column>
           </el-table>
-          <!-- <div class="pagination-box">
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="page.currentPage"
-              :page-sizes="[10, 20, 30, 40]"
-              :page-size="page.pageSize"
-              layout="total, sizes, prev, pager, next"
-              :total="page.totalCount">
-            </el-pagination>
-          </div> -->
           <el-row>
             <el-button type="primary" @click="addVisual">完成</el-button>
             <el-button type="danger" style="margin-right: -23%;" @click="reset">取消</el-button>
@@ -104,14 +103,14 @@ export default {
   name: 'edit',
   data () {
     return {
-      isPreview: true,
+      isPreview: false,
       visualizeList: [],
       bid: '',
       isAddVisual: false,
       selVisuaList:  [],
       echartIndex: 0,
       page: {
-        currentPage: 0,
+        currentPage: 1,
         pageSize: 10,
         totalCount: 0,
       },
@@ -137,6 +136,14 @@ export default {
     }
   },
   methods: {
+    handleSizeChange(val) {
+      this.page.pageSize = val;
+      this.getVisualList();
+    },
+    handleCurrentChange(val) {
+      this.page.currentPage = val;
+      this.getVisualList();
+    },
     editDashboard(){
       var url = '/api/show/dashboard/?bid=' + this.bid ;
       this.$axios.put(url,this.newDashboard).then((res) => {
@@ -212,6 +219,11 @@ export default {
     },
     reset(){
       this.isAddVisual = false;
+      this.page = {
+        currentPage: 1,
+        pageSize: 10,
+        totalCount: 0,
+      };
       this.$refs.visualizeTable.clearSelection();
     },
     showVisualize(){
@@ -220,6 +232,11 @@ export default {
     },
     addVisual(){
       this.isAddVisual = false;
+      this.page = {
+        currentPage: 1,
+        pageSize: 10,
+        totalCount: 0,
+      };
       var _this = this;
 
       var list = this.selVisuaList.filter(function(item){
@@ -593,18 +610,24 @@ export default {
       }
     },
     getVisualList(){
+      $(".el-pagination").hide();
       var _this = this;
-      var url = '/api/show/visualizeList';
-      this.$axios.post(url,{
-        'page': _this.page.currentPage,
-        'size': _this.page.pageSize
-      }).then((res) => {
+      var page =  _this.page.currentPage - 1;
+      var url = '/api/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
+      this.$axios.post(url,{}).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
-            _this.page.totalCount = res.data.totalPages;
+            _this.page.totalCount = res.data.total;
+            setTimeout(function(){
+              var top = $(".visualizeList").height() - 50;
+              $(".el-pagination").css({
+                top: top
+              });
+              $(".el-pagination").show();
+            }, 100);
           }else{
             $('.table-box').show();
-            _this.page.totalCount = res.data.totalPages;
+            _this.page.totalCount = res.data.total;
             var listData = res.data.visualizeList;
             _this.visualizeList = JSON.parse(JSON.stringify(listData));
             _this.toggleSelection([_this.visualizeList[0]]);
@@ -616,6 +639,13 @@ export default {
                 }
               }
             }
+            setTimeout(function(){
+              var top = $(".visualizeList").height() - 50;
+              $(".el-pagination").css({
+                top: top
+              });
+              $(".el-pagination").show();
+            }, 100);
           }
       }).catch((err) => {
           this.$message({
