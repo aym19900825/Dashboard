@@ -32,7 +32,7 @@
           </el-table-column>
           <el-table-column prop="dashboarddescription" label="描述">
           </el-table-column>
-          <el-table-column label="操作" width="160">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <el-button size="mini" type="danger" @click="delDashboard(scope.$index, scope.row)">删除</el-button>
               <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
@@ -60,9 +60,9 @@
         <el-form-item label="描述">
           <el-input v-model="newDashboard.dashboardshowname"></el-input>
         </el-form-item>
-         <el-form-item label="业务场景">
+         <el-form-item label="菜单编组">
           <el-select v-model="newDashboard.businesscategory" filterable allow-create default-first-option
-            placeholder="请选择或输入业务场景">
+            placeholder="请选择或输入菜单编组">
             <el-option
               v-for="item in businesscategorys"
               :label="item"
@@ -150,8 +150,7 @@ export default {
       this.dashboardForm = true;
       // this.$router.replace('/dashboardEdit');
     },
-     edit(index,row){
-      console.log(row.bid);
+    edit(index,row){
       this.$router.push({
         path: '/dashboardEdit', 
         query: { 

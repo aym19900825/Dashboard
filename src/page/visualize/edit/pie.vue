@@ -2,7 +2,7 @@
   <div class="edit">
     <v-nav showItem="visualize"></v-nav>
     <div class="edit-content">
-      <v-pie :vid="vid" ref="lines"></v-pie>
+      <v-pie :vid="vid" :businessCats="businessCats" :bid="bid" ref="lines"></v-pie>
     </div>
   </div>
 </template>
@@ -14,11 +14,10 @@ export default {
   name: 'pie',
   data () {
     return {
-      vid: ''
+      vid: '',
+      businessCats: [],
+      bid: ''
     }
-  },
-  methods: {
-    
   },
   components: {
     'v-nav': Nav,
@@ -26,6 +25,8 @@ export default {
   },
   created(){
     this.vid = this.$route.query.vid;
+    this.businessCats = this.$route.query.businesscategorys;
+    this.bid = this.$route.query.bid;
   }
 }
 </script>

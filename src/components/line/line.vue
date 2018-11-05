@@ -2,7 +2,8 @@
   <div>
      <header>
      	<span>{{visualParam.visualizename}}</span>
-		<el-button type="warning" size="small" @click="reset">取消</el-button>
+		<el-button type="warning" size="small" v-if="!bid" @click="reset">取消</el-button>
+		<el-button type="info" size="small" v-if="bid" @click="returnDb">返回Dashboard</el-button>
 		<el-button type="primary" size="small" @click="save">保存</el-button>
      </header>
 		<div id="content">
@@ -34,9 +35,9 @@
 						            <el-option label="int" value="int"></el-option>
 						          </el-select>
 						        </el-form-item>
-						        <el-form-item label="业务场景">
+						        <el-form-item label="菜单编组">
 						          <el-select v-model="visualParam.businesscategory" filterable allow-create default-first-option
-						            placeholder="请选择或输入业务场景">
+						            placeholder="请选择或输入菜单编组">
 						            <el-option
 						              v-for="item in businessCats"
 						              :label="item"
@@ -114,7 +115,7 @@
 import { Chrome } from 'vue-color'
 export default {
   	name: 'line',
-  	props: ['vid','businessCats'],
+  	props: ['vid','businessCats','bid'],
  	data(){
    		return {
    			colorSet: false,
@@ -165,6 +166,15 @@ export default {
     	}
     },
     methods: {
+    	returnDb(){
+    	    this.$router.push({
+	        	path: '/dashboardEdit', 
+	        	query: { 
+	        	  bid: this.bid,
+	        	  businesscategorys: this.businessCats
+	        	}
+	        })
+    	},
     	updateColor(value){
     		this.testColors = value.hex;
     	},
@@ -302,9 +312,11 @@ export default {
 		                message: '保存成功！',
 		                showClose: true
 		            })
-		            this.$router.push({
-				        path: '/visualizeList'
-				    })
+		            if(!this.bid){
+		            	this.$router.push({
+					        path: '/visualizeList'
+					    })
+		            }
 	        	}else{
 	        		this.$message({
 		                type: 'error',

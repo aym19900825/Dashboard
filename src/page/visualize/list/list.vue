@@ -31,7 +31,7 @@
           </el-table-column>
           <el-table-column prop="type" label="类型" width="150">
           </el-table-column>
-          <el-table-column label="操作" width="160">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <el-button size="mini" type="danger" @click="delVisual(scope.$index, scope.row)">删除</el-button>
               <el-button size="mini" type="success" @click="edit(scope.$index, scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
@@ -70,9 +70,9 @@
             <el-option label="int" value="int"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="业务场景">
+        <el-form-item label="菜单编组">
           <el-select v-model="newVisualize.businesscategory" filterable allow-create default-first-option
-            placeholder="请选择或输入业务场景">
+            placeholder="请选择或输入菜单编组">
             <el-option
               v-for="item in Businesscategorys"
               :label="item"

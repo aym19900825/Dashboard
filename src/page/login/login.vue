@@ -38,6 +38,12 @@
                         }).then((res) => {
                             if(res.data.code==1){
                                 this.$router.replace('/visualizeList');
+                            }else{
+                                this.$message({
+                                    type: 'error',
+                                    message: '用户名或者密码错误，请重试！',
+                                    showClose: true
+                                })
                             }
                         }).catch((err) => {
                             this.$message({

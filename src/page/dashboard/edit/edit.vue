@@ -14,7 +14,7 @@
     <div class="list-content">
         <header v-if="!isPreview">
             <span>{{dashboardshowname}}</span>
-            <el-button type="warning" size="small" @click="exportPage">共享</el-button>
+            <el-button type="warning" size="small" @click="exportPage">分享</el-button>
             <el-button type="warning" size="small" @click="preview">预览</el-button>
             <el-button type="warning" size="small" @click="editInfo">修改信息</el-button>
             <el-button type="warning" size="small" @click="save">保存</el-button>
@@ -77,9 +77,9 @@
         <el-form-item label="描述">
           <el-input v-model="newDashboard.dashboarddescription"></el-input>
         </el-form-item>
-        <el-form-item label="业务场景">
+        <el-form-item label="菜单编组">
           <el-select v-model="newDashboard.businesscategory" filterable allow-create default-first-option
-          placeholder="请选择或输入业务场景">
+          placeholder="请选择或输入菜单编组">
             <el-option
               v-for="item in businesscategorys"
               :label="item"
@@ -195,7 +195,7 @@ export default {
               message: '保存成功！',
               showClose: true
           })
-          this.$router.replace('/dashboardList');
+          // this.$router.replace('/dashboardList');
         }else{
           this.$message({
               type: 'error',
@@ -297,7 +297,8 @@ export default {
         path: url, 
         query: { 
           vid: vid,
-          businesscategorys: this.businesscategorys
+          businesscategorys: this.businesscategorys,
+          bid: this.bid
         }
       })
     },
@@ -306,7 +307,6 @@ export default {
       if(visualize.did){
         this.deleteList.push(visualize.did);
       }
-      console.log(visualize.vid);
       for(var i = 0; i < this.layout.length; i++){
           console.log(this.layout[i].vid);
           if(this.layout[i].vid == visualize.vid){

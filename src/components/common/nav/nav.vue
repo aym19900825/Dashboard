@@ -1,7 +1,7 @@
 <template>
-  <div>
-   		<nav>
-			<span class="logo">Dashboard</span>
+  <div class="nav">
+   		<nav :style="{height: navH}">
+			<span class="logo" @click="dashboard">Dashboard</span>
 			<ul>
 				<li :style="{background: showItem == 'visualize' ? '#0079A5' : '#005571'}">
           <i class="icon iconfont db--zhexiantu"></i>
@@ -37,7 +37,8 @@ export default {
   	name: 'nav',
  	  data(){
    		return {
-        secShow: false
+        secShow: false,
+        navH : 600
     	}
     },
     props: ['showItem'],
@@ -45,10 +46,15 @@ export default {
     	showMenu(){
         this.secShow = !this.secShow;
         this.showItem = 'system';
+      },
+      dashboard(){
+        this.$router.replace('/visualizeList');
       }
     },
     mounted(){
-      console.log(this.showItem);
+      console.log("滚动距离"+$(document).height());
+      console.log("可视距离"+$(window).height());
+      $(".nav").height($(window).height());
     }
 }
 </script>
