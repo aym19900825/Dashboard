@@ -219,6 +219,7 @@ export default {
   },
   mounted(){
     this.requestData();
+    $(".list-content").height($(window).height());
   }
 }
 </script>

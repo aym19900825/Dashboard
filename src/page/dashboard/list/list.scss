@@ -13,6 +13,7 @@ div.list{
   .list-content{
     flex: 1;
     background: #fff;
+    overflow:scroll;
     .empty-content{
       text-align: center;
       span{

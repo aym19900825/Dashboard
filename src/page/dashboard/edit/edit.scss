@@ -15,10 +15,12 @@ $content-padding: 30px;
   } 
 }
 div.list{
+  overflow:scroll;
   height: 100%;
   display: flex;
   width: 100%;
   .list-content{
+    overflow:scroll;
     flex: 1;
     .returnBtn{
       cursor: pointer;

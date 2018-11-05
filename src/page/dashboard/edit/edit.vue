@@ -782,6 +782,7 @@ export default {
       var _this = this;
       _this.getParam();
       _this.getDashboardData();
+      $(".list-content").height($(window).height());
   },
   components: {
     'v-nav': Nav

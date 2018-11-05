@@ -52,8 +52,6 @@ export default {
       }
     },
     mounted(){
-      console.log("滚动距离"+$(document).height());
-      console.log("可视距离"+$(window).height());
       $(".nav").height($(window).height());
     }
 }
