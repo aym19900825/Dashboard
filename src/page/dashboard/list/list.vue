@@ -11,7 +11,7 @@
           <p>
             <span>仪表板列表</span>
             <!-- <el-button type="danger" icon="el-icon-delete" size="small" style="margin-right: 10px; margin-left: 6px;"></el-button> -->
-            <el-button type="success" icon="el-icon-plus" size="small" @click="choose"></el-button>
+            <el-button type="success" icon="el-icon-plus" size="small" @click="choose">新增</el-button>
           </p>
           <el-row :gutter="20" style="display: flex;align-items:center;border-bottom: 1px solid #ccc; margin-left: 0px;margin-right: 0px;height: 60px;">
             <el-col :span="12"> 
