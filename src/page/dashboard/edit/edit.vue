@@ -20,7 +20,7 @@
             <el-button type="warning" size="small" @click="save">保存</el-button>
             <el-button type="primary" size="small" @click="showVisualize">配置视图</el-button>
         </header>
-        <el-button size="small" @click="returnEdit" v-if="isPreview" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
+        <el-button size="small" @click="returnEdit" v-if="isPreview&&!isShare" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
         <div class="visualizeList" v-show="isAddVisual && !isPreview" >
           <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark" style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
             <el-table-column type="selection" width="55" disabled></el-table-column>
@@ -94,6 +94,16 @@
         <el-button type="primary" @click="editDashboard">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="分享地址" :visible.sync="shareShow" width="560px" :before-close="resetShare">
+      <el-form :model="shareForm" label-width="120">
+        <el-form-item label="链接地址">
+          <el-input v-model="shareForm.link"></el-input>
+        </el-form-item>
+        <el-form-item label="嵌入iframe链接地址">
+          <el-input v-model="shareForm.iframeLink"></el-input>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -103,6 +113,13 @@ export default {
   name: 'edit',
   data () {
     return {
+      shareShow: false,
+      shareForm: {
+        link: '',
+        iframeLink: ''
+      },
+      isShare: false,
+
       isPreview: false,
       visualizeList: [],
       bid: '',
@@ -238,7 +255,6 @@ export default {
         totalCount: 0,
       };
       var _this = this;
-
       var list = this.selVisuaList.filter(function(item){
         var flag = true;
         for(var m=0; m<_this.layout.length; m++){
@@ -657,7 +673,6 @@ export default {
     },
     toggleSelection() {
       var rows = this.selVisuaList;
-      console.log("rows:"+rows);
       if(rows) {
         this.$nextTick(function () {
           rows.forEach(row => {
@@ -669,6 +684,8 @@ export default {
     getParam(){
       this.bid = this.$route.query.bid;
       this.businesscategorys = this.$route.query.businesscategorys;
+      this.isPreview = this.$route.query.isPreview || false;
+      this.isShare = this.$route.query.isShare || false;
     },
     editInfo(){
       var url = '/api/show/dashboard/'+ this.bid;
@@ -731,7 +748,19 @@ export default {
       this.rerenderEchart('edit');
     },
     exportPage(){
-
+      var url = window.location.href;
+      var domain = window.location.host;
+      url = url.replace(domain,'192.168.1.114:8080');
+      this.shareForm.link = url+'&isPreview=true&isShare=true';
+      this.shareForm.iframeLink = '<iframe src="' + url + '" height="600" width="800"></iframe>';
+      this.shareShow = true;
+    },
+    resetShare(){
+      this.shareForm = {
+        link: '',
+        iframeLink: ''
+      };
+      this.shareShow = false;
     },
     getDashboardData(){
       var _this = this;
@@ -783,6 +812,9 @@ export default {
       _this.getParam();
       _this.getDashboardData();
       $(".list-content").height($(window).height());
+      if(this.isShare){
+        this.rerenderEchart('preview');
+      }
   },
   components: {
     'v-nav': Nav
