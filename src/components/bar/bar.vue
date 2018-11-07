@@ -55,6 +55,21 @@
 							  	<el-form-item label="标题">
 							   		 <el-input v-model="visualParam.echarttitle"></el-input>
 							 	</el-form-item>
+							 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
+							 		<el-select v-model="visualParam.echartTitPos" placeholder="请选择标题位置">
+								    	<el-option
+									      v-for="item in legendPos"
+									      :key="item.value"
+									      :label="item.txt"
+									      :value="item.value">
+									    </el-option>
+							    	</el-select>
+							 	</el-form-item>
+							 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
+							 		<!-- <el-input v-model="visualParam.echartTitColor"></el-input> -->
+							 		<el-input v-model="echartTitColor"  @focus="colorSet1 = !colorSet1;"></el-input>
+							   		<photoshop-picker v-model="echartTitColor" v-show="colorSet1" @input="updateTitColor"/>
+							 	</el-form-item>
 							 	<el-form-item label="显示图例">
 							    	<el-switch v-model="visualParam.legendShow"></el-switch>
 							    </el-form-item>
@@ -81,6 +96,11 @@
 							    <el-form-item label="显示提示">
 							    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
 							    </el-form-item>
+							    <el-form-item label="表盘颜色">
+							    	<!-- <el-input v-model="visualParam.background"></el-input> -->
+							    	<el-input v-model="background" @focus="colorSet = !colorSet;"></el-input>
+						            <photoshop-picker v-model="background" v-show="colorSet" @input="updateBgColor"/>
+						        </el-form-item>
 							</el-form>
 						</div>
 					</div>
@@ -94,11 +114,18 @@
 </template>
 
 <script>
+import { Chrome } from 'vue-color'
 export default {
   	name: 'bar',
   	props: ['vid','businessCats','bid'],
  	data(){
    		return {
+   			colorSet: false,
+   			colorSet1: false,
+   			//设置颜色
+   			echartTitColor: '#194d33',
+   			background: '#194d33',
+
    			visualizename: '',
    			tabIndex: '0',
    			legendOpt:[
@@ -153,21 +180,40 @@ export default {
 	        	}
 	        })
     	},
+    	updateTitColor(value){
+    		// this.visualParam.echartTitColor = value.hex;
+    		this.echartTitColor = value.hex;
+    	},
+    	updateBgColor(value){
+    		// this.visualParam.background = value.hex;
+    		this.background = value.hex;
+    	},
     	tabSwitch(index){
 			this.tabIndex = index;
 		},
-		dealLegendPos(){
-			switch(this.visualParam.legendPos){
+		dealLegendPos(data,type){
+			var res = {};
+			switch(data){
 				case 'topCenter':
-					this.dealPos = {
-						top: 'auto',
-				        left: 'auto',
-				        bottom: 'auto',
-				        right: 'auto'
-					};
+					if(type == 'titPos'){
+						res = {
+							top: 'auto',
+					        left: 'center',
+					        bottom: 'auto',
+					        right: 'auto'
+						};
+					}else{
+						res = {
+							top: 'auto',
+					        left: 'auto',
+					        bottom: 'auto',
+					        right: 'auto'
+						};
+					}
+					
 					break;
 				case 'topRight':
-					this.dealPos = {
+					res = {
 						top: 'auto',
 				        left: 'auto',
 				        bottom: 'auto',
@@ -175,7 +221,7 @@ export default {
 					};
 					break;
 				case 'topLeft':
-					this.dealPos = {
+					res = {
 						top: 'auto',
 				        left: '0',
 				        bottom: 'auto',
@@ -183,15 +229,24 @@ export default {
 					};
 					break;
 				case 'bottomCenter':
-					this.dealPos = {
-						top: 'auto',
-				        left: 'auto',
-				        bottom: '0',
-				        right: 'auto'
-					};
+					if(type == 'titPos'){
+						res = {
+							top: 'auto',
+					        left: 'auto',
+					        bottom: 'auto',
+					        right: 'auto'
+						};
+					}else{
+						res = {
+							top: 'auto',
+					        left: 'center',
+					        bottom: '0',
+					        right: 'auto'
+						};
+					}
 					break;
 				case 'bottomLeft':
-					this.dealPos = {
+					res = {
 						top: 'auto',
 				        left: '0',
 				        bottom: '0',
@@ -199,7 +254,7 @@ export default {
 					};
 					break;
 				default:
-					this.dealPos = {
+					res = {
 						top: 'auto',
 				        left: 'auto',
 				        bottom: '0',
@@ -207,16 +262,27 @@ export default {
 					};
 					break;
 			}
+			return res;
 		},
     	initEchart(){
 			var myChart = this.$echarts.init(document.getElementById('echart-box'));
 			var param = this.visualParam;
 			var echartData = this.echartData;
+			this.dealPos = this.dealLegendPos(this.visualParam.legendPos,'legendPos');
+			this.dealTitPos = this.dealLegendPos(this.visualParam.echartTitPos,'titPos');
 			this.dealLegendPos();
 			myChart.clear();
 			var option = {
+				backgroundColor: this.background,
 				title: {
 					text: param.echarttitle,
+					left: this.dealTitPos.left,
+					top: this.dealTitPos.top,
+					bottom: this.dealTitPos.bottom,
+					right: this.dealTitPos.right,
+					textStyle: {
+						color: this.echartTitColor
+					}
 				},
 				legend: {
 					show: param.legendShow,
@@ -252,6 +318,8 @@ export default {
 	            integerId: this.vid,
 	        }).then((res) => {
 	        	var data = res.data;
+	        	this.background = res.data.background || '#FFFFFF';
+	        	this.echartTitColor = res.data.echartTitColor || '#000000';
 	        	this.visualParam = JSON.parse(JSON.stringify(data));
 	        }).catch((err) => {
 	            this.$message({
@@ -279,6 +347,9 @@ export default {
 		},
 		save(){
 			var url = '/api/show/visualize?vid='+this.vid;
+			this.visualParam.background = this.background;
+			this.visualParam.echartTitColor = this.echartTitColor;
+			
 			this.$axios.put(url,this.visualParam
 	        ).then((res) => {
 	        	if(res.data.code == 1){
@@ -313,6 +384,9 @@ export default {
 		    })
 		}
     },
+    components: {
+   		'photoshop-picker': Chrome
+ 	},
     mounted(){
     	var _this = this;
     	this.requestData();
