@@ -331,58 +331,78 @@ export default {
       }
       this.layout.splice(index,1);
     },
-
-    dealLegendPos(legendPos){
-      switch(legendPos){
+    dealLegendPos(data,type){
+      var res = {};
+      switch(data){
         case 'topCenter':
-          return {
-            top: 'auto',
-            left: 'auto',
-            bottom: 'auto',
-            right: 'auto'
-          };
+          if(type == 'titPos'){
+            res = {
+              top: 'auto',
+                  left: 'center',
+                  bottom: 'auto',
+                  right: 'auto'
+            };
+          }else{
+            res = {
+              top: 'auto',
+                  left: 'auto',
+                  bottom: 'auto',
+                  right: 'auto'
+            };
+          }
+          
           break;
         case 'topRight':
-          return {
+          res = {
             top: 'auto',
-            left: 'auto',
-            bottom: 'auto',
-            right: '0'
+                left: 'auto',
+                bottom: 'auto',
+                right: '0'
           };
           break;
         case 'topLeft':
-          return {
+          res = {
             top: 'auto',
-            left: '0',
-            bottom: 'auto',
-            right: 'auto'
+                left: '0',
+                bottom: 'auto',
+                right: 'auto'
           };
           break;
         case 'bottomCenter':
-          return {
-            top: 'auto',
-            left: 'auto',
-            bottom: '0',
-            right: 'auto'
-          };
+          if(type == 'titPos'){
+            res = {
+              top: 'auto',
+                  left: 'auto',
+                  bottom: 'auto',
+                  right: 'auto'
+            };
+          }else{
+            res = {
+              top: 'auto',
+                  left: 'center',
+                  bottom: '0',
+                  right: 'auto'
+            };
+          }
           break;
         case 'bottomLeft':
-          return {
+          res = {
             top: 'auto',
-            left: '0',
-            bottom: '0',
-            right: 'auto'
+                left: '0',
+                bottom: '0',
+                right: 'auto'
           };
           break;
         default:
-          return {
+          res = {
             top: 'auto',
-            left: 'auto',
-            bottom: '0',
-            right: '0'
+                left: 'auto',
+                bottom: '0',
+                right: '0'
           };
           break;
-        }
+      }
+      return res;
     },
     initPie(echartId,vid,param,echartData){
       echartData = echartData || {};
@@ -395,12 +415,19 @@ export default {
           echartData = res.data;
           var myChart = this.$echarts.init(document.getElementById(echartId));
           myChart.clear();
-          var dealPos = this.dealLegendPos(param.legendPos);
-          myChart.clear();
+          var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
+          var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
           var option = {
-            backgroundColor: '#fff',
+            backgroundColor: param.background,
             title: {
-             text: param.echarttitle,
+              text: param.echarttitle,
+              left: dealTitPos.left,
+              top: dealTitPos.top,
+              bottom: dealTitPos.bottom,
+              right: dealTitPos.right,
+              textStyle: {
+                color: param.echartTitColor
+              }
             },
             tooltip: {
                 show: param.tooltipShow,
@@ -446,7 +473,6 @@ export default {
           };
           myChart.setOption(option);
           myChart.resize();
-
         }).catch((err) => {
             this.$message({
                 type: 'error',
@@ -457,12 +483,19 @@ export default {
       }else{
         var myChart = this.$echarts.init(document.getElementById(echartId));
         myChart.clear();
-        var dealPos = this.dealLegendPos(param.legendPos);
-        myChart.clear();
+        var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
+        var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
         var option = {
-          backgroundColor: '#fff',
+          backgroundColor: param.background,
           title: {
-           text: param.echarttitle,
+            text: param.echarttitle,
+            left: dealTitPos.left,
+            top: dealTitPos.top,
+            bottom: dealTitPos.bottom,
+            right: dealTitPos.right,
+            textStyle: {
+              color: param.echartTitColor
+            }
           },
           tooltip: {
               show: param.tooltipShow,
@@ -520,12 +553,20 @@ export default {
           }).then((res) => {
             echartData = JSON.parse(JSON.stringify(res.data));
             var myChart = this.$echarts.init(document.getElementById(echartId));
-            var dealPos = this.dealLegendPos(param.legendPos);
+            var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
+            var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
             myChart.clear();
             var option = {
-              backgroundColor: '#fff',
+              backgroundColor: param.background,
               title: {
                 text: param.echarttitle,
+                left: dealTitPos.left,
+                top: dealTitPos.top,
+                bottom: dealTitPos.bottom,
+                right: dealTitPos.right,
+                textStyle: {
+                  color: param.echartTitColor
+                }
               },
               legend: {
                 show: param.legendShow,
@@ -564,12 +605,20 @@ export default {
           })
         }else{
           var myChart = this.$echarts.init(document.getElementById(echartId));
-          var dealPos = this.dealLegendPos(param.legendPos);
+          var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
+          var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
           myChart.clear();
           var option = {
-            backgroundColor: '#fff',
+            backgroundColor: param.background,
             title: {
               text: param.echarttitle,
+              left: dealTitPos.left,
+              top: dealTitPos.top,
+              bottom: dealTitPos.bottom,
+              right: dealTitPos.right,
+              textStyle: {
+                color: param.echartTitColor
+              }
             },
             legend: {
               show: param.legendShow,
