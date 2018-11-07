@@ -267,10 +267,10 @@ export default {
         }
       });
       for(let i=0; i< list.length; i++){
-        var vid = list[i].vid;
-        var type = list[i].type;
-        var param = list[i];
-        var obj = JSON.parse(JSON.stringify(list[i]));
+        let vid = list[i].vid;
+        let type = list[i].type;
+        let param = list[i];
+        let obj = JSON.parse(JSON.stringify(list[i]));
         obj.x = 0;
         obj.y = 0;
         obj.w = 6;
@@ -284,6 +284,7 @@ export default {
           let echartId = "echart"+vid;
           let h = $("#"+echartId).parent(".vue-grid-item").height();
           $("#"+echartId).height(h);
+          console.log($("#"+echartId).height());
           switch(type){
             case  'pie':
               _this.initPie(echartId,vid,param); 
@@ -292,7 +293,7 @@ export default {
               _this.initLine(echartId,vid,type,param);
               break;
           }
-        }, 500);
+        }, 1000);
         
       }
     },
@@ -324,12 +325,12 @@ export default {
         this.deleteList.push(visualize.did);
       }
       for(var i = 0; i < this.layout.length; i++){
-          console.log(this.layout[i].vid);
           if(this.layout[i].vid == visualize.vid){
             index = i;
           }
       }
       this.layout.splice(index,1);
+      this.rerenderEchart('edit');
     },
     dealLegendPos(data,type){
       var res = {};
@@ -846,7 +847,6 @@ export default {
               }
             });
           },1000);
-          
       }).catch((err) => {
           this.$message({
               type: 'error',
