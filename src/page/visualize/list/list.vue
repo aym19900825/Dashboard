@@ -146,7 +146,6 @@ export default {
           url = '/editbar';
           break;
       }
-      console.log(url);
       this.$router.push({
         path: url, 
         query: { 
@@ -158,7 +157,12 @@ export default {
     delVisual(index,row){
       var _this = this;
       var url = '/api/show/visualize/'+row.vid;
-      _this.$axios.delete(url,{}).then((res) => {
+      this.$confirm('确定删除此视图?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        _this.$axios.delete(url,{}).then((res) => {
           if(res.data.code != 1){
             _this.$message({
               type: 'error',
@@ -173,13 +177,14 @@ export default {
             })
           }
           _this.requestData();
-      }).catch((err) => {
-          _this.$message({
-              type: 'error',
-              message: '网络错误，请重试',
-              showClose: true
-          })
-      })
+        }).catch((err) => {
+            _this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+        })
+      }).catch(() => {});
     },
     search(){
       this.page.currentPage = 1;

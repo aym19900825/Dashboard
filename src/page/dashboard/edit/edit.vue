@@ -1,7 +1,6 @@
 <template>
   <div class="list">
     <v-nav showItem="dashboard" v-show="!isPreview"></v-nav>
-    
     <div class="list-content">
         <header v-if="!isPreview">
             <span>{{dashboardshowname}}</span>
@@ -33,10 +32,10 @@
           </div>
           <el-row>
             <el-button type="primary" @click="addVisual">完成</el-button>
-            <el-button type="danger" style="margin-right: -23%;" @click="reset">取消</el-button>
+            <el-button type="danger" @click="reset">取消</el-button>
           </el-row>
         </div>
-        <div>
+        <div class="content-layout">
           <grid-layout
             :layout="layout"
             :col-num="12"
@@ -70,6 +69,9 @@
             </grid-item>
           </grid-layout>
         </div> 
+        <div class="empty-layout">
+          <p style="text-align: center;margin-top: 15%;font-size: 26px;">您还没有配置任何视图!</p>
+        </div>
     </div>
     <el-dialog title="dashboard" :visible.sync="dashboardForm" width="560px" :before-close="resetDashboard">
       <el-form :model="newDashboard" label-width="120">
@@ -84,6 +86,17 @@
           placeholder="请选择或输入菜单编组">
             <el-option
               v-for="item in businesscategorys"
+              :label="item"
+              :value="item"
+              :key="item">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="刷新时间">
+          <el-select v-model="newDashboard.refresh" filterable allow-create default-first-option
+          placeholder="请选择刷新时间(s)">
+            <el-option
+              v-for="item in refreshOpt"
               :label="item"
               :value="item"
               :key="item">
@@ -119,6 +132,7 @@ export default {
   name: 'edit',
   data () {
     return {
+      refreshOpt: [0,3,5,8,10],
       shareShow: false,
       shareForm: {
         link: '',
@@ -152,7 +166,8 @@ export default {
         businesscategory: '',
         dashboarddescription: '',
         bid: '',
-        type: ''
+        type: '',
+        refresh: ''
       },
       businesscategorys: [],
       dashboardForm: false
@@ -172,11 +187,12 @@ export default {
       this.$axios.put(url,this.newDashboard).then((res) => {
         if(res.data.code == 1){
           this.$message({
-              type: 'error',
+              type: 'success',
               message: '保存成功',
               showClose: true
           });
           this.dashboardForm = false;
+          this.refresh = this.newDashboard.refresh;
         }else{
           this.$message({
               type: 'error',
@@ -742,6 +758,7 @@ export default {
       this.businesscategorys = this.$route.query.businesscategorys;
       this.isPreview = this.$route.query.isPreview || false;
       this.isShare = this.$route.query.isShare || false;
+      this.refresh = this.$route.query.refresh || 0;
     },
     editInfo(){
       var url = '/api/show/dashboard/'+ this.bid;
@@ -807,7 +824,8 @@ export default {
       var url = window.location.href;
       var domain = window.location.host;
       url = url.replace(domain,'192.168.1.114:8080');
-      this.shareForm.link = url+'&isPreview=true&isShare=true';
+      url = url + '&isPreview=true&isShare=true&refresh=' + this.refresh;
+      this.shareForm.link = url;
       this.shareForm.iframeLink = '<iframe src="' + url + '" height="600" width="800"></iframe>';
       this.shareShow = true;
     },
@@ -825,12 +843,20 @@ export default {
         'integerId': _this.bid,
       }).then((res) => {
           this.dashboardshowname = res.data.dashboardshowname;
+          this.refresh = res.data.refresh;
           var data = res.data.showDtoList;
           data.forEach(function(item){
               item.echartId = 'echart' + item.vid;
               item.i = item.vid;
           });
           this.layout = data;
+          if(this.layout.length > 0){
+            $('.content-layout').show();
+            $('.empty-layout').hide();
+          }else{
+            $('.content-layout').hide();
+            $('.empty-layout').show();
+          }
           setTimeout(function(){
             data.forEach(function(item){
               var id = item.echartId;
@@ -888,6 +914,13 @@ export default {
          }else{
             _this.rerenderEchart('edit');
          }
+      }
+      //页面分享后定时刷新
+      var refresh = this.refresh;
+      if(refresh > 0 && this.isShare){
+        setInterval(function(){ 
+          window.location.reload();
+        }, refresh*60*1000);
       }
   },
   components: {
