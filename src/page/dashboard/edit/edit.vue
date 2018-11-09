@@ -1,16 +1,7 @@
 <template>
   <div class="list">
     <v-nav showItem="dashboard" v-show="!isPreview"></v-nav>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="page.currentPage"
-      :page-sizes="[10, 20, 30, 40]"
-      :page-size="page.pageSize"
-      layout="total, sizes, prev, pager, next"
-      :total="page.totalCount" style="position: absolute; right: 10px;
-      z-index: 10003; display: none;">
-    </el-pagination>
+    
     <div class="list-content">
         <header v-if="!isPreview">
             <span>{{dashboardshowname}}</span>
@@ -29,6 +20,17 @@
             <el-table-column prop="type" label="类型" width="150">
             </el-table-column>
           </el-table>
+          <div style="text-align: right;">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="page.currentPage"
+              :page-sizes="[10, 20, 30, 40]"
+              :page-size="page.pageSize"
+              layout="total, sizes, prev, pager, next"
+              :total="page.totalCount">
+            </el-pagination>
+          </div>
           <el-row>
             <el-button type="primary" @click="addVisual">完成</el-button>
             <el-button type="danger" style="margin-right: -23%;" @click="reset">取消</el-button>
