@@ -11,8 +11,8 @@
           <p>
             <span>视图列表</span>
             <!-- <el-button type="danger" icon="el-icon-delete" size="small" style="margin-right: 10px; margin-left: 6px;"></el-button> -->
-            <el-button type="warning" icon="el-icon-plus" size="small" style="margin-left: 20px;" @click="exportExcel">导出</el-button>
-            <el-button type="success" icon="el-icon-plus" size="small" @click="choose">新增</el-button>
+            <el-button type="success" icon="el-icon-plus" size="small" style="margin-left: 20px;" @click="choose">新增</el-button>
+            <el-button type="warning" icon="el-icon-plus" size="small" @click="exportExcel">导出</el-button>
           </p>
           <el-row :gutter="20" style="display: flex;align-items:center;border-bottom: 1px solid #ccc; margin-left: 0px;margin-right: 0px;height: 60px;">
             <el-col :span="12"> 
@@ -243,8 +243,14 @@ export default {
       })
     },
     exportExcel(){
-      var url = '/api/show/excel/export';
-      window.open(url) 
+     this.$confirm('确定导出视图?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        var url = '/api/show/excel/export';
+        window.open(url) 
+      }).catch(() => {});
     }
   },
   components: {

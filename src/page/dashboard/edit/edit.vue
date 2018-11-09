@@ -97,10 +97,14 @@
     <el-dialog title="分享地址" :visible.sync="shareShow" width="560px" :before-close="resetShare">
       <el-form :model="shareForm" label-width="120">
         <el-form-item label="链接地址">
-          <el-input v-model="shareForm.link"></el-input>
+          <el-input v-model="shareForm.link" style="width: 95%;"></el-input>
+          <i class="icon iconfont db--fuzhi" v-clipboard:copy="shareForm.link"
+            v-clipboard:success="copySuccess" v-clipboard:error="copyError"></i>
         </el-form-item>
         <el-form-item label="嵌入iframe链接地址">
-          <el-input v-model="shareForm.iframeLink"></el-input>
+          <el-input v-model="shareForm.iframeLink" style="width: 95%;"></el-input>
+          <i class="icon iconfont db--fuzhi" v-clipboard:copy="shareForm.iframeLink"
+           v-clipboard:success="copySuccess" v-clipboard:error="copyError"></i>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -854,6 +858,26 @@ export default {
               showClose: true
           })
       })
+    },
+    // copy(data){
+    //   var copyData = data=='link'? this.shareForm.link : this.shareForm.iframeLink;
+    //   window.clipboardData.setData("Text",copyData);
+    //   this.$message({
+    //       message: '复制成功',
+    //       type: 'success'
+    //   });
+    // },
+    copySuccess(){
+      this.$message({
+          message: '复制成功',
+          type: 'success'
+      });
+    },
+    copyError(){
+      this.$message({
+          message: '复制失败',
+          type: 'error'
+      });
     }
   },
   mounted(){

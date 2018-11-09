@@ -12,6 +12,7 @@ import axios from 'axios'
 import vueGridLayout from 'vue-grid-layout';
 //引用vue-color中的某一个组件
 import { Photoshop } from 'vue-color'
+import VueClipboard from 'vue-clipboard2'
 
 
 Vue.config.productionTip = false
@@ -19,6 +20,7 @@ Vue.prototype.$echarts = echarts
 Vue.prototype.$axios= axios
 Vue.use(ElementUI)
 Vue.use(vueGridLayout);
+Vue.use(VueClipboard)
 
 /* eslint-disable no-new */
 new Vue({
