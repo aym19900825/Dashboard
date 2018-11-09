@@ -311,6 +311,7 @@ export default {
 			    }]
 			};
 			myChart.setOption(option);
+			myChart.resize();
 		},
 		requestData(){
 			var url = '/api/show/visualize';
@@ -393,6 +394,9 @@ export default {
     	setTimeout(function(){
 			_this.initEchart();
     	},1000);
+    	window.onresize = function() {
+	        _this.initEchart();
+	    }
     }
 }
 </script>

@@ -859,14 +859,6 @@ export default {
           })
       })
     },
-    // copy(data){
-    //   var copyData = data=='link'? this.shareForm.link : this.shareForm.iframeLink;
-    //   window.clipboardData.setData("Text",copyData);
-    //   this.$message({
-    //       message: '复制成功',
-    //       type: 'success'
-    //   });
-    // },
     copySuccess(){
       this.$message({
           message: '复制成功',
@@ -887,6 +879,13 @@ export default {
       $(".list-content").height($(window).height());
       if(this.isShare){
         this.rerenderEchart('preview');
+      }
+      window.onresize = function() {
+         if(_this.isShare){
+            _this.rerenderEchart('preview');
+         }else{
+            _this.rerenderEchart('edit');
+         }
       }
   },
   components: {

@@ -265,6 +265,7 @@ export default {
 			return res;
 		},
     	initEchart(echartId){
+    		console.log($('echart-box').width());
 	        var myChart = this.$echarts.init(document.getElementById('echart-box'));
 			var param = this.visualParam;
 			var echartData = this.echartData;
@@ -327,6 +328,7 @@ export default {
 	            ]
 	        };
 	        myChart.setOption(option);
+	        myChart.resize();
 	    },
 		requestData(){
 			var url = '/api/show/visualize';
@@ -410,6 +412,11 @@ export default {
     	setTimeout(function(){
 			_this.initEchart();
     	},1000);
+    	window.onresize = function() {
+    		setTimeout(function(){
+				_this.initEchart();
+	    	},500);
+	    }
     }
 }
 </script>
