@@ -86,7 +86,6 @@ header{
             div.tab-content-one,div.tab-content-two{
                 width: 100%;
                 position: absolute;
-                height: 100%;
             }
             div.tab-content-one{
                 padding: 10px;
@@ -94,14 +93,12 @@ header{
                     background: #fff;
                     min-height: 100px;
                     border-radius: 5px;
-                    padding-top: 20px;
                     height: 100%;
                 }
             }
             div.tab-content-two{
                 padding: 10px;
                 .panl-setting{
-                    height: 500px;
                     background: #fff;
                     border-radius: 5px;
                     padding: 10px;
@@ -136,4 +133,29 @@ header{
             height: 95%;
         }
     }
+}
+.y-axios,.x-axios{
+    border-bottom: 1px solid #ccc;
+    padding-top: 20px;
+}
+.el-form-item{
+    margin-right: 30px;
+    i.data-show{
+        position: absolute;
+        top: 0px;
+        right: -20px;
+        cursor: pointer;
+    }
+}
+h5{
+    line-height: 30px;
+    padding-left: 10px;
+    font-size: 16px;
+    background: #ccc;
+    color: #fff;
+    margin-bottom: 10px;
+}
+.column-set{
+    height: 70px;
+    overflow: hidden;
 }

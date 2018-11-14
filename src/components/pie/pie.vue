@@ -21,6 +21,9 @@
 								<el-form-item label="名称">
 						          <el-input v-model="visualParam.visualizename"></el-input>
 						        </el-form-item>
+						        <el-form-item label="描述">
+						          <el-input v-model="visualParam.visualizedescription"></el-input>
+						        </el-form-item>
 						        <el-form-item label="类型">
 						          <el-select disabled v-model="visualParam.type" placeholder="请选择活动区域" width="100%">
 						            <el-option label="折线图" value="line"></el-option>

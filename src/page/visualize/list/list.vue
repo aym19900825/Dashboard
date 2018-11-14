@@ -57,6 +57,9 @@
         <el-form-item label="名称">
           <el-input v-model="newVisualize.visualizename"></el-input>
         </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="newVisualize.visualizedescription"></el-input>
+        </el-form-item>
         <el-form-item label="类型">
           <el-select v-model="newVisualize.type" placeholder="请选择活动区域" width="100%">
             <el-option label="折线图" value="line"></el-option>
@@ -64,13 +67,13 @@
             <el-option label="柱状图" value="bar"></el-option>
           </el-select>
         </el-form-item>
-         <el-form-item label="y轴数据类型">
+        <!--  <el-form-item label="y轴数据类型">
           <el-select v-model="newVisualize.ytype" placeholder="y轴数据类型">
             <el-option label="double" value="double"></el-option>
             <el-option label="float" value="float"></el-option>
             <el-option label="int" value="int"></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="菜单编组">
           <el-select v-model="newVisualize.businesscategory" filterable allow-create default-first-option
             placeholder="请选择或输入菜单编组">
@@ -80,6 +83,21 @@
               :value="item"
               :key="item">
             </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数据库">
+          <el-select v-model="newVisualize.dbid" placeholder="请选择数据库" width="100%" @change="getTable">
+            <el-option :label="item.database" :value="item.dbid" v-for="item in databaseList"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数据表">
+          <el-select v-model="newVisualize.sourcetablename" placeholder="请选择数据表" width="100%" @change="getCol">
+            <el-option :label="item" :value="item" v-for="item in tableList"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数据列">
+          <el-select v-model="newVisualize.columnList" placeholder="请选择数据列" width="100%" multiple>
+            <el-option :label="item.field" :value="item.field"  v-for="item in columnList"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -97,6 +115,10 @@ export default {
   name: 'list',
   data () {
     return {
+      databaseList: [],
+      tableList: [],
+      columnList: [],
+
       page:{
         currentPage: 1,
         pageSize: 10,
@@ -107,9 +129,12 @@ export default {
       visualizeForm: false,
       newVisualize: {
         visualizename: '',
+        visualizedescription: '',
         type: '',
-        ytype: '',
         businesscategory: '',
+        dbid: '',
+        sourcetablename: '',
+        columnList: []
       },
       Businesscategorys: [],
 
@@ -130,11 +155,47 @@ export default {
     },
     choose(){
       this.visualizeForm = true;
-      // this.$router.replace('/detail');
+      if(this.databaseList.length == 0){
+        var url = '/api/show/databaseList';
+        this.$axios.get(url,{}).then((res) => {
+          this.databaseList = res.data;
+        }).catch((err) => {
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+        })
+      }
+    },
+    getTable(val){
+      console.log(val);
+      var url = '/api/show/tableList';
+      this.$axios.get(url,{}).then((res) => {
+        this.tableList = res.data;
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
+    },
+    getCol(val){
+      console.log(val);
+      var url = '/api/show/columnList?tablename=' + val;
+      this.$axios.get(url,{}).then((res) => {
+        this.columnList = res.data;
+      }).catch((err) => {
+          this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+          })
+      })
     },
     edit(index,row){
       var url = '';
-      console.log(row.type);
       switch(row.type){
         case  'line':
           url = '/editline';
@@ -217,19 +278,37 @@ export default {
       this.visualizeForm = false;
       this.newVisualize = {
         visualizename: '',
+        visualizedescription: '',
         type: '',
-        ytype: '',
         businesscategory: '',
+        dbid: '',
+        sourcetablename: '',
+        columnList: []
       };
     },
     addVisual(){
       var url = '/api/show/visualizeAdd';
-      this.$axios.post(url,{
-        "type": this.newVisualize.type,
-        "visualizename": this.newVisualize.visualizename,
-        "ytype" : this.newVisualize.ytype,
-        "businesscategory" : this.newVisualize.businesscategory
-      }).then((res) => {
+      var obj = {
+        'visualize': {
+          'type': this.newVisualize.type,
+          'visualizename': this.newVisualize.visualizename,
+          'visualizedescription': this.newVisualize.visualizedescription,
+          'businesscategory': this.newVisualize.businesscategory,
+          'sourcetablename': this.newVisualize.sourcetablename,
+          'dbid': this.newVisualize.dbid
+        },
+        'columnList': []
+      };
+      var colList = this.columnList;
+      var selCol =  this.newVisualize.columnList;
+      for(var i = 0; i < selCol.length; i++){
+        for(var j=0; j<colList.length;j++){
+          if(colList[j].field == selCol[i]){
+            obj.columnList.push(colList[j]);
+          }
+        }
+      }
+      this.$axios.post(url,obj).then((res) => {
           if(res.data.code != 1){
               this.$message({
                   type: 'error',
