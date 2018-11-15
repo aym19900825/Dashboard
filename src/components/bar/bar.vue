@@ -122,6 +122,10 @@
 							          </el-select>
 							          <i class="data-show icon iconfont db--right" @click="showYSet($event)"></i>
 							        </el-form-item>
+							        <el-form-item label="数据颜色">
+							           <el-input v-model="colData.colColor"></el-input>
+							   		   <!-- <photoshop-picker v-model="colData.colColor" v-show="colorSet1" @input="updateTitColor"/> -->
+							        </el-form-item>
 							        <el-form-item label="数据说明">
 							          <el-input v-model="colData.colName"></el-input>
 							        </el-form-item>
@@ -344,7 +348,7 @@ export default {
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
     		if(h == 60){
-				$(e.target).parents(".y-axios").height("620");
+				$(e.target).parents(".y-axios").height("680");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
 	    		$(e.target).parents(".y-axios").height("60");
