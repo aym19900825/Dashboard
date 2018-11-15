@@ -134,9 +134,16 @@
 							        <el-form-item label="lable">
 								        <el-switch v-model="colData.colLabel"></el-switch>
 							        </el-form-item>
-							        <!-- <el-form-item label="lable位置" v-show="colData.colLabel">
-							          <el-input v-model="colData.colLabelPos"></el-input>
-							        </el-form-item> -->
+							        <el-form-item label="lable位置" v-show="colData.colLabel">
+							          <el-select v-model="colData.colLabelPos" filterable allow-create default-first-option>
+							            <el-option
+							              v-for="it in labelPos"
+							              :label="it.txt"
+							              :value="it.value"
+							              :key="it.value">
+							            </el-option>
+							          </el-select>
+							        </el-form-item>
 							        <el-form-item label="最大值">
 							          <el-switch v-model="colData.colMax"></el-switch>
 							        </el-form-item>
@@ -269,6 +276,57 @@ export default {
 
    			],
 
+   			labelPos: [
+   				{
+   					txt: '顶部',
+   					value: 'top'
+   				},
+   				{
+   					txt: '左侧',
+   					value: 'left'
+   				},
+   				{
+   					txt: '右侧',
+   					value: 'right'
+   				},
+   				{
+   					txt: '底部',
+   					value: 'bottom'
+   				},
+   				{
+   					txt: '内部',
+   					value: 'inside'
+   				},
+   				{
+   					txt: '内部左侧',
+   					value: 'insideLeft'
+   				},
+   				{
+   					txt: '内部右侧',
+   					value: 'insideRight'
+   				},
+   				{
+   					txt: '内部底部',
+   					value: 'insideBottom'
+   				},
+   				{
+   					txt: '内部左上方',
+   					value: 'insideTopLeft'
+   				},
+   				{
+   					txt: '内部左下方',
+   					value: 'insideBottomLeft'
+   				},
+   				{
+   					txt: '内部右上方',
+   					value: 'insideTopRight'
+   				},
+   				{
+   					txt: '内部右下方',
+   					value: 'insideBottomRight'
+   				}
+   			],
+
       		visualParam: {},
       		echartData: {},
       		dealPos: {
@@ -286,7 +344,7 @@ export default {
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
     		if(h == 60){
-				$(e.target).parents(".y-axios").height("580");
+				$(e.target).parents(".y-axios").height("620");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
 	    		$(e.target).parents(".y-axios").height("60");
@@ -465,8 +523,8 @@ export default {
 					type: !!colSets[i].colType ? colSets[i].colType : 'bar',
 					name: colSets[i].colName,
 					label: {
-						show: !!colSets[i].colLabel,
-						position: ''
+						show: colSets[i].colLabel,
+						position: colSets[i].colLabelPos
 					},
 					barWidth: colSets[i].colWidth,
 					markPoint: {
@@ -575,6 +633,13 @@ export default {
 		        }).then((res) => {
 		        	var data = res.data;
 		        	this.echartData = JSON.parse(JSON.stringify(data));
+		        	for(var i=0; i<data.columnList.length;i++){
+		        		if(data.columnList[i].colLabel=='true'){
+		        			data.columnList[i].colLabel = true;
+		        		}else{
+							data.columnList[i].colLabel = false;
+		        		}
+		        	}
 		        	this.columnList = data.columnList;
 		        	this.visualParam.columnList = this.columnList;
 		        	console.log(this.columnList);
