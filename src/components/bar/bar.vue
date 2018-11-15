@@ -63,37 +63,6 @@
 								          </el-select>
 								    </el-form-item> -->
 								</div>
-								<h5>数据列设置
-									<!-- <el-button size="mini" type="primary" style="float: right;">+</el-button> -->
-						        </h5>
-						        <div class="y-axios column-set" v-for="colData in visualParam.columnList">
-							        <el-form-item label="数据列">
-							          <el-select v-model="colData.field" filterable allow-create default-first-option disabled>
-							            <el-option
-							              v-for="it in businessCats"
-							              :label="it"
-							              :value="it"
-							              :key="it">
-							            </el-option>
-							          </el-select>
-							          <i class="data-show icon iconfont db--dashboard" @click="showYSet($event)"></i>
-							        </el-form-item>
-							        <el-form-item label="lable">
-								        <el-switch v-model="colData.colLabel"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="lable位置" v-show="item.colLabel">
-							          <el-input v-model="colData.colLabelPos"></el-input>
-							        </el-form-item>
-							        <el-form-item label="最大值">
-							          <el-switch v-model="colData.colMax"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="最小值">
-							          <el-switch v-model="colData.colMin"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="堆叠数据">
-							          <el-input v-model="colData.colStack"></el-input>
-							        </el-form-item>
-							    </div>
 						        <div class="y-axios">
 						        	<h5>Y轴设置</h5>
 							        <el-form-item label="y轴标注">
@@ -132,7 +101,58 @@
 									<el-form-item label="轴线居中">
 										<el-switch v-model="visualParam.alignWithLabel"></el-switch>
 							        </el-form-item>
+							         <el-form-item label="X->Y">
+							          	<el-switch v-model="visualParam.xToy"></el-switch>
+							        </el-form-item>
 						        </div>
+							</el-form>
+							<el-form ref="option-set" :model="columnList" label-width="80px">
+								<h5>数据列设置
+									<!-- <el-button size="mini" type="primary" style="float: right;">+</el-button> -->
+						        </h5>
+							  	<div class="y-axios column-set" v-for="colData in columnList">
+							        <el-form-item label="数据列">
+							          <el-select v-model="colData.field" filterable allow-create default-first-option disabled>
+							            <el-option
+							              v-for="it in businessCats"
+							              :label="it"
+							              :value="it"
+							              :key="it">
+							            </el-option>
+							          </el-select>
+							          <i class="data-show icon iconfont db--right" @click="showYSet($event)"></i>
+							        </el-form-item>
+							        <el-form-item label="数据说明">
+							          <el-input v-model="colData.colName"></el-input>
+							        </el-form-item>
+							        <el-form-item label="数据宽度">
+							          <el-input v-model="colData.colWidth"></el-input>
+							        </el-form-item>
+							        <el-form-item label="堆叠数据">
+							          <el-input v-model="colData.colStack"></el-input>
+							        </el-form-item>
+							        <el-form-item label="lable">
+								        <el-switch v-model="colData.colLabel"></el-switch>
+							        </el-form-item>
+							        <!-- <el-form-item label="lable位置" v-show="colData.colLabel">
+							          <el-input v-model="colData.colLabelPos"></el-input>
+							        </el-form-item> -->
+							        <el-form-item label="最大值">
+							          <el-switch v-model="colData.colMax"></el-switch>
+							        </el-form-item>
+							        <el-form-item label="最小值">
+							          <el-switch v-model="colData.colMin"></el-switch>
+							        </el-form-item>
+							        <el-form-item label="平均值">
+							          <el-switch v-model="colData.colAverage"></el-switch>
+							        </el-form-item>
+							        <el-form-item label="类型">
+							          <el-select v-model="colData.colType" placeholder="请选择数据类型" width="100%">
+							            <el-option label="折线图" value="line"></el-option>
+							            <el-option label="柱状图" value="bar"></el-option>
+							          </el-select>
+							        </el-form-item>
+								</div>
 							</el-form>
 						</div>
 					</div>
@@ -257,15 +277,20 @@ export default {
       			right: 'auto',
       			bottom: 'auto',
       		},
+
+      		columnList: [],
+      		colstacks:[]
     	}
     },
     methods: {
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
-    		if(h == 70){
-				$(e.target).parents(".y-axios").height("330");
+    		if(h == 60){
+				$(e.target).parents(".y-axios").height("580");
+				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
-	    		$(e.target).parents(".y-axios").height("70");
+	    		$(e.target).parents(".y-axios").height("60");
+	    		$(e.target).parents(".y-axios").find(".db--down").removeClass("db--down").addClass("db--right");
     		}
     	},
     	returnDb(){
@@ -369,11 +394,121 @@ export default {
 			this.dealTitPos = this.dealLegendPos(this.visualParam.echartTitPos,'titPos');
 			this.dealLegendPos();
 			var seriesData = [];
+			var colSets = this.columnList;
+			var lengdData = [];
+
+			var xSet = {};
+			var ySet = {};
+			if(param.xToy){
+				xSet = {
+			    	name: param.yname,
+			        type: 'value',
+			        splitLine: {show: param.ySplitLine},
+		            inverse: param.yInverse,
+		            axisLine: {
+			            show: param.yAxisLine
+			        },
+			        axisLabel: {
+		                formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
+		            }
+			    };
+			    ySet = {
+			    	name: param.xname,
+			        type: 'category',
+			        data: echartData.showKey,
+			        axisTick: {
+		                alignWithLabel: param.alignWithLabel
+		            },
+		            splitLine: {show: param.xSplitLine},
+		            inverse: param.xInverse,
+		            axisLine: {
+			            show: param.xAxisLine
+			        },
+			        axisLabel: {
+		                formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
+		            }
+			    };
+			}else{
+				xSet = {
+			    	name: param.xname,
+			        type: 'category',
+			        data: echartData.showKey,
+			        axisTick: {
+		                alignWithLabel: param.alignWithLabel
+		            },
+		            splitLine: {show: param.xSplitLine},
+		            inverse: param.xInverse,
+		            axisLine: {
+			            show: param.xAxisLine
+			        },
+			        axisLabel: {
+		                formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
+		            }
+			    };
+			    ySet = {
+			    	name: param.yname,
+			        type: 'value',
+			        splitLine: {show: param.ySplitLine},
+		            inverse: param.yInverse,
+		            axisLine: {
+			            show: param.yAxisLine
+			        },
+			        axisLabel: {
+		                formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
+		            }
+			    };
+			}
+
 			for(var i=0; i<echartData.showValue.length; i++){
 				var obj = {
 					'data': echartData.showValue[i],
-					type: 'bar',
+					type: !!colSets[i].colType ? colSets[i].colType : 'bar',
+					name: colSets[i].colName,
+					label: {
+						show: !!colSets[i].colLabel,
+						position: ''
+					},
+					barWidth: colSets[i].colWidth,
+					markPoint: {
+						data: []
+					}
 				};
+				lengdData.push(colSets[i].colName);
+				if(!!colSets[i].colMax || !!colSets[i].colMax){
+					if(!!colSets[i].colMax){
+						obj.markPoint.data.push({type : 'max', name: '最大值'});
+					}
+					if(!!colSets[i].colMin){
+						obj.markPoint.data.push({type : 'min', name: '最小值'});
+					}
+				}
+				if(!!colSets[i].colStack){
+					if(this.colstacks.length == 0){
+						this.colstacks.push({
+							name: colSets[i].colStack,
+							val: colSets[i].colStack
+						});
+						obj.stack = colSets[i].colStack;
+					}else{
+						for(var j=0; j<this.colstacks.length; j++){
+							if(colSets[i].colStack == this.colstacks[j].val){
+								this.colstacks.push({
+									name: this.colstacks[j].name,
+									val: colSets[i].colStack
+								});
+								obj.stack = this.colstacks[j].name;
+								break;
+							}else{
+								this.colstacks.push({
+									name: colSets[i].colStack,
+									val: colSets[i].colStack
+								});
+								obj.stack = colSets[i].colStack;
+								break;
+							}
+						}
+					}
+				}
 			    seriesData.push(obj);
 			}
 			myChart.clear();
@@ -396,39 +531,13 @@ export default {
 					top: this.dealPos.top,
 					bottom: this.dealPos.bottom,
 					right: this.dealPos.right,
-			        data: echartData.xname
+			        data: lengdData
 			    },
 			    tooltip: {
 	   				show: param.tooltipShow,
 	   			},
-			    xAxis: {
-			    	name: param.xname,
-			        type: 'category',
-			        data: echartData.showKey,
-			        axisTick: {
-		                alignWithLabel: param.alignWithLabel
-		            },
-		            splitLine: {show: param.xSplitLine},
-		            inverse: param.xInverse,
-		            axisLine: {
-			            show: param.xAxisLine
-			        },
-			        axisLabel: {
-		                formatter: '{value}'+(!!param.xAxisLabel?'':param.xAxisLabel)
-		            }
-			    },
-			    yAxis: {
-			    	name: param.yname,
-			        type: 'value',
-			        splitLine: {show: param.ySplitLine},
-		            inverse: param.yInverse,
-		            axisLine: {
-			            show: param.yAxisLine
-			        },
-			        axisLabel: {
-		                formatter: '{value}'+param.yAxisLabel
-		            }
-			    },
+			    xAxis: xSet,
+			    yAxis: ySet,
 			    dataZoom: [
 		            {
 		                show: param.dataZoom,
@@ -460,6 +569,22 @@ export default {
 	        	this.background = res.data.background || '#FFFFFF';
 	        	this.echartTitColor = res.data.echartTitColor || '#000000';
 	        	this.visualParam = JSON.parse(JSON.stringify(data));
+	        	var url1 = '/api/show/visualizeData';
+		        this.$axios.post(url1,{
+		            integerId: this.vid,
+		        }).then((res) => {
+		        	var data = res.data;
+		        	this.echartData = JSON.parse(JSON.stringify(data));
+		        	this.columnList = data.columnList;
+		        	this.visualParam.columnList = this.columnList;
+		        	console.log(this.columnList);
+		        }).catch((err) => {
+		            this.$message({
+		                type: 'error',
+		                message: '网络错误，请重试',
+		                showClose: true
+		            })
+		        })
 	        }).catch((err) => {
 	            this.$message({
 	                type: 'error',
@@ -467,21 +592,7 @@ export default {
 	                showClose: true
 	            })
 	        });
-	        var url1 = '/api/show/visualizeData';
-	        this.$axios.post(url1,{
-	            integerId: this.vid,
-	        }).then((res) => {
-	        	var data = res.data;
-	        	this.echartData = JSON.parse(JSON.stringify(data));
-	        	this.visualParam.columnList = data.columnList;
-	        	console.log(this.visualParam.columnList);
-	        }).catch((err) => {
-	            this.$message({
-	                type: 'error',
-	                message: '网络错误，请重试',
-	                showClose: true
-	            })
-	        })
+	        
 		},
 		run(){
 			this.initEchart();
@@ -490,8 +601,11 @@ export default {
 			var url = '/api/show/visualize?vid='+this.vid;
 			this.visualParam.background = this.background;
 			this.visualParam.echartTitColor = this.echartTitColor;
-			
-			this.$axios.put(url,this.visualParam
+			var obj = {
+				'columnMaps': this.columnList,
+				'visualize': this.visualParam
+			};
+			this.$axios.put(url,obj
 	        ).then((res) => {
 	        	if(res.data.code == 1){
 	        		this.$message({
