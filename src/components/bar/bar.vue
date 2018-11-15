@@ -170,56 +170,62 @@
 					<div class="tab-content-two" v-show="tabIndex == 1">
 						<div class="panl-setting">
 							<el-form ref="option-set" :model="visualParam" label-width="80px">
-							  	<el-form-item label="标题">
-							   		 <el-input v-model="visualParam.echarttitle"></el-input>
-							 	</el-form-item>
-							 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
-							 		<el-select v-model="visualParam.echartTitPos" placeholder="请选择标题位置">
-								    	<el-option
-									      v-for="item in legendPos"
-									      :key="item.value"
-									      :label="item.txt"
-									      :value="item.value">
-									    </el-option>
-							    	</el-select>
-							 	</el-form-item>
-							 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
-							 		<el-input v-model="visualParam.echartTitColor"></el-input>
-							 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
-							 	</el-form-item>
-							 	<el-form-item label="显示图例">
-							    	<el-switch v-model="visualParam.legendShow"></el-switch>
-							    </el-form-item>
-							 	<el-form-item label="图例位置" v-if="visualParam.legendShow">
-							    	<el-select v-model="visualParam.legendPos" placeholder="请选择图例位置">
-								    	<el-option
-									      v-for="item in legendPos"
-									      :key="item.value"
-									      :label="item.txt"
-									      :value="item.value">
-									    </el-option>
-							    	</el-select>
-							    </el-form-item>
-							    <el-form-item label="图例布局" v-if="visualParam.legendShow">
-							    	<el-select v-model="visualParam.legendOrient" placeholder="请选择图例布局">
-								    	<el-option
-									      v-for="item in legendOpt"
-									      :key="item.value"
-									      :label="item.txt"
-									      :value="item.value">
-									    </el-option>
-							    	</el-select>
-							    </el-form-item>
-							    <el-form-item label="显示提示">
-							    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
-							    </el-form-item>
-							    <el-form-item label="区域组件">
-							    	<el-switch v-model="visualParam.dataZoom"></el-switch>
-							    </el-form-item>
-							    <el-form-item label="表盘颜色">
-							    	<el-input v-model="visualParam.background"></el-input>
-							    	<el-color-picker v-model="visualParam.background" size="medium"></el-color-picker>
-						        </el-form-item>
+							  	<div class="y-axios">
+								  	<el-form-item label="标题">
+								   		 <el-input v-model="visualParam.echarttitle"></el-input>
+								 	</el-form-item>
+								 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
+								 		<el-select v-model="visualParam.echartTitPos" placeholder="请选择标题位置">
+									    	<el-option
+										      v-for="item in legendPos"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								 	</el-form-item>
+								 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
+								 		<el-input v-model="visualParam.echartTitColor"></el-input>
+								 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
+								 	</el-form-item>
+								</div>
+								<div class="y-axios">
+								 	<el-form-item label="显示图例">
+								    	<el-switch v-model="visualParam.legendShow"></el-switch>
+								    </el-form-item>
+								 	<el-form-item label="图例位置" v-if="visualParam.legendShow">
+								    	<el-select v-model="visualParam.legendPos" placeholder="请选择图例位置">
+									    	<el-option
+										      v-for="item in legendPos"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								    </el-form-item>
+								    <el-form-item label="图例布局" v-if="visualParam.legendShow">
+								    	<el-select v-model="visualParam.legendOrient" placeholder="请选择图例布局">
+									    	<el-option
+										      v-for="item in legendOpt"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								    </el-form-item>
+							    </div>
+							    <div class="y-axios">
+								    <el-form-item label="显示提示">
+								    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
+								    </el-form-item>
+								    <el-form-item label="区域组件">
+								    	<el-switch v-model="visualParam.dataZoom"></el-switch>
+								    </el-form-item>
+								    <el-form-item label="表盘颜色">
+								    	<el-input v-model="visualParam.background"></el-input>
+								    	<el-color-picker v-model="visualParam.background" size="medium"></el-color-picker>
+							        </el-form-item>
+						        </div>
 							</el-form>
 						</div>
 					</div>
