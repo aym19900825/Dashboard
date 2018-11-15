@@ -123,8 +123,8 @@
 							          <i class="data-show icon iconfont db--right" @click="showYSet($event)"></i>
 							        </el-form-item>
 							        <el-form-item label="数据颜色">
-							           <el-input v-model="colData.colColor"></el-input>
-							   		   <!-- <photoshop-picker v-model="colData.colColor" v-show="colorSet1" @input="updateTitColor"/> -->
+							   		    <el-input v-model="colData.colColor"></el-input>
+							   		    <el-color-picker v-model="colData.colColor" size="medium"></el-color-picker>
 							        </el-form-item>
 							        <el-form-item label="数据说明">
 							          <el-input v-model="colData.colName"></el-input>
@@ -184,8 +184,8 @@
 							    	</el-select>
 							 	</el-form-item>
 							 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
-							 		<el-input v-model="echartTitColor"  @focus="colorSet1 = !colorSet1;"></el-input>
-							   		<photoshop-picker v-model="echartTitColor" v-show="colorSet1" @input="updateTitColor"/>
+							 		<el-input v-model="visualParam.echartTitColor"></el-input>
+							 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
 							 	</el-form-item>
 							 	<el-form-item label="显示图例">
 							    	<el-switch v-model="visualParam.legendShow"></el-switch>
@@ -217,9 +217,8 @@
 							    	<el-switch v-model="visualParam.dataZoom"></el-switch>
 							    </el-form-item>
 							    <el-form-item label="表盘颜色">
-							    	<!-- <el-input v-model="visualParam.background"></el-input> -->
-							    	<el-input v-model="background" @focus="colorSet = !colorSet;"></el-input>
-						            <photoshop-picker v-model="background" v-show="colorSet" @input="updateBgColor"/>
+							    	<el-input v-model="visualParam.background"></el-input>
+							    	<el-color-picker v-model="visualParam.background" size="medium"></el-color-picker>
 						        </el-form-item>
 							</el-form>
 						</div>
@@ -240,12 +239,6 @@ export default {
   	props: ['vid','businessCats','bid'],
  	data(){
    		return {
-   			colorSet: false,
-   			colorSet1: false,
-   			//设置颜色
-   			echartTitColor: '#194d33',
-   			background: '#194d33',
-
    			visualizename: '',
    			tabIndex: '0',
    			legendOpt:[
@@ -341,7 +334,8 @@ export default {
       		},
 
       		columnList: [],
-      		colstacks:[]
+      		colstacks:[],
+      		colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3']
     	}
     },
     methods: {
@@ -363,14 +357,6 @@ export default {
 	        	  businesscategorys: this.businessCats
 	        	}
 	        })
-    	},
-    	updateTitColor(value){
-    		// this.visualParam.echartTitColor = value.hex;
-    		this.echartTitColor = value.hex;
-    	},
-    	updateBgColor(value){
-    		// this.visualParam.background = value.hex;
-    		this.background = value.hex;
     	},
     	tabSwitch(index){
 			this.tabIndex = index;
@@ -458,6 +444,7 @@ export default {
 			var seriesData = [];
 			var colSets = this.columnList;
 			var lengdData = [];
+			var colors = [];
 
 			var xSet = {};
 			var ySet = {};
@@ -536,6 +523,11 @@ export default {
 					}
 				};
 				lengdData.push(colSets[i].colName);
+				if(!!colSets[i].colColor){
+					colors.push(colSets[i].colColor);
+				}else{
+					colors.push(this.colors[i]);
+				}
 				if(!!colSets[i].colMax || !!colSets[i].colMax){
 					if(!!colSets[i].colMax){
 						obj.markPoint.data.push({type : 'max', name: '最大值'});
@@ -575,7 +567,8 @@ export default {
 			}
 			myChart.clear();
 			var option = {
-				backgroundColor: this.background,
+				backgroundColor: param.background,
+				color: colors,
 				title: {
 					text: param.echarttitle,
 					left: this.dealTitPos.left,
@@ -583,7 +576,7 @@ export default {
 					bottom: this.dealTitPos.bottom,
 					right: this.dealTitPos.right,
 					textStyle: {
-						color: this.echartTitColor
+						color: param.echartTitColor
 					}
 				},
 				legend: {
@@ -628,8 +621,6 @@ export default {
 	            integerId: this.vid,
 	        }).then((res) => {
 	        	var data = res.data;
-	        	this.background = res.data.background || '#FFFFFF';
-	        	this.echartTitColor = res.data.echartTitColor || '#000000';
 	        	this.visualParam = JSON.parse(JSON.stringify(data));
 	        	var url1 = '/api/show/visualizeData';
 		        this.$axios.post(url1,{
@@ -668,8 +659,6 @@ export default {
 		},
 		save(){
 			var url = '/api/show/visualize?vid='+this.vid;
-			this.visualParam.background = this.background;
-			this.visualParam.echartTitColor = this.echartTitColor;
 			var obj = {
 				'columnMaps': this.columnList,
 				'visualize': this.visualParam
