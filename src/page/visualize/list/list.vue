@@ -172,7 +172,7 @@ export default {
     getTable(val){
       this.newVisualize.sourcetablename = [];
       this.newVisualize.columnList = [];
-      var url = '/api/show/tableList';
+      var url = '/api/show/tableList?dbid=' + this.newVisualize.dbid;
       this.$axios.get(url,{}).then((res) => {
         this.tableList = res.data;
         this.columnList = [];
@@ -187,7 +187,7 @@ export default {
     getCol(val){
       this.columnList = [];
       this.newVisualize.columnList = [];
-      var url = '/api/show/columnList?tablename=' + val;
+      var url = '/api/show/columnList?tablename=' + val + '&dbid=' + this.newVisualize.dbid;
       this.$axios.get(url,{}).then((res) => {
         this.columnList = res.data;
       }).catch((err) => {
