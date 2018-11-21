@@ -169,10 +169,12 @@ export default {
       }
     },
     getTable(val){
-      console.log(val);
+      this.newVisualize.sourcetablename = [];
+      this.newVisualize.columnList = [];
       var url = '/api/show/tableList';
       this.$axios.get(url,{}).then((res) => {
         this.tableList = res.data;
+        this.columnList = [];
       }).catch((err) => {
           this.$message({
               type: 'error',
@@ -182,7 +184,8 @@ export default {
       })
     },
     getCol(val){
-      console.log(val);
+      this.columnList = [];
+      this.newVisualize.columnList = [];
       var url = '/api/show/columnList?tablename=' + val;
       this.$axios.get(url,{}).then((res) => {
         this.columnList = res.data;
@@ -227,7 +230,7 @@ export default {
           if(res.data.code != 1){
             _this.$message({
               type: 'error',
-              message: '删除失败，请重试',
+              message: res.data.message,
               showClose: true
             })
           }else{
@@ -312,7 +315,7 @@ export default {
           if(res.data.code != 1){
               this.$message({
                   type: 'error',
-                  message: '新增失败',
+                  message: res.data.message,
                   showClose: true
               })
           }

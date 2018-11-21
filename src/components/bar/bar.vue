@@ -63,23 +63,28 @@
 								          </el-select>
 								    </el-form-item> -->
 								</div>
-						        <div class="y-axios">
-						        	<h5>Y轴设置</h5>
-							        <el-form-item label="y轴标注">
-							          <el-input v-model="visualParam.yname"></el-input>
-							        </el-form-item>
-							        <el-form-item label="y轴单位">
-							          <el-input v-model="visualParam.yAxisLabel"></el-input>
-							        </el-form-item>
-							        <el-form-item label="轴线">
-							          <el-switch v-model="visualParam.yAxisLine"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="分隔线">
-							          <el-switch v-model="visualParam.ySplitLine"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="翻转">
-								       <el-switch v-model="visualParam.yInverse"></el-switch>
-							        </el-form-item>
+						        <div>
+						        	<h5>Y轴设置
+										<el-button size="mini" type="primary" style="float: right;" @click="addYSet()">+</el-button>
+						        	</h5>
+						        	<div class="y-axios column-set">
+						        		<el-form-item label="y轴标注">
+								          <el-input v-model="visualParam.yname"></el-input>
+								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
+								        </el-form-item>
+								        <el-form-item label="y轴单位">
+								          <el-input v-model="visualParam.yAxisLabel"></el-input>
+								        </el-form-item>
+								        <el-form-item label="轴线">
+								          <el-switch v-model="visualParam.yAxisLine"></el-switch>
+								        </el-form-item>
+								        <el-form-item label="分隔线">
+								          <el-switch v-model="visualParam.ySplitLine"></el-switch>
+								        </el-form-item>
+								        <el-form-item label="翻转">
+									       <el-switch v-model="visualParam.yInverse"></el-switch>
+								        </el-form-item>
+						        	</div>
 						        </div>
 						        <div class="x-axios">
 							        <h5>x轴设置</h5>
@@ -258,9 +263,6 @@ export default {
    			],
    			legendPos: [
 				{
-   					txt: '上中',
-   					value: 'topCenter'
-   				},{
 					txt: '上右',
    					value: 'topRight'
    				},{
@@ -345,10 +347,23 @@ export default {
     	}
     },
     methods: {
+    	addYSet(){
+    		
+    	},
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
     		if(h == 60){
 				$(e.target).parents(".y-axios").height("680");
+				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
+    		}else{
+	    		$(e.target).parents(".y-axios").height("60");
+	    		$(e.target).parents(".y-axios").find(".db--down").removeClass("db--down").addClass("db--right");
+    		}
+    	},
+    	showSet(e){
+			var h = $(e.target).parents(".y-axios").height();
+    		if(h == 60){
+				$(e.target).parents(".y-axios").height("320");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
 	    		$(e.target).parents(".y-axios").height("60");
@@ -709,6 +724,9 @@ export default {
     mounted(){
     	var _this = this;
     	this.requestData();
+    	$(".tab-content").height($(window).height()-120);
+    	$(".right").height($(window).height()-50);
+    	$("#echart-box").height($(window).height()-50);
     	setTimeout(function(){
 			_this.initEchart();
     	},1000);

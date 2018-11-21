@@ -170,7 +170,9 @@ export default {
         refresh: ''
       },
       businesscategorys: [],
-      dashboardForm: false
+      dashboardForm: false,
+
+      colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3']
     }
   },
   methods: {
@@ -270,13 +272,13 @@ export default {
       this.isAddVisual = true;
     },
     addVisual(){
+      var _this = this;
       this.isAddVisual = false;
       this.page = {
         currentPage: 1,
         pageSize: 10,
         totalCount: 0,
       };
-      var _this = this;
       var list = this.selVisuaList.filter(function(item){
         var flag = true;
         for(var m=0; m<_this.layout.length; m++){
@@ -316,7 +318,6 @@ export default {
               break;
           }
         }, 1000);
-        
       }
     },
     editVisual(vid,type){
@@ -578,47 +579,181 @@ export default {
             var myChart = this.$echarts.init(document.getElementById(echartId));
             var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
             var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
+            this.dealLegendPos();
+            var seriesData = [];
+            var colSets = echartData.columnList;
+            var lengdData = [];
+            var colors = [];
+
             myChart.clear();
-            var option = {
-              backgroundColor: param.background,
-              title: {
-                text: param.echarttitle,
-                left: dealTitPos.left,
-                top: dealTitPos.top,
-                bottom: dealTitPos.bottom,
-                right: dealTitPos.right,
-                textStyle: {
-                  color: param.echartTitColor
+
+            var xSet = {};
+            var ySet = {};
+            if(echartData.xToy){
+              xSet = {
+              name: echartData.yname,
+                type: 'value',
+                splitLine: {show: echartData.ySplitLine},
+                  inverse: echartData.yInverse,
+                  axisLine: {
+                    show: echartData.yAxisLine
+                },
+                axisLabel: {
+                    formatter: '{value}'+(!!echartData.yAxisLabel&&echartData.yAxisLabel!='null'?echartData.yAxisLabel:'')
+                  }
+              };
+              ySet = {
+                name: echartData.xname,
+                type: 'category',
+                data: echartData.showKey,
+                axisTick: {
+                      alignWithLabel: echartData.alignWithLabel
+                  },
+                  splitLine: {show: echartData.xSplitLine},
+                  inverse: echartData.xInverse,
+                  axisLine: {
+                    show: echartData.xAxisLine
+                },
+                axisLabel: {
+                      formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel!='null'?echartData.xAxisLabel:'')
+                  }
+                };
+              }else{
+                  xSet = {
+                    name: echartData.xname,
+                    type: 'category',
+                    data: echartData.showKey,
+                    axisTick: {
+                          alignWithLabel: echartData.alignWithLabel
+                      },
+                      splitLine: {show: echartData.xSplitLine},
+                      inverse: echartData.xInverse,
+                      axisLine: {
+                        show: echartData.xAxisLine
+                    },
+                    axisLabel: {
+                      formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel!='null'?echartData.xAxisLabel:'')
+                    }
+                  };
+                  ySet = {
+                    name: echartData.yname,
+                    type: 'value',
+                    splitLine: {show: echartData.ySplitLine},
+                    inverse: echartData.yInverse,
+                    axisLine: {
+                      show: echartData.yAxisLine
+                    },
+                    axisLabel: {
+                      formatter: '{value}'+(!!echartData.yAxisLabel&&echartData.yAxisLabel!='null'?echartData.yAxisLabel:'')
+                    }
+                  };
+              }
+
+              for(var i=0; i<echartData.showValue.length; i++){
+                var obj = {
+                  data: echartData.showValue[i],
+                  type: !!colSets[i].colType ? colSets[i].colType : 'bar',
+                  name: colSets[i].colName,
+                  label: {
+                    show: colSets[i].colLabel == 'false' ? false : true,
+                    position: colSets[i].colLabelPos
+                  },
+                  barWidth: colSets[i].colWidth,
+                  markPoint: {
+                    data: []
+                  }
+                };
+              lengdData.push(colSets[i].colName);
+              if(!!colSets[i].colColor){
+                colors.push(colSets[i].colColor);
+              }else{
+                colors.push(this.colors[i]);
+              }
+              if(!!colSets[i].colMax || !!colSets[i].colMax){
+                if(!!colSets[i].colMax){
+                  obj.markPoint.data.push({type : 'max', name: '最大值'});
                 }
-              },
-              legend: {
-                show: param.legendShow,
-                orient: param.legendOrient, //图例水平或者垂直
-                left: dealPos.left,
-                top: dealPos.top,
-                bottom: dealPos.bottom,
-                right: dealPos.right,
-                data: echartData.xname
-              },
-              tooltip: {
-                show: param.tooltipShow,
-              },
-              xAxis: {
-                  type: 'category',
-                  data: echartData.showKey
-              },
-              yAxis: {
-                  type: 'value'
-              },
-              series: [{
-                  data: echartData.showValue,
-                  name: echartData.xname,
-                  type: type,
-                  smooth: true
-              }]
-            };
-            myChart.setOption(option);
-            myChart.resize();
+                if(!!colSets[i].colMin){
+                  obj.markPoint.data.push({type : 'min', name: '最小值'});
+                }
+              }
+              if(!!colSets[i].colStack){
+                if(this.colstacks.length == 0){
+                  this.colstacks.push({
+                    name: colSets[i].colStack,
+                    val: colSets[i].colStack
+                  });
+                  obj.stack = colSets[i].colStack;
+                }else{
+                  for(var j=0; j<this.colstacks.length; j++){
+                    if(colSets[i].colStack == this.colstacks[j].val){
+                      this.colstacks.push({
+                        name: this.colstacks[j].name,
+                        val: colSets[i].colStack
+                      });
+                      obj.stack = this.colstacks[j].name;
+                      break;
+                    }else{
+                      this.colstacks.push({
+                        name: colSets[i].colStack,
+                        val: colSets[i].colStack
+                      });
+                      obj.stack = colSets[i].colStack;
+                      break;
+                    }
+                  }
+                }
+              }
+              seriesData.push(obj);
+            }
+            var option = {
+                backgroundColor: param.background,
+                color: colors,
+                title: {
+                  text: param.echarttitle,
+                  left: dealTitPos.left,
+                  top: dealTitPos.top,
+                  bottom: dealTitPos.bottom,
+                  right: dealTitPos.right,
+                  textStyle: {
+                    color: param.echartTitColor
+                  }
+                },
+                legend: {
+                  show: param.legendShow,
+                  orient: param.legendOrient, //图例水平或者垂直
+                  left: dealPos.left,
+                  top: dealPos.top,
+                  bottom: dealPos.bottom,
+                  right: dealPos.right,
+                  data: lengdData
+                },
+                tooltip: {
+                  show: param.tooltipShow,
+                },
+                xAxis: xSet,
+                yAxis: ySet,
+                dataZoom: [
+                  {
+                      show: echartData.dataZoom,
+                  },
+                  {
+                      type: 'inside',
+                  },
+                  {
+                    show: echartData.dataZoom,
+                    yAxisIndex: 0,
+                    filterMode: 'empty',
+                    width: 30,
+                    height: '80%',
+                    showDataShadow: false,
+                    left: '93%'
+                  }
+                ],
+                series: seriesData
+              };
+              myChart.setOption(option);
+              myChart.resize();
           }).catch((err) => {
               this.$message({
                   type: 'error',
@@ -630,48 +765,182 @@ export default {
           var myChart = this.$echarts.init(document.getElementById(echartId));
           var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
           var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
+          this.dealLegendPos();
+          var seriesData = [];
+          var colSets = param.columnList;
+          var lengdData = [];
+          var colors = [];
+
           myChart.clear();
-          var option = {
-            backgroundColor: param.background,
-            title: {
-              text: param.echarttitle,
-              left: dealTitPos.left,
-              top: dealTitPos.top,
-              bottom: dealTitPos.bottom,
-              right: dealTitPos.right,
-              textStyle: {
-                color: param.echartTitColor
-              }
-            },
-            legend: {
-              show: param.legendShow,
-              orient: param.legendOrient, //图例水平或者垂直
-              left: dealPos.left,
-              top: dealPos.top,
-              bottom: dealPos.bottom,
-              right: dealPos.right,
-              data: echartData.xname
-            },
-            tooltip: {
-              show: param.tooltipShow,
-            },
-            xAxis: {
-                type: 'category',
-                data: echartData.showKey
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [{
-                data: echartData.showValue,
-                name: echartData.xname,
-                type: type,
-                smooth: true
-            }]
+
+          var xSet = {};
+          var ySet = {};
+          if(param.xToy){
+            xSet = {
+            name: param.yname,
+              type: 'value',
+              splitLine: {show: param.ySplitLine},
+                inverse: param.yInverse,
+                axisLine: {
+                  show: param.yAxisLine
+              },
+              axisLabel: {
+                  formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
+                }
           };
-          myChart.setOption(option);
-          myChart.resize();
+          ySet = {
+            name: param.xname,
+              type: 'category',
+              data: param.showKey,
+              axisTick: {
+                    alignWithLabel: param.alignWithLabel
+                },
+                splitLine: {show: param.xSplitLine},
+                inverse: param.xInverse,
+                axisLine: {
+                  show: param.xAxisLine
+              },
+              axisLabel: {
+                    formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
+                }
+          };
+        }else{
+          xSet = {
+            name: param.xname,
+            type: 'category',
+            data: param.showKey,
+            axisTick: {
+                  alignWithLabel: param.alignWithLabel
+              },
+              splitLine: {show: param.xSplitLine},
+              inverse: param.xInverse,
+              axisLine: {
+                show: param.xAxisLine
+            },
+            axisLabel: {
+              formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
+            }
+          };
+          ySet = {
+            name: param.yname,
+            type: 'value',
+            splitLine: {show: param.ySplitLine},
+            inverse: param.yInverse,
+            axisLine: {
+              show: param.yAxisLine
+            },
+            axisLabel: {
+              formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
+            }
+          };
         }
+
+        for(var i=0; i<echartData.showValue.length; i++){
+          var obj = {
+            data: echartData.showValue[i],
+            type: !!colSets[i].colType ? colSets[i].colType : 'bar',
+            name: colSets[i].colName,
+            label: {
+              show: colSets[i].colLabel == 'false' ? false : true,
+              position: colSets[i].colLabelPos
+            },
+            barWidth: colSets[i].colWidth,
+            markPoint: {
+              data: []
+            }
+          };
+        lengdData.push(colSets[i].colName);
+        if(!!colSets[i].colColor){
+          colors.push(colSets[i].colColor);
+        }else{
+          colors.push(this.colors[i]);
+        }
+        if(!!colSets[i].colMax || !!colSets[i].colMax){
+          if(!!colSets[i].colMax){
+            obj.markPoint.data.push({type : 'max', name: '最大值'});
+          }
+          if(!!colSets[i].colMin){
+            obj.markPoint.data.push({type : 'min', name: '最小值'});
+          }
+        }
+        if(!!colSets[i].colStack){
+          if(this.colstacks.length == 0){
+            this.colstacks.push({
+              name: colSets[i].colStack,
+              val: colSets[i].colStack
+            });
+            obj.stack = colSets[i].colStack;
+          }else{
+            for(var j=0; j<this.colstacks.length; j++){
+              if(colSets[i].colStack == this.colstacks[j].val){
+                this.colstacks.push({
+                  name: this.colstacks[j].name,
+                  val: colSets[i].colStack
+                });
+                obj.stack = this.colstacks[j].name;
+                break;
+              }else{
+                this.colstacks.push({
+                  name: colSets[i].colStack,
+                  val: colSets[i].colStack
+                });
+                obj.stack = colSets[i].colStack;
+                break;
+              }
+            }
+          }
+        }
+        seriesData.push(obj);
+      }
+      var option = {
+          backgroundColor: param.background,
+          color: colors,
+          title: {
+            text: param.echarttitle,
+            left: dealTitPos.left,
+            top: dealTitPos.top,
+            bottom: dealTitPos.bottom,
+            right: dealTitPos.right,
+            textStyle: {
+              color: param.echartTitColor
+            }
+          },
+          legend: {
+            show: param.legendShow,
+            orient: param.legendOrient, //图例水平或者垂直
+            left: dealPos.left,
+            top: dealPos.top,
+            bottom: dealPos.bottom,
+            right: dealPos.right,
+            data: lengdData
+          },
+          tooltip: {
+            show: param.tooltipShow,
+          },
+          xAxis: xSet,
+          yAxis: ySet,
+          dataZoom: [
+            {
+                show: param.dataZoom,
+            },
+            {
+                type: 'inside',
+            },
+            {
+              show: param.dataZoom,
+              yAxisIndex: 0,
+              filterMode: 'empty',
+              width: 30,
+              height: '80%',
+              showDataShadow: false,
+              left: '93%'
+            }
+          ],
+          series: seriesData
+        };
+        myChart.setOption(option);
+        myChart.resize();
+      }
     },
     resizedEvent: function(i, newH, newW, newHPx, newWPx){
       var data = this.layout.filter(function(item){
