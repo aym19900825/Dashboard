@@ -355,7 +355,7 @@ export default {
     	},
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
-    		if(h == 60){
+    		if(h != 680){
 				$(e.target).parents(".y-axios").height("680");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
@@ -365,7 +365,7 @@ export default {
     	},
     	showSet(e){
 			var h = $(e.target).parents(".y-axios").height();
-    		if(h == 60){
+    		if(h != 320){
 				$(e.target).parents(".y-axios").height("320");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
