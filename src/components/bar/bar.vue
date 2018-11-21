@@ -63,53 +63,6 @@
 								          </el-select>
 								    </el-form-item> -->
 								</div>
-						        <div>
-						        	<h5>Y轴设置
-										<el-button size="mini" type="primary" style="float: right;" @click="addYSet()">+</el-button>
-						        	</h5>
-						        	<div class="y-axios column-set">
-						        		<el-form-item label="y轴标注">
-								          <el-input v-model="visualParam.yname"></el-input>
-								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
-								        </el-form-item>
-								        <el-form-item label="y轴单位">
-								          <el-input v-model="visualParam.yAxisLabel"></el-input>
-								        </el-form-item>
-								        <el-form-item label="轴线">
-								          <el-switch v-model="visualParam.yAxisLine"></el-switch>
-								        </el-form-item>
-								        <el-form-item label="分隔线">
-								          <el-switch v-model="visualParam.ySplitLine"></el-switch>
-								        </el-form-item>
-								        <el-form-item label="翻转">
-									       <el-switch v-model="visualParam.yInverse"></el-switch>
-								        </el-form-item>
-						        	</div>
-						        </div>
-						        <div class="x-axios">
-							        <h5>x轴设置</h5>
-						        	<el-form-item label="x轴标注">
-							          	<el-input v-model="visualParam.xname"></el-input>
-							        </el-form-item>
-							        <el-form-item label="x轴单位">
-							          	<el-input v-model="visualParam.xAxisLabel"></el-input>
-							        </el-form-item>
-							        <el-form-item label="轴线">
-							          	<el-switch v-model="visualParam.xAxisLine"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="分割线">
-							          	<el-switch v-model="visualParam.xSplitLine"></el-switch>
-							        </el-form-item>
-							        <!-- <el-form-item label="x轴数据">
-							          	<el-input></el-input>
-							        </el-form-item> -->
-									<el-form-item label="轴线居中">
-										<el-switch v-model="visualParam.alignWithLabel"></el-switch>
-							        </el-form-item>
-							         <el-form-item label="X->Y">
-							          	<el-switch v-model="visualParam.xToy"></el-switch>
-							        </el-form-item>
-						        </div>
 							</el-form>
 							<el-form ref="option-set" :model="columnList" label-width="80px">
 								<h5>数据列设置
@@ -175,7 +128,8 @@
 					<div class="tab-content-two" v-show="tabIndex == 1">
 						<div class="panl-setting">
 							<el-form ref="option-set" :model="visualParam" label-width="80px">
-							  	<div class="y-axios">
+							  	<div class="y-axios" style="padding-top: 0px; border-bottom: 0px;">
+								  	<h5>标题设置</h5>
 								  	<el-form-item label="标题">
 								   		 <el-input v-model="visualParam.echarttitle"></el-input>
 								 	</el-form-item>
@@ -194,7 +148,55 @@
 								 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
 								 	</el-form-item>
 								</div>
-								<div class="y-axios">
+								 <div class="x-axios">
+							        <h5>x轴设置</h5>
+						        	<el-form-item label="x轴标注">
+							          	<el-input v-model="visualParam.xname"></el-input>
+							        </el-form-item>
+							        <el-form-item label="x轴单位">
+							          	<el-input v-model="visualParam.xAxisLabel"></el-input>
+							        </el-form-item>
+							        <el-form-item label="轴线">
+							          	<el-switch v-model="visualParam.xAxisLine"></el-switch>
+							        </el-form-item>
+							        <el-form-item label="分割线">
+							          	<el-switch v-model="visualParam.xSplitLine"></el-switch>
+							        </el-form-item>
+							        <!-- <el-form-item label="x轴数据">
+							          	<el-input></el-input>
+							        </el-form-item> -->
+									<el-form-item label="轴线居中">
+										<el-switch v-model="visualParam.alignWithLabel"></el-switch>
+							        </el-form-item>
+							         <el-form-item label="X->Y">
+							          	<el-switch v-model="visualParam.xToy"></el-switch>
+							        </el-form-item>
+						        </div>
+						         <div>
+						        	<h5>Y轴设置
+										<el-button size="mini" type="primary" style="float: right;" @click="addYSet()">+</el-button>
+						        	</h5>
+						        	<div class="y-axios column-set">
+						        		<el-form-item label="y轴标注">
+								          <el-input v-model="visualParam.yname"></el-input>
+								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
+								        </el-form-item>
+								        <el-form-item label="y轴单位">
+								          <el-input v-model="visualParam.yAxisLabel"></el-input>
+								        </el-form-item>
+								        <el-form-item label="轴线">
+								          <el-switch v-model="visualParam.yAxisLine"></el-switch>
+								        </el-form-item>
+								        <el-form-item label="分隔线">
+								          <el-switch v-model="visualParam.ySplitLine"></el-switch>
+								        </el-form-item>
+								        <el-form-item label="翻转">
+									       <el-switch v-model="visualParam.yInverse"></el-switch>
+								        </el-form-item>
+						        	</div>
+						        </div>
+								<div class="x-axios">
+									<h5>图例设置</h5>
 								 	<el-form-item label="显示图例">
 								    	<el-switch v-model="visualParam.legendShow"></el-switch>
 								    </el-form-item>
@@ -219,7 +221,8 @@
 								    	</el-select>
 								    </el-form-item>
 							    </div>
-							    <div class="y-axios">
+							    <div class="x-axios">
+								    <h5>其他设置</h5>
 								    <el-form-item label="显示提示">
 								    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
 								    </el-form-item>

@@ -128,10 +128,13 @@
 
 <script>
 import Nav from '../../../components/common/nav/nav.vue'
+import Config from '../../../config.js'
 export default {
   name: 'edit',
   data () {
     return {
+      config: Config,
+
       refreshOpt: [0,3,5,8,10],
       shareShow: false,
       shareForm: {
@@ -1092,7 +1095,7 @@ export default {
     exportPage(){
       var url = window.location.href;
       var domain = window.location.host;
-      url = url.replace(domain,'192.168.1.114:8080');
+      url = url.replace(domain,this.config.export_url);
       url = url + '&isPreview=true&isShare=true&refresh=' + this.refresh;
       this.shareForm.link = url;
       this.shareForm.iframeLink = '<iframe src="' + url + '" height="600" width="800"></iframe>';
@@ -1178,11 +1181,12 @@ export default {
         this.rerenderEchart('preview');
       }
       window.onresize = function() {
-         if(_this.isShare){
+        $(".list-content").height($(window).height());
+        if(_this.isShare){
             _this.rerenderEchart('preview');
-         }else{
+        }else{
             _this.rerenderEchart('edit');
-         }
+        }
       }
       //页面分享后定时刷新
       var refresh = this.refresh;

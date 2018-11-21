@@ -52,7 +52,7 @@
         </div>
        </div>
     </div>
-    <el-dialog title="dashboard" :visible.sync="dashboardForm" width="560px" :before-close="resetDashboard">
+    <el-dialog title="仪表板" :visible.sync="dashboardForm" width="560px" :before-close="resetDashboard">
       <el-form :model="newDashboard" label-width="120">
         <el-form-item label="名称">
           <el-input v-model="newDashboard.dashboardname"></el-input>

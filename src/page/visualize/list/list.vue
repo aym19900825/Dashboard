@@ -52,7 +52,7 @@
         </div>
        </div>
     </div>
-    <el-dialog title="visualize" :visible.sync="visualizeForm" width="560px" :before-close="resetVisual">
+    <el-dialog title="视图" :visible.sync="visualizeForm" width="560px" :before-close="resetVisual">
       <el-form :model="newVisualize"  label-position="top" label-width="120px">
         <el-form-item label="名称">
           <el-input v-model="newVisualize.visualizename"></el-input>
@@ -99,6 +99,7 @@
           <el-select v-model="newVisualize.columnList" placeholder="请选择数据列" width="100%" multiple>
             <el-option :label="item.field" :value="item.field"  v-for="item in columnList"></el-option>
           </el-select>
+          <p class="tip">注：选择的数据列中必须包含字符串类型的数据列</p>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
