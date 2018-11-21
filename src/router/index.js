@@ -12,6 +12,7 @@ import Login from '@/page/login/login'
 import User from '@/page/sys/user/user'
 import Role from '@/page/sys/role/role'
 import Model from '@/page/sys/model/model'
+import DatabaseList from '@/page/database/list/list'
 Vue.use(Router)
 
 export default new Router({
@@ -74,6 +75,11 @@ export default new Router({
 	  path: '/visualizeList',
 	  name: 'List',
 	  component: List
+	},
+	{
+	  path: '/databaseList',
+	  name: 'DatabaseList',
+	  component: DatabaseList
 	}
   ]
 })
