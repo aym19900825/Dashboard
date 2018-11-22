@@ -9,15 +9,19 @@
        </div>
        <div class="table-box">
           <p>
-            <span>视图列表</span>
+            <span>数据库列表</span>
             <el-button type="success" icon="el-icon-plus" size="small" style="margin-left: 20px;" @click="choose">添加</el-button>
           </p>
          <el-table ref="listTable" :data="list" tooltip-effect="dark"
           style="width: 100%">
           <!-- <el-table-column type="selection" width="55"></el-table-column> -->
-          <el-table-column prop="datasourcename" label="数据库名称"  show-overflow-tooltip>
+          <el-table-column prop="datasourcename" label="连接名"  show-overflow-tooltip>
           </el-table-column>
           <el-table-column prop="database" label="数据库" width="150">
+          </el-table-column>
+          <el-table-column prop="dbtype" label="数据库类型" width="150">
+          </el-table-column>
+          <el-table-column prop="dbstatus" label="连接状态" width="150">
           </el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
@@ -37,6 +41,9 @@
         <el-form-item label="端口号">
           <el-input v-model="newDataBase.port"></el-input>
         </el-form-item>
+        <el-form-item label="连接名">
+          <el-input v-model="newDataBase.datasourcename"></el-input>
+        </el-form-item>
         <el-form-item label="数据库">
           <el-input v-model="newDataBase.database"></el-input>
         </el-form-item>
@@ -45,9 +52,6 @@
         </el-form-item>
         <el-form-item label="密码">
           <el-input v-model="newDataBase.password"></el-input>
-        </el-form-item>
-        <el-form-item label="数据库名称">
-          <el-input v-model="newDataBase.datasourcename"></el-input>
         </el-form-item>
         <el-form-item label="数据库类型">
           <el-select v-model="newDataBase.dbtype" placeholder="请选择数据库" width="100%">
@@ -111,6 +115,7 @@ export default {
               showClose: true
             })
           }
+          this.requestData();
       }).catch((err) => {
           this.$message({
               type: 'error',

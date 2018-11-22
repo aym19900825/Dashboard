@@ -67,13 +67,6 @@
             <el-option label="柱状图" value="bar"></el-option>
           </el-select>
         </el-form-item>
-        <!--  <el-form-item label="y轴数据类型">
-          <el-select v-model="newVisualize.ytype" placeholder="y轴数据类型">
-            <el-option label="double" value="double"></el-option>
-            <el-option label="float" value="float"></el-option>
-            <el-option label="int" value="int"></el-option>
-          </el-select>
-        </el-form-item> -->
         <el-form-item label="菜单编组">
           <el-select v-model="newVisualize.businesscategory" filterable allow-create default-first-option
             placeholder="请选择或输入菜单编组">
@@ -85,10 +78,12 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据库">
+        <el-form-item label="连接名">
           <el-select v-model="newVisualize.dbid" placeholder="请选择数据库" width="100%" @change="getTable">
-            <el-option :label="item.database" :value="item.dbid" v-for="item in databaseList"></el-option>
+            <el-option :label="item.datasourcename" :value="item.dbid" v-for="item in databaseList"></el-option>
           </el-select>
+          <i v-if="dbTest=='1'" class="el-icon-success"></i>
+          <i v-if="dbTest=='0'" class="el-icon-warning"></i>
         </el-form-item>
         <el-form-item label="数据表">
           <el-select v-model="newVisualize.sourcetablename" placeholder="请选择数据表" width="100%" @change="getCol">
@@ -119,6 +114,7 @@ export default {
       databaseList: [],
       tableList: [],
       columnList: [],
+      dbTest: '2',
 
       page:{
         currentPage: 1,
@@ -157,7 +153,7 @@ export default {
     choose(){
       this.visualizeForm = true;
       if(this.databaseList.length == 0){
-        var url = '/api/show/databaseList';
+        var url = '/api/show/databaseList?valid=1';
         this.$axios.get(url,{}).then((res) => {
           this.databaseList = res.data;
         }).catch((err) => {
@@ -172,10 +168,25 @@ export default {
     getTable(val){
       this.newVisualize.sourcetablename = [];
       this.newVisualize.columnList = [];
-      var url = '/api/show/tableList?dbid=' + this.newVisualize.dbid;
-      this.$axios.get(url,{}).then((res) => {
-        this.tableList = res.data;
-        this.columnList = [];
+
+      var testUrl = '/api/show/validateDatabase?dbid=' + this.newVisualize.dbid;
+      this.$axios.get(testUrl,{}).then((res) => {
+          if(res.data.code == 1){
+            this.dbTest = '1';
+            var url = '/api/show/tableList?dbid=' + this.newVisualize.dbid;
+            this.$axios.get(url,{}).then((res) => {
+              this.tableList = res.data;
+              this.columnList = [];
+            }).catch((err) => {
+              this.$message({
+                  type: 'error',
+                  message: '网络错误，请重试',
+                  showClose: true
+              })
+            })
+          }else{
+            this.dbTest = '0';
+          }
       }).catch((err) => {
           this.$message({
               type: 'error',
@@ -313,21 +324,21 @@ export default {
         }
       }
       this.$axios.post(url,obj).then((res) => {
-          if(res.data.code != 1){
-              this.$message({
-                  type: 'error',
-                  message: res.data.message,
-                  showClose: true
-              })
-          }
-          this.resetVisual();
-          this.requestData();
+        if(res.data.code != 1){
+            this.$message({
+                type: 'error',
+                message: res.data.message,
+                showClose: true
+            })
+        }
+        this.resetVisual();
+        this.requestData();
       }).catch((err) => {
-          this.$message({
-              type: 'error',
-              message: '网络错误，请重试',
-              showClose: true
-          })
+        this.$message({
+            type: 'error',
+            message: '网络错误，请重试',
+            showClose: true
+        });
       })
     },
     exportExcel(){

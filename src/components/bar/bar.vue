@@ -33,13 +33,6 @@
 							            <el-option label="柱状图" value="bar"></el-option>
 							          </el-select>
 							        </el-form-item>
-							        <!-- <el-form-item label="y轴数据类型">
-							          <el-select disabled v-model="visualParam.ytype" placeholder="y轴数据类型">
-							            <el-option label="double" value="double"></el-option>
-							            <el-option label="float" value="float"></el-option>
-							            <el-option label="int" value="int"></el-option>
-							          </el-select>
-							        </el-form-item> -->
 							        <el-form-item label="菜单编组">
 							          <el-select v-model="visualParam.businesscategory" filterable allow-create default-first-option
 							            placeholder="请选择或输入菜单编组">
@@ -51,23 +44,10 @@
 							            </el-option>
 							          </el-select>
 							        </el-form-item>
-							        <!-- <el-form-item label="数据表">
-								          <el-select v-model="visualParam.bid" filterable allow-create default-first-option
-								            placeholder="请选择或输入菜单编组">
-								            <el-option
-								              v-for="item in businessCats"
-								              :label="item"
-								              :value="item"
-								              :key="item">
-								            </el-option>
-								          </el-select>
-								    </el-form-item> -->
 								</div>
 							</el-form>
 							<el-form ref="option-set" :model="columnList" label-width="80px">
-								<h5>数据列设置
-									<!-- <el-button size="mini" type="primary" style="float: right;">+</el-button> -->
-						        </h5>
+								<h5>数据列设置</h5>
 							  	<div class="y-axios column-set" v-for="colData in columnList">
 							        <el-form-item label="数据列">
 							          <el-select v-model="colData.field" filterable allow-create default-first-option disabled>
@@ -93,10 +73,10 @@
 							        <el-form-item label="堆叠数据">
 							          <el-input v-model="colData.colStack"></el-input>
 							        </el-form-item>
-							        <el-form-item label="lable">
+							        <el-form-item label="label">
 								        <el-switch v-model="colData.colLabel"></el-switch>
 							        </el-form-item>
-							        <el-form-item label="lable位置" v-show="colData.colLabel">
+							        <el-form-item label="label位置" v-show="colData.colLabel">
 							          <el-select v-model="colData.colLabelPos" filterable allow-create default-first-option>
 							            <el-option
 							              v-for="it in labelPos"

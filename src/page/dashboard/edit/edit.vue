@@ -294,6 +294,9 @@ export default {
         }
       });
       for(let i=0; i< list.length; i++){
+        $('.content-layout').show();
+        $('.empty-layout').hide();
+        
         let vid = list[i].vid;
         let type = list[i].type;
         let param = list[i];
