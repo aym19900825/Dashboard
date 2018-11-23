@@ -444,9 +444,161 @@ export default {
         }).then((res) => {
           echartData = res.data;
           var myChart = this.$echarts.init(document.getElementById(echartId));
+          var dealPos = this.dealLegendPos(echartData.legendPos,'legendPos');
+          var dealTitPos = this.dealLegendPos(echartData.echartTitPos,'titPos');
           myChart.clear();
+          var seriesData = [];
+          var legendData = [];
+          var legendSelO = !!echartData.legendSelData && echartData.legendSelData!='' ? echartData.legendSelData.split(',') : [];
+
+          var legendSel = {};
+          for(var i=0; i<echartData.showValue[0].length; i++){
+            var colObj = echartData.columnList[i];
+            var radius = !!colObj.colRadius ? colObj.colRadius.split(',') : ['0%','50%'];
+            var len = echartData.columnList.length;
+            var center = [];
+            if(len=1){
+              center = ['50%', '50%'];
+            }else{
+              if(i==1){
+                center = ['25%', '50%'];
+              }else{
+                center = ['75%', '50%'];
+              }
+            }
+            var seriesObj = {};
+            seriesObj = {
+              name: colObj.colName,
+                type:'pie',
+                radius : radius,
+                center : center,
+                roseType : colObj.colRoseType == false ? false : 'area',
+                label: {
+                  show: colObj.colLabel,
+                  position: colObj.colLabelPos
+                },
+                lableLine: {
+                    show: colObj.colLabelline,
+                },
+                data: echartData.showValue[0][i]
+            };
+            seriesData.push(seriesObj);
+          }
+
+          var showVal = echartData.showValue[0][0];
+          for(var j = 0; j < showVal.length; j++ ){
+            if(legendData.indexOf(showVal[j].name) === -1){
+             legendData.push(showVal[j].name);
+            }
+            if(legendSelO.length > 0){
+              if(legendSelO.indexOf(showVal[j].name) === -1){
+                legendSel[showVal[j].name] = false;
+              }else{
+                legendSel[showVal[j].name] = true;
+              }
+            }else{
+              legendSel[showVal[j].name] = true;
+            }
+          }
+
+          var option = {
+            backgroundColor: echartData.background,
+            title: {
+              text: echartData.echarttitle,
+              left: dealTitPos.left,
+              top: dealTitPos.top,
+              bottom: dealTitPos.bottom,
+              right: dealTitPos.right,
+              textStyle: {
+                color: echartData.echartTitColor
+              }
+            },
+            tooltip: {
+              show: echartData.tooltipShow,
+              trigger: 'item',
+              formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+              show: echartData.legendShow,
+              type: !!echartData.legendType ? echartData.legendType : 'plain',
+              orient: echartData.legendOrient, //图例水平或者垂直
+              left: dealPos.left,
+              top: dealPos.top,
+              bottom: dealPos.bottom,
+              right: dealPos.right,
+              data: legendData,
+              selected: legendSel
+            },
+            series: seriesData
+          };
+          myChart.setOption(option);
+          myChart.resize();
+        }).catch((err) => {
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
+        })
+      }else{
+          var myChart = this.$echarts.init(document.getElementById(echartId));
           var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
           var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
+          myChart.clear();
+          var seriesData = [];
+          var legendData = [];
+          var legendSelO = !!param.legendSelData && param.legendSelData!='' ? param.legendSelData.split(',') : [];
+
+          var legendSel = {};
+          for(var i=0; i<echartData.showValue[0].length; i++){
+            var colObj = param.columnList[i];
+            var radius = !!colObj.colRadius ? colObj.colRadius.split(',') : ['0%','50%'];
+            var len = param.columnList.length;
+            var center = [];
+            if(len=1){
+              center = ['50%', '50%'];
+            }else{
+              if(i==1){
+                center = ['25%', '50%'];
+              }else{
+                center = ['75%', '50%'];
+              }
+            }
+            var seriesObj = {};
+            seriesObj = {
+              name: colObj.colName,
+                type:'pie',
+                radius : radius,
+                center : center,
+                roseType : colObj.colRoseType == false ? false : 'area',
+                label: {
+                  show: colObj.colLabel,
+                  position: colObj.colLabelPos
+                },
+                lableLine: {
+                    show: colObj.colLabelline,
+                },
+                data: echartData.showValue[0][i]
+            };
+            seriesData.push(seriesObj);
+          }
+
+          var showVal = echartData.showValue[0][0];
+          for(var j = 0; j < showVal.length; j++ ){
+            if(legendData.indexOf(showVal[j].name) === -1){
+             legendData.push(showVal[j].name);
+            }
+            if(legendSelO.length > 0){
+              if(legendSelO.indexOf(showVal[j].name) === -1){
+                legendSel[showVal[j].name] = false;
+              }else{
+                legendSel[showVal[j].name] = true;
+              }
+            }else{
+              legendSel[showVal[j].name] = true;
+            }
+          }
+
           var option = {
             backgroundColor: param.background,
             title: {
@@ -460,118 +612,26 @@ export default {
               }
             },
             tooltip: {
-                show: param.tooltipShow,
-                trigger: 'item',
-                formatter: "{a} <br/>{b}: {c} ({d}%)"
+              show: param.tooltipShow,
+              trigger: 'item',
+              formatter: "{a} <br/>{b}: {c} ({d}%)"
             },
             legend: {
               show: param.legendShow,
+              type: !!param.legendType ? param.legendType : 'plain',
               orient: param.legendOrient, //图例水平或者垂直
               left: dealPos.left,
               top: dealPos.top,
               bottom: dealPos.bottom,
               right: dealPos.right,
-              data: echartData.showKey
+              data: legendData,
+              selected: legendSel
             },
-            series: [
-              {
-                name:'访问来源',
-                type:'pie',
-                radius: ['50%', '70%'],
-                avoidLabelOverlap: false,
-                label: {
-                    normal: {
-                        show: false,
-                        position: 'center'
-                    },
-                    emphasis: {
-                        show: true,
-                        textStyle: {
-                            fontSize: '30',
-                            fontWeight: 'bold'
-                        }
-                    }
-                },
-                labelLine: {
-                    normal: {
-                        show: false
-                    }
-                },
-                data: echartData.showValue
-              }
-            ]
+            series: seriesData
           };
           myChart.setOption(option);
           myChart.resize();
-        }).catch((err) => {
-            this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-            })
-        })
-      }else{
-        var myChart = this.$echarts.init(document.getElementById(echartId));
-        myChart.clear();
-        var dealPos = this.dealLegendPos(param.legendPos,'legendPos');
-        var dealTitPos = this.dealLegendPos(param.echartTitPos,'titPos');
-        var option = {
-          backgroundColor: param.background,
-          title: {
-            text: param.echarttitle,
-            left: dealTitPos.left,
-            top: dealTitPos.top,
-            bottom: dealTitPos.bottom,
-            right: dealTitPos.right,
-            textStyle: {
-              color: param.echartTitColor
-            }
-          },
-          tooltip: {
-              show: param.tooltipShow,
-              trigger: 'item',
-              formatter: "{a} <br/>{b}: {c} ({d}%)"
-          },
-          legend: {
-            show: param.legendShow,
-            orient: param.legendOrient, //图例水平或者垂直
-            left: dealPos.left,
-            top: dealPos.top,
-            bottom: dealPos.bottom,
-            right: dealPos.right,
-            data: echartData.showKey
-          },
-          series: [
-            {
-              name:'访问来源',
-              type:'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                  normal: {
-                      show: false,
-                      position: 'center'
-                  },
-                  emphasis: {
-                      show: true,
-                      textStyle: {
-                          fontSize: '30',
-                          fontWeight: 'bold'
-                      }
-                  }
-              },
-              labelLine: {
-                  normal: {
-                      show: false
-                  }
-              },
-              data: echartData.showValue
-            }
-          ]
-        };
-        myChart.setOption(option);
-        myChart.resize();
-      }
+        }
     },
     initLine(echartId,vid,type,param,echartData){
         echartData = echartData || {};

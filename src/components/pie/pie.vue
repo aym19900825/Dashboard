@@ -155,7 +155,7 @@
 								    	</el-select>
 								    </el-form-item>
 								    <el-form-item label="展示图例">
-								    	<el-checkbox-group v-model="legendSel" @change="handleCheckedCitiesChange">
+								    	<el-checkbox-group v-model="legendSel">
 									    <el-checkbox v-for="item in legendData" :label="item" :key="item">{{item}}</el-checkbox>
 									  </el-checkbox-group>
 								    </el-form-item>
@@ -464,12 +464,12 @@ export default {
 					bottom: this.dealPos.bottom,
 					right: this.dealPos.right,
 			        data: legendData,
-			        
 			        selected: legendSel
 			    },
 
 			    series: seriesData
 	        };
+	        console.log(param.legendType);
 	        myChart.setOption(option);
 	        myChart.resize();
 	    },
