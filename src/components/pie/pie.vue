@@ -2,7 +2,7 @@
   <div>
      <header>
      	<span>{{visualParam.visualizename}}</span>
-		<el-button type="warning" size="small" @click="reset" v-if="!bid">取消</el-button>
+		<el-button type="warning" size="small" v-if="!bid" @click="reset">取消</el-button>
 		<el-button type="info" size="small" v-if="bid" @click="returnDb">返回Dashboard</el-button>
 		<el-button type="primary" size="small" @click="save">保存</el-button>
      </header>
@@ -10,100 +10,166 @@
 			<div class="left">
 				<h4>table表名</h4>
 				<ul class="tab-list">
-					<li @click="tabSwitch(0)" :class=" tabIndex == 0 ? 'selected' : '' ">视图设置</li>
-					<li @click="tabSwitch(1)" :class=" tabIndex == 1 ? 'selected' : '' ">表盘设置</li>
+					<li @click="tabSwitch(0)" :class=" tabIndex == 0 ? 'selected' : '' ">数据设置</li>
+					<li @click="tabSwitch(1)" :class=" tabIndex == 1 ? 'selected' : '' ">样式设置</li>
 					<span class="run" @click="run"></span>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-content-one" v-show="tabIndex == 0">
 						<div class="metrics">
 							<el-form ref="option-set" :model="visualParam" label-width="100px">
-								<el-form-item label="名称">
-						          <el-input v-model="visualParam.visualizename"></el-input>
-						        </el-form-item>
-						        <el-form-item label="描述">
-						          <el-input v-model="visualParam.visualizedescription"></el-input>
-						        </el-form-item>
-						        <el-form-item label="类型">
-						          <el-select disabled v-model="visualParam.type" placeholder="请选择活动区域" width="100%">
-						            <el-option label="折线图" value="line"></el-option>
-						            <el-option label="饼图" value="pie"></el-option>
-						            <el-option label="柱状图" value="bar"></el-option>
-						          </el-select>
-						        </el-form-item>
-						        <el-form-item label="y轴数据类型">
-						          <el-select disabled v-model="visualParam.ytype" placeholder="y轴数据类型">
-						            <el-option label="double" value="double"></el-option>
-						            <el-option label="float" value="float"></el-option>
-						            <el-option label="int" value="int"></el-option>
-						          </el-select>
-						        </el-form-item>
-						        <el-form-item label="菜单编组">
-						          <el-select v-model="visualParam.businesscategory" filterable allow-create default-first-option
-						            placeholder="请选择或输入菜单编组">
-						            <el-option
-						              v-for="item in businessCats"
-						              :label="item"
-						              :value="item"
-						              :key="item">
-						            </el-option>
-						          </el-select>
-						        </el-form-item>
+								<div class="visilize-info">
+									<h5>视图信息</h5>
+									<el-form-item label="名称">
+							          <el-input v-model="visualParam.visualizename"></el-input>
+							        </el-form-item>
+							        <el-form-item label="描述">
+							          <el-input v-model="visualParam.visualizedescription"></el-input>
+							        </el-form-item>
+							        <el-form-item label="类型">
+							          <el-select disabled v-model="visualParam.type" placeholder="请选择活动区域" width="100%">
+							            <el-option label="折线图" value="line"></el-option>
+							            <el-option label="饼图" value="pie"></el-option>
+							            <el-option label="柱状图" value="bar"></el-option>
+							          </el-select>
+							        </el-form-item>
+							        <el-form-item label="菜单编组">
+							          <el-select v-model="visualParam.businesscategory" filterable allow-create default-first-option
+							            placeholder="请选择或输入菜单编组">
+							            <el-option
+							              v-for="item in businessCats"
+							              :label="item"
+							              :value="item"
+							              :key="item">
+							            </el-option>
+							          </el-select>
+							        </el-form-item>
+								</div>
+							</el-form>
+							<el-form ref="option-set" :model="columnList" label-width="100px">
+								<h5>数据列设置</h5>
+							  	<div class="y-axios column-set" v-for="colData in columnList">
+							        <el-form-item label="数据列">
+							          <el-select v-model="colData.field" filterable allow-create default-first-option disabled>
+							            <el-option
+							              v-for="it in businessCats"
+							              :label="it"
+							              :value="it"
+							              :key="it">
+							            </el-option>
+							          </el-select>
+							          <i class="data-show icon iconfont db--right" @click="showYSet($event)"></i>
+							        </el-form-item>
+							        <el-form-item label="数据说明">
+								        <el-input v-model="colData.colName"></el-input>
+							        </el-form-item>
+							        <el-form-item label="图形">
+							          <el-select v-model="colData.colRadius" filterable allow-create default-first-option>
+							            <el-option
+							              v-for="it in colRadius"
+							              :label="it.text"
+							              :value="it.value"
+							              :key="it.value">
+							            </el-option>
+							          </el-select>
+							        </el-form-item>
+							        <el-form-item label="label">
+								        <el-switch v-model="colData.colLabel"></el-switch>
+							        </el-form-item>
+							        <el-form-item label="label位置" v-show="colData.colLabel">
+							          <el-select v-model="colData.colLabelPos" filterable allow-create default-first-option>
+							            <el-option
+							              v-for="it in labelPos"
+							              :label="it.txt"
+							              :value="it.value"
+							              :key="it.value">
+							            </el-option>
+							          </el-select>
+							        </el-form-item>
+							        <!-- <el-form-item label="label线">
+								        <el-switch v-model="colData.colLabelline"></el-switch>
+							        </el-form-item> -->
+							        <el-form-item label="南丁格尔图">
+								        <el-switch v-model="colData.colRoseType"></el-switch>
+							        </el-form-item>
+								</div>
 							</el-form>
 						</div>
 					</div>
 					<div class="tab-content-two" v-show="tabIndex == 1">
 						<div class="panl-setting">
-							<el-form ref="option-set" :model="visualParam" label-width="80px">
-							  	<el-form-item label="标题">
-							   		 <el-input v-model="visualParam.echarttitle"></el-input>
-							 	</el-form-item>
-							 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
-							 		<el-select v-model="visualParam.echartTitPos" placeholder="请选择标题位置">
-								    	<el-option
-									      v-for="item in legendPos"
-									      :key="item.value"
-									      :label="item.txt"
-									      :value="item.value">
-									    </el-option>
-							    	</el-select>
-							 	</el-form-item>
-							 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
-							 		<!-- <el-input v-model="visualParam.echartTitColor"></el-input> -->
-							 		<el-input v-model="echartTitColor"  @focus="colorSet1 = !colorSet1;"></el-input>
-							   		<photoshop-picker v-model="echartTitColor" v-show="colorSet1" @input="updateTitColor"/>
-							 	</el-form-item>
-							 	<el-form-item label="显示图例">
-							    	<el-switch v-model="visualParam.legendShow"></el-switch>
-							    </el-form-item>
-							 	<el-form-item label="图例位置" v-if="visualParam.legendShow">
-							    	<el-select v-model="visualParam.legendPos" placeholder="请选择图例位置">
-								    	<el-option
-									      v-for="item in legendPos"
-									      :key="item.value"
-									      :label="item.txt"
-									      :value="item.value">
-									    </el-option>
-							    	</el-select>
-							    </el-form-item>
-							    <el-form-item label="图例布局" v-if="visualParam.legendShow">
-							    	<el-select v-model="visualParam.legendOrient" placeholder="请选择图例布局">
-								    	<el-option
-									      v-for="item in legendOpt"
-									      :key="item.value"
-									      :label="item.txt"
-									      :value="item.value">
-									    </el-option>
-							    	</el-select>
-							    </el-form-item>
-							    <el-form-item label="显示提示">
-							    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
-							    </el-form-item>
-							    <el-form-item label="表盘颜色">
-							    	<!-- <el-input v-model="visualParam.background"></el-input> -->
-							    	<el-input v-model="background" @focus="colorSet = !colorSet;"></el-input>
-						            <photoshop-picker v-model="background" v-show="colorSet" @input="updateBgColor"/>
-						        </el-form-item>
+							<el-form ref="option-set" :model="visualParam" label-width="100px">
+							  	<div class="y-axios" style="padding-top: 0px; border-bottom: 0px;">
+								  	<h5>标题设置</h5>
+								  	<el-form-item label="标题">
+								   		 <el-input v-model="visualParam.echarttitle"></el-input>
+								 	</el-form-item>
+								 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
+								 		<el-select v-model="visualParam.echartTitPos" placeholder="请选择标题位置">
+									    	<el-option
+										      v-for="item in legendPos"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								 	</el-form-item>
+								 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
+								 		<el-input v-model="visualParam.echartTitColor"></el-input>
+								 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
+								 	</el-form-item>
+								</div>
+								<div class="x-axios">
+									<h5>图例设置</h5>
+								 	<el-form-item label="显示图例">
+								    	<el-switch v-model="visualParam.legendShow"></el-switch>
+								    </el-form-item>
+								 	<el-form-item label="图例位置" v-if="visualParam.legendShow">
+								    	<el-select v-model="visualParam.legendPos" placeholder="请选择图例位置">
+									    	<el-option
+										      v-for="item in legendPos"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								    </el-form-item>
+								    <el-form-item label="图例布局" v-if="visualParam.legendShow">
+								    	<el-select v-model="visualParam.legendOrient" placeholder="请选择图例布局">
+									    	<el-option
+										      v-for="item in legendOpt"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								    </el-form-item>
+								    <el-form-item label="图例类型">
+								    	<el-select v-model="visualParam.legendType" placeholder="请选择图例布局">
+									    	<el-option
+										      v-for="item in legendType"
+										      :key="item.value"
+										      :label="item.txt"
+										      :value="item.value">
+										    </el-option>
+								    	</el-select>
+								    </el-form-item>
+								    <el-form-item label="展示图例">
+								    	<el-checkbox-group v-model="legendSel" @change="handleCheckedCitiesChange">
+									    <el-checkbox v-for="item in legendData" :label="item" :key="item">{{item}}</el-checkbox>
+									  </el-checkbox-group>
+								    </el-form-item>
+							    </div>
+							    <div class="x-axios">
+								    <h5>其他设置</h5>
+								    <el-form-item label="显示提示">
+								    	<el-switch v-model="visualParam.tooltipShow"></el-switch>
+								    </el-form-item>
+								    <el-form-item label="表盘颜色">
+								    	<el-input v-model="visualParam.background"></el-input>
+								    	<el-color-picker v-model="visualParam.background" size="medium"></el-color-picker>
+							        </el-form-item>
+						        </div>
 							</el-form>
 						</div>
 					</div>
@@ -123,12 +189,6 @@ export default {
   	props: ['vid','businessCats','bid'],
  	data(){
    		return {
-   			colorSet: false,
-   			colorSet1: false,
-   			//设置颜色
-   			echartTitColor: '#194d33',
-   			background: '#194d33',
-
    			visualizename: '',
    			tabIndex: '0',
    			legendOpt:[
@@ -142,9 +202,6 @@ export default {
    			],
    			legendPos: [
 				{
-   					txt: '上中',
-   					value: 'topCenter'
-   				},{
 					txt: '上右',
    					value: 'topRight'
    				},{
@@ -162,6 +219,30 @@ export default {
    				}
 
    			],
+			legendType: [
+				{
+   					txt: '普通图例',
+   					value: 'plain'
+   				},
+   				{
+   					txt: '翻页图例',
+   					value: 'scroll'
+   				}
+			],
+   			labelPos: [
+   				{
+   					txt: '外侧',
+   					value: 'outside'
+   				},
+   				{
+   					txt: '内部',
+   					value: 'inside'
+   				},
+   				{
+   					txt: '中心',
+   					value: 'center'
+   				}
+   			],
 
       		visualParam: {},
       		echartData: {},
@@ -171,9 +252,46 @@ export default {
       			right: 'auto',
       			bottom: 'auto',
       		},
+
+      		colRadius: [
+      			{
+      				text: '饼状图',
+      				value: '0%,50%'
+      			},
+      			{
+      				text: '环形图',
+      				value: '50%,70%'
+      			}
+      		],
+
+      		columnList: [],
+      		colstacks:[],
+      		colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
+      		legendSel: [],
+      		legendData: []
     	}
     },
     methods: {
+    	showYSet(e){
+    		var h = $(e.target).parents(".y-axios").height();
+    		if(h != 680){
+				$(e.target).parents(".y-axios").height("680");
+				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
+    		}else{
+	    		$(e.target).parents(".y-axios").height("60");
+	    		$(e.target).parents(".y-axios").find(".db--down").removeClass("db--down").addClass("db--right");
+    		}
+    	},
+    	showSet(e){
+			var h = $(e.target).parents(".y-axios").height();
+    		if(h != 320){
+				$(e.target).parents(".y-axios").height("320");
+				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
+    		}else{
+	    		$(e.target).parents(".y-axios").height("60");
+	    		$(e.target).parents(".y-axios").find(".db--down").removeClass("db--down").addClass("db--right");
+    		}
+    	},
     	returnDb(){
     	    this.$router.push({
 	        	path: '/dashboardEdit', 
@@ -182,14 +300,6 @@ export default {
 	        	  businesscategorys: this.businessCats
 	        	}
 	        })
-    	},
-    	updateTitColor(value){
-    		// this.visualParam.echartTitColor = value.hex;
-    		this.echartTitColor = value.hex;
-    	},
-    	updateBgColor(value){
-    		// this.visualParam.background = value.hex;
-    		this.background = value.hex;
     	},
     	tabSwitch(index){
 			this.tabIndex = index;
@@ -268,15 +378,68 @@ export default {
 			return res;
 		},
     	initEchart(echartId){
-    		console.log($('echart-box').width());
 	        var myChart = this.$echarts.init(document.getElementById('echart-box'));
 			var param = this.visualParam;
 			var echartData = this.echartData;
 			this.dealPos = this.dealLegendPos(this.visualParam.legendPos,'legendPos');
 			this.dealTitPos = this.dealLegendPos(this.visualParam.echartTitPos,'titPos');
 			myChart.clear();
+	        var seriesData = [];
+	        var legendData = this.legendData;
+	        var legendSelO = this.legendSel;
+
+	        var legendSel = {};
+	        for(var i=0; i<echartData.showValue[0].length; i++){
+	        	var colObj = this.columnList[i];
+	        	var radius = !!colObj.colRadius ? colObj.colRadius.split(',') : ['0%','50%'];
+	        	var len = this.columnList.length;
+	        	var center = [];
+	        	if(len=1){
+					center = ['50%', '50%'];
+	        	}else{
+	        		if(i==1){
+						center = ['25%', '50%'];
+	        		}else{
+	        			center = ['75%', '50%'];
+	        		}
+	        	}
+	        	var seriesObj = {};
+	        	seriesObj = {
+	        		name: colObj.colName,
+		            type:'pie',
+		            radius : radius,
+		            center : center,
+		            roseType : colObj.colRoseType == false ? false : 'area',
+		            label: {
+		            	show: colObj.colLabel,
+		            	position: colObj.colLabelPos
+		            },
+		            lableLine: {
+		                show: colObj.colLabelline,
+		            },
+		            data: echartData.showValue[0][i]
+		        };
+		        seriesData.push(seriesObj);
+	        }
+
+        	var showVal = echartData.showValue[0][0];
+	        for(var j = 0; j < showVal.length; j++ ){
+	        	if(legendData.indexOf(showVal[j].name) === -1){
+					legendData.push(showVal[j].name);
+	        	}
+        		if(legendSelO.length > 0){
+        			if(legendSelO.indexOf(showVal[j].name) === -1){
+        				legendSel[showVal[j].name] = false;
+        			}else{
+        				legendSel[showVal[j].name] = true;
+        			}
+        		}else{
+        			legendSel[showVal[j].name] = true;
+        		}
+       		}
+
 	        var option = {
-	          	backgroundColor: this.background,
+	        	backgroundColor: param.background,
 				title: {
 					text: param.echarttitle,
 					left: this.dealTitPos.left,
@@ -292,43 +455,20 @@ export default {
 	                trigger: 'item',
 	                formatter: "{a} <br/>{b}: {c} ({d}%)"
 	            },
-	          
 	            legend: {
 					show: param.legendShow,
+					type: !!param.legendType ? param.legendType : 'plain',
 					orient: param.legendOrient, //图例水平或者垂直
 					left: this.dealPos.left,
 					top: this.dealPos.top,
 					bottom: this.dealPos.bottom,
 					right: this.dealPos.right,
-			        data: echartData.showKey
+			        data: legendData,
+			        
+			        selected: legendSel
 			    },
-	            series: [
-	               {
-	                    name:'访问来源',
-	                    type:'pie',
-	                    radius: ['50%', '70%'],
-	                    avoidLabelOverlap: false,
-	                    label: {
-	                        normal: {
-	                            show: false,
-	                            position: 'center'
-	                        },
-	                        emphasis: {
-	                            show: true,
-	                            textStyle: {
-	                                fontSize: '30',
-	                                fontWeight: 'bold'
-	                            }
-	                        }
-	                    },
-	                    labelLine: {
-	                        normal: {
-	                            show: false
-	                        }
-	                    },
-	                    data: echartData.showValue
-	                }
-	            ]
+
+			    series: seriesData
 	        };
 	        myChart.setOption(option);
 	        myChart.resize();
@@ -339,9 +479,31 @@ export default {
 	            integerId: this.vid,
 	        }).then((res) => {
 	        	var data = res.data;
-	        	this.background = res.data.background || '#FFFFFF';
-	        	this.echartTitColor = res.data.echartTitColor || '#000000';
 	        	this.visualParam = JSON.parse(JSON.stringify(data));
+				this.legendSel = !!data.legendSelData && data.legendSelData!='' ? data.legendSelData.split(',') : [];
+
+	        	var url1 = '/api/show/visualizeData';
+		        this.$axios.post(url1,{
+		            integerId: this.vid,
+		        }).then((res) => {
+		        	var data = res.data;
+		        	this.echartData = JSON.parse(JSON.stringify(data));
+		        	for(var i=0; i<data.columnList.length;i++){
+		        		if(data.columnList[i].colLabel=='true'){
+		        			data.columnList[i].colLabel = true;
+		        		}else{
+							data.columnList[i].colLabel = false;
+		        		}
+		        	}
+		        	this.columnList = data.columnList;
+		        	this.visualParam.columnList = this.columnList;
+		        }).catch((err) => {
+		            this.$message({
+		                type: 'error',
+		                message: '网络错误，请重试',
+		                showClose: true
+		            })
+		        })
 	        }).catch((err) => {
 	            this.$message({
 	                type: 'error',
@@ -349,29 +511,19 @@ export default {
 	                showClose: true
 	            })
 	        });
-	        var url1 = '/api/show/visualizeData';
-	        this.$axios.post(url1,{
-	            integerId: this.vid,
-	        }).then((res) => {
-	        	var data = res.data;
-	        	this.echartData = JSON.parse(JSON.stringify(data));
-	        }).catch((err) => {
-	            this.$message({
-	                type: 'error',
-	                message: '网络错误，请重试',
-	                showClose: true
-	            })
-	        })
 		},
 		run(){
 			this.initEchart();
 		},
 		save(){
 			var url = '/api/show/visualize?vid='+this.vid;
-			this.visualParam.background = this.background;
-			this.visualParam.echartTitColor = this.echartTitColor;
-
-			this.$axios.put(url,this.visualParam
+			console.log(this.legendSel);
+			this.visualParam.legendSelData = this.legendSel.join(',');
+			var obj = {
+				'columnMaps': this.columnList,
+				'visualize': this.visualParam
+			};
+			this.$axios.put(url,obj
 	        ).then((res) => {
 	        	if(res.data.code == 1){
 	        		this.$message({
@@ -384,7 +536,6 @@ export default {
 					        path: '/visualizeList'
 					    })
 		            }
-		            
 	        	}else{
 	        		this.$message({
 		                type: 'error',
@@ -412,13 +563,14 @@ export default {
     mounted(){
     	var _this = this;
     	this.requestData();
+    	$(".tab-content").height($(window).height()-120);
+    	$(".right").height($(window).height()-50);
+    	$("#echart-box").height($(window).height()-50);
     	setTimeout(function(){
 			_this.initEchart();
     	},1000);
     	window.onresize = function() {
-    		setTimeout(function(){
-				_this.initEchart();
-	    	},500);
+	        _this.initEchart();
 	    }
     }
 }

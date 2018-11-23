@@ -175,7 +175,8 @@ export default {
       businesscategorys: [],
       dashboardForm: false,
 
-      colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3']
+      colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
+      colstacks:[]
     }
   },
   methods: {
@@ -314,7 +315,6 @@ export default {
           let echartId = "echart"+vid;
           let h = $("#"+echartId).parent(".vue-grid-item").height();
           $("#"+echartId).height(h);
-          console.log($("#"+echartId).height());
           switch(type){
             case  'pie':
               _this.initPie(echartId,vid,param); 
@@ -638,8 +638,9 @@ export default {
                         show: echartData.xAxisLine
                     },
                     axisLabel: {
-                      formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel!='null'?echartData.xAxisLabel:'')
-                    }
+                      formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel != 'null' ? echartData.xAxisLabel : '')
+                    },
+                    boundaryGap: echartData.xBoundaryGap
                   };
                   ySet = {
                     name: echartData.yname,
@@ -658,7 +659,6 @@ export default {
               for(var i=0; i<echartData.showValue.length; i++){
                 var obj = {
                   data: echartData.showValue[i],
-                  type: !!colSets[i].colType ? colSets[i].colType : 'bar',
                   name: colSets[i].colName,
                   label: {
                     show: colSets[i].colLabel == 'false' ? false : true,
@@ -667,8 +667,16 @@ export default {
                   barWidth: colSets[i].colWidth,
                   markPoint: {
                     data: []
-                  }
+                  },
+                  smooth: colSets[i].colSmooth,
+                  step: colSets[i].colstep
                 };
+                console.log('echart图类型：'+colSets[i].colType);
+                if(!!colSets[i].colType){
+                  obj.type = colSets[i].colType;
+                }else{
+                  obj.type = type;
+                }
               lengdData.push(colSets[i].colName);
               if(!!colSets[i].colColor){
                 colors.push(colSets[i].colColor);
@@ -682,6 +690,15 @@ export default {
                 if(!!colSets[i].colMin){
                   obj.markPoint.data.push({type : 'min', name: '最小值'});
                 }
+              }
+
+              if(!!colSets[i].colAreaStyle){
+                obj.areaStyle = {
+                  color: colSets[i].colAreaColor
+                }
+              }
+              if(!!colSets[i].sampling){
+                obj.sampling = colSets[i].sampling;
               }
               if(!!colSets[i].colStack){
                 if(this.colstacks.length == 0){
@@ -853,52 +870,68 @@ export default {
             barWidth: colSets[i].colWidth,
             markPoint: {
               data: []
-            }
+            },
+            smooth: colSets[i].colSmooth,
+            step: colSets[i].colstep    
           };
-        lengdData.push(colSets[i].colName);
-        if(!!colSets[i].colColor){
-          colors.push(colSets[i].colColor);
-        }else{
-          colors.push(this.colors[i]);
-        }
-        if(!!colSets[i].colMax || !!colSets[i].colMax){
-          if(!!colSets[i].colMax){
-            obj.markPoint.data.push({type : 'max', name: '最大值'});
-          }
-          if(!!colSets[i].colMin){
-            obj.markPoint.data.push({type : 'min', name: '最小值'});
-          }
-        }
-        if(!!colSets[i].colStack){
-          if(this.colstacks.length == 0){
-            this.colstacks.push({
-              name: colSets[i].colStack,
-              val: colSets[i].colStack
-            });
-            obj.stack = colSets[i].colStack;
+          if(!!colSets[i].colType){
+            obj.type = colSets[i].colType;
           }else{
-            for(var j=0; j<this.colstacks.length; j++){
-              if(colSets[i].colStack == this.colstacks[j].val){
-                this.colstacks.push({
-                  name: this.colstacks[j].name,
-                  val: colSets[i].colStack
-                });
-                obj.stack = this.colstacks[j].name;
-                break;
-              }else{
-                this.colstacks.push({
-                  name: colSets[i].colStack,
-                  val: colSets[i].colStack
-                });
-                obj.stack = colSets[i].colStack;
-                break;
+            obj.type = type;
+          }
+          lengdData.push(colSets[i].colName);
+          if(!!colSets[i].colColor){
+            colors.push(colSets[i].colColor);
+          }else{
+            colors.push(this.colors[i]);
+          }
+
+          if(!!colSets[i].colAreaStyle){
+            obj.areaStyle = {
+              color: colSets[i].colAreaColor
+            }
+          }
+          if(!!colSets[i].sampling){
+            obj.sampling = colSets[i].sampling;
+          }
+          if(!!colSets[i].colMax || !!colSets[i].colMax){
+            if(!!colSets[i].colMax){
+              obj.markPoint.data.push({type : 'max', name: '最大值'});
+            }
+            if(!!colSets[i].colMin){
+              obj.markPoint.data.push({type : 'min', name: '最小值'});
+            }
+          }
+          if(!!colSets[i].colStack){
+            if(this.colstacks.length == 0){
+              this.colstacks.push({
+                name: colSets[i].colStack,
+                val: colSets[i].colStack
+              });
+              obj.stack = colSets[i].colStack;
+            }else{
+              for(var j=0; j<this.colstacks.length; j++){
+                if(colSets[i].colStack == this.colstacks[j].val){
+                  this.colstacks.push({
+                    name: this.colstacks[j].name,
+                    val: colSets[i].colStack
+                  });
+                  obj.stack = this.colstacks[j].name;
+                  break;
+                }else{
+                  this.colstacks.push({
+                    name: colSets[i].colStack,
+                    val: colSets[i].colStack
+                  });
+                  obj.stack = colSets[i].colStack;
+                  break;
+                }
               }
             }
           }
+          seriesData.push(obj);
         }
-        seriesData.push(obj);
-      }
-      var option = {
+        var option = {
           backgroundColor: param.background,
           color: colors,
           title: {
