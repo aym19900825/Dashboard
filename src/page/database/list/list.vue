@@ -25,7 +25,7 @@
           </el-table-column>
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
-              <el-button size="mini" type="danger" @click="delVisual(scope.row)">删除</el-button>
+              <el-button size="mini" type="danger" @click="del(scope.row)">删除</el-button>
               <el-button size="mini" type="success" @click="edit(scope.row)" style="margin-left: 10px;margin-right: 10px;">编辑</el-button>
               <el-button size="mini" type="success" @click="test(scope.row)" style="margin-left: 10px;margin-right: 10px;">连接测试</el-button>
             </template>
@@ -129,10 +129,10 @@ export default {
       this.editForm = false;
       this.dbForm = true;
     },
-    del(index,row){
+    del(row){
       var _this = this;
-      var url = '/api/show/visualize/'+row.vid;
-      this.$confirm('确定删除此视图?', '提示', {
+      var url = '/api/show/database/'+row.dbid;
+      this.$confirm('确定删除此数据库连接吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

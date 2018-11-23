@@ -457,7 +457,7 @@ export default {
             var radius = !!colObj.colRadius ? colObj.colRadius.split(',') : ['0%','50%'];
             var len = echartData.columnList.length;
             var center = [];
-            if(len=1){
+            if(len==1){
               center = ['50%', '50%'];
             }else{
               if(i==1){
@@ -555,7 +555,7 @@ export default {
             var radius = !!colObj.colRadius ? colObj.colRadius.split(',') : ['0%','50%'];
             var len = param.columnList.length;
             var center = [];
-            if(len=1){
+            if(len==1){
               center = ['50%', '50%'];
             }else{
               if(i==1){

@@ -394,10 +394,10 @@ export default {
 	        	var radius = !!colObj.colRadius ? colObj.colRadius.split(',') : ['0%','50%'];
 	        	var len = this.columnList.length;
 	        	var center = [];
-	        	if(len=1){
+	        	if(len==1){
 					center = ['50%', '50%'];
 	        	}else{
-	        		if(i==1){
+	        		if(i==0){
 						center = ['25%', '50%'];
 	        		}else{
 	        			center = ['75%', '50%'];
@@ -421,6 +421,8 @@ export default {
 		        };
 		        seriesData.push(seriesObj);
 	        }
+
+	        console.log(seriesData);
 
         	var showVal = echartData.showValue[0][0];
 	        for(var j = 0; j < showVal.length; j++ ){
@@ -469,7 +471,6 @@ export default {
 
 			    series: seriesData
 	        };
-	        console.log(param.legendType);
 	        myChart.setOption(option);
 	        myChart.resize();
 	    },
