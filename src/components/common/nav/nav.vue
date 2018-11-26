@@ -12,7 +12,7 @@
           <router-link :to="{path:'/dashboardList'}" >仪表板</router-link>
         </li>
         <li :style="{background: showItem == 'database' ? '#0079A5' : '#005571'}">
-          <i class="icon iconfont db--dashboard"></i>
+          <i class="icon iconfont db--set"></i>
           <router-link :to="{path:'/databaseList'}" >数据库配置</router-link>
         </li>
 				<!-- <li :style="{background: showItem == 'model' ? '#0079A5' : '#005571'}">

@@ -14,11 +14,14 @@
             <el-button type="success" icon="el-icon-plus" size="small" @click="choose">新增</el-button>
           </p>
           <el-row :gutter="20" style="display: flex;align-items:center;border-bottom: 1px solid #ccc; margin-left: 0px;margin-right: 0px;height: 60px;">
-            <el-col :span="12"> 
-              <el-input placeholder="请选择名称" v-model="searchData.dashboardname"></el-input>
+            <el-col :span="6"> 
+              <el-input placeholder="请输入名称" v-model="searchData.dashboardname"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-input placeholder="请选择描述" v-model="searchData.dashboarddescription"></el-input>
+              <el-input placeholder="请输入描述" v-model="searchData.dashboarddescription"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-input placeholder="请输入菜单编组" v-model="searchData.businesscategory"></el-input>
             </el-col>
             <el-col :span="6">
               <el-button icon="el-icon-search" @click="search"></el-button>
@@ -31,6 +34,8 @@
           <el-table-column prop="dashboardname" label="名称"  show-overflow-tooltip>
           </el-table-column>
           <el-table-column prop="dashboarddescription" label="描述">
+          </el-table-column>
+          <el-table-column prop="businesscategory" label="菜单编组">
           </el-table-column>
           <el-table-column label="操作" width="180">
             <template slot-scope="scope">
@@ -94,14 +99,15 @@ export default {
       dashboardForm: false,
       businesscategorys: [],
       newDashboard: {
-        "dashboardname": "",
-        "dashboardshowname": "",
-        "businesscategory": ""
+        'dashboardname': '',
+        'dashboardshowname': '',
+        'businesscategory': ''
       },
       list: [],
       searchData: {
-        "dashboardname": "",
-        "dashboarddescription": ""
+        'dashboardname': '',
+        'dashboarddescription': '',
+        'businesscategory': ''
       }
     }
   },
