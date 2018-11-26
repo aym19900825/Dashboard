@@ -58,21 +58,21 @@
        </div>
     </div>
     <el-dialog title="视图" :visible.sync="visualizeForm" width="560px" :before-close="resetVisual">
-      <el-form :model="newVisualize"  label-position="top" label-width="120px">
-        <el-form-item label="名称">
+      <el-form ref="visualForm" :model="newVisualize" :rules="rules"  label-position="top" label-width="120px">
+        <el-form-item label="名称" prop="visualizename">
           <el-input v-model="newVisualize.visualizename"></el-input>
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="描述" prop="visualizedescription">
           <el-input v-model="newVisualize.visualizedescription"></el-input>
         </el-form-item>
-        <el-form-item label="类型">
+        <el-form-item label="类型" prop="type">
           <el-select v-model="newVisualize.type" placeholder="请选择活动区域" width="100%">
             <el-option label="折线图" value="line"></el-option>
             <el-option label="饼图" value="pie"></el-option>
             <el-option label="柱状图" value="bar"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="菜单编组">
+        <el-form-item label="菜单编组" prop="businesscategory">
           <el-select v-model="newVisualize.businesscategory" filterable allow-create default-first-option
             placeholder="请选择或输入菜单编组">
             <el-option
@@ -83,19 +83,19 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="连接名">
+        <el-form-item label="连接名" prop="dbid">
           <el-select v-model="newVisualize.dbid" placeholder="请选择数据库" width="100%" @change="getTable">
             <el-option :label="item.datasourcename" :value="item.dbid" v-for="item in databaseList"></el-option>
           </el-select>
           <i v-if="dbTest=='1'" class="el-icon-success"></i>
           <i v-if="dbTest=='0'" class="el-icon-warning"></i>
         </el-form-item>
-        <el-form-item label="数据表">
+        <el-form-item label="数据表" prop="sourcetablename">
           <el-select v-model="newVisualize.sourcetablename" placeholder="请选择数据表" width="100%" @change="getCol">
             <el-option :label="item" :value="item" v-for="item in tableList"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据列">
+        <el-form-item label="数据列" prop="columnList">
           <el-select v-model="newVisualize.columnList" placeholder="请选择数据列" width="100%" multiple>
             <el-option :label="item.field" :value="item.field"  v-for="item in columnList"></el-option>
           </el-select>
@@ -144,6 +144,24 @@ export default {
         'type': '',
         'visualizename': '',
         'businesscategory': ''
+      },
+
+      rules: {
+        visualizename: [
+          { required: true, message: '请输入视图名称', trigger: 'blur' },
+        ],
+        type: [
+          { required: true, message: '请选择视图类型', trigger: 'change' }
+        ],
+        dbid: [
+          { required: true, message: '请选择连接', trigger: 'change' }
+        ],
+        sourcetablename: [
+          { required: true, message: '请选择数据表', trigger: 'change' }
+        ],
+        columnList: [
+          { required: true, message: '请选择数据列', trigger: 'change' }
+        ]
       }
     }
   },
@@ -306,46 +324,51 @@ export default {
         sourcetablename: '',
         columnList: []
       };
+      this.$refs['visualForm'].resetFields();
     },
     addVisual(){
       var url = '/api/show/visualizeAdd';
-      var obj = {
-        'visualize': {
-          'type': this.newVisualize.type,
-          'visualizename': this.newVisualize.visualizename,
-          'visualizedescription': this.newVisualize.visualizedescription,
-          'businesscategory': this.newVisualize.businesscategory,
-          'sourcetablename': this.newVisualize.sourcetablename,
-          'dbid': this.newVisualize.dbid
-        },
-        'columnList': []
-      };
-      var colList = this.columnList;
-      var selCol =  this.newVisualize.columnList;
-      for(var i = 0; i < selCol.length; i++){
-        for(var j=0; j<colList.length;j++){
-          if(colList[j].field == selCol[i]){
-            obj.columnList.push(colList[j]);
+      this.$refs['visualForm'].validate((valid)=>{
+        if (valid) {
+          var obj = {
+            'visualize': {
+              'type': this.newVisualize.type,
+              'visualizename': this.newVisualize.visualizename,
+              'visualizedescription': this.newVisualize.visualizedescription,
+              'businesscategory': this.newVisualize.businesscategory,
+              'sourcetablename': this.newVisualize.sourcetablename,
+              'dbid': this.newVisualize.dbid
+            },
+            'columnList': []
+          };
+          var colList = this.columnList;
+          var selCol =  this.newVisualize.columnList;
+          for(var i = 0; i < selCol.length; i++){
+            for(var j=0; j<colList.length;j++){
+              if(colList[j].field == selCol[i]){
+                obj.columnList.push(colList[j]);
+              }
+            }
           }
-        }
-      }
-      this.$axios.post(url,obj).then((res) => {
-        if(res.data.code != 1){
+          this.$axios.post(url,obj).then((res) => {
+            if(res.data.code != 1){
+                this.$message({
+                    type: 'error',
+                    message: res.data.message,
+                    showClose: true
+                })
+            }
+            this.resetVisual();
+            this.requestData();
+          }).catch((err) => {
             this.$message({
                 type: 'error',
-                message: res.data.message,
+                message: '网络错误，请重试',
                 showClose: true
-            })
+            });
+          })
         }
-        this.resetVisual();
-        this.requestData();
-      }).catch((err) => {
-        this.$message({
-            type: 'error',
-            message: '网络错误，请重试',
-            showClose: true
-        });
-      })
+      });
     },
     exportExcel(){
      this.$confirm('确定导出视图?', '提示', {

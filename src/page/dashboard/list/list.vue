@@ -58,14 +58,14 @@
        </div>
     </div>
     <el-dialog title="仪表板" :visible.sync="dashboardForm" width="560px" :before-close="resetDashboard">
-      <el-form :model="newDashboard" label-width="120">
-        <el-form-item label="名称">
+      <el-form :model="newDashboard" ref="dashboardForm":rules="rules" label-width="120">
+        <el-form-item label="名称" prop="dashboardname">
           <el-input v-model="newDashboard.dashboardname"></el-input>
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="描述" prop="dashboardshowname">
           <el-input v-model="newDashboard.dashboardshowname"></el-input>
         </el-form-item>
-         <el-form-item label="菜单编组">
+         <el-form-item label="菜单编组" prop="businesscategory">
           <el-select v-model="newDashboard.businesscategory" filterable allow-create default-first-option
             placeholder="请选择或输入菜单编组">
             <el-option
@@ -108,41 +108,52 @@ export default {
         'dashboardname': '',
         'dashboarddescription': '',
         'businesscategory': ''
+      },
+
+      rules: {
+        dashboardname: [
+          { required: true, message: '请输入仪表板名称', trigger: 'blur' },
+        ]
       }
     }
   },
   methods: {
     addDashboard(){
-      var url = '/api/show/dashboardAdd';
-      this.$axios.post(url,{
-          "dashboardname": this.newDashboard.dashboardname,
-          "dashboardshowname": this.newDashboard.dashboardshowname,
-          "businesscategory": this.newDashboard.businesscategory
-      }).then((res) => {
-          if(res.data.code != 1){
-              this.$message({
-                  type: 'error',
-                  message: '新增失败',
-                  showClose: true
-              })
-          }
-          this.resetDashboard();
-          this.requestData();
-      }).catch((err) => {
-          this.$message({
+      this.$refs['dashboardForm'].validate((valid)=>{
+        if(valid){
+          var url = '/api/show/dashboardAdd';
+          this.$axios.post(url,{
+            "dashboardname": this.newDashboard.dashboardname,
+            "dashboardshowname": this.newDashboard.dashboardshowname,
+            "businesscategory": this.newDashboard.businesscategory
+          }).then((res) => {
+            if(res.data.code != 1){
+                this.$message({
+                    type: 'error',
+                    message: '新增失败',
+                    showClose: true
+                })
+            }
+            this.resetDashboard();
+            this.requestData();
+          }).catch((err) => {
+            this.$message({
               type: 'error',
               message: '网络错误，请重试',
               showClose: true
+            })
           })
-      })
+        }
+      });
     },
     resetDashboard(){
       this.dashboardForm = false;
       this.newDashboard = {
-        "dashboardname": "",
-        "dashboardshowname": "",
-        "businesscategory": ""
+        'dashboardname': '',
+        'dashboardshowname': '',
+        'businesscategory': ''
       };
+      this.$refs['dashboardForm'].resetFields();
     },
     handleSizeChange(val) {
       this.page.pageSize = val;

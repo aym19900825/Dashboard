@@ -34,26 +34,26 @@
       </div>
     </div>
     <el-dialog title="数据库" :visible.sync="dbForm" width="560px" :before-close="reset">
-      <el-form :model="newDataBase"  label-position="top" label-width="120px">
-        <el-form-item label="IP地址">
-          <el-input v-model="newDataBase.ip"></el-input>
-        </el-form-item>
-        <el-form-item label="端口号">
-          <el-input v-model="newDataBase.port"></el-input>
-        </el-form-item>
-        <el-form-item label="连接名">
+      <el-form ref="dbForm" :rules="rules" :model="newDataBase"  label-position="top" label-width="120px">
+        <el-form-item label="连接名" prop="datasourcename">
           <el-input v-model="newDataBase.datasourcename"></el-input>
         </el-form-item>
-        <el-form-item label="数据库">
+        <el-form-item label="IP地址" prop="ip">
+          <el-input v-model="newDataBase.ip"></el-input>
+        </el-form-item>
+        <el-form-item label="端口号" prop="port">
+          <el-input v-model="newDataBase.port"></el-input>
+        </el-form-item>
+        <el-form-item label="数据库" prop="database">
           <el-input v-model="newDataBase.database"></el-input>
         </el-form-item>
-        <el-form-item label="用户名">
+        <el-form-item label="用户名" prop="user">
           <el-input v-model="newDataBase.user"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="password">
           <el-input v-model="newDataBase.password"></el-input>
         </el-form-item>
-        <el-form-item label="数据库类型">
+        <el-form-item label="数据库类型" prop="dbtype">
           <el-select v-model="newDataBase.dbtype" placeholder="请选择数据库" width="100%">
             <el-option :label="item" :value="item" v-for="item in dbType"></el-option>
           </el-select>
@@ -95,7 +95,31 @@ export default {
       dbType: [
         'mysql',
         'oracle'
-      ]
+      ],
+
+      rules: {
+        datasourcename: [
+          { required: true, message: '请输入连接名', trigger: 'blur' },
+        ],
+        ip: [
+          { required: true, message: '请输入IP地址', trigger: 'blur' }
+        ],
+        port: [
+          { required: true, message: '请输入端口号', trigger: 'blur' }
+        ],
+        database: [
+          { required: true, message: '请输入数据库', trigger: 'blur' }
+        ],
+        user: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ],
+        dbtype: [
+          { required: true, message: '请选择数据库类型', trigger: 'change' }
+        ]
+      }
     }
   },
   methods: {
@@ -194,32 +218,38 @@ export default {
         'datasourcename': '',
         'dbtype': ''
       };
+      this.$refs['dbForm'].resetFields();
     },
     add(){
-      var url = '/api/show/databaseAdd';
-      this.$axios.post(url,this.newDataBase).then((res) => {
-          if(res.data.code != 1){
-            this.$message({
-              type: 'error',
-              message: res.data.message,
-              showClose: true
-            });
-          }else{
-            this.$message({
-                type: 'success',
-                message: '新增成功',
+      this.$refs['dbForm'].validate((valid)=>{
+        if(valid){
+          var url = '/api/show/databaseAdd';
+          this.$axios.post(url,this.newDataBase).then((res) => {
+            if(res.data.code != 1){
+              this.$message({
+                type: 'error',
+                message: res.data.message,
                 showClose: true
-            });
-          }
-          this.reset();
-          this.requestData();
-      }).catch((err) => {
-          this.$message({
-              type: 'error',
-              message: '网络错误，请重试',
-              showClose: true
+              });
+            }else{
+              this.$message({
+                  type: 'success',
+                  message: '新增成功',
+                  showClose: true
+              });
+            }
+            this.reset();
+            this.requestData();
+          }).catch((err) => {
+            this.$message({
+                type: 'error',
+                message: '网络错误，请重试',
+                showClose: true
+            })
           })
-      })
+        }
+      });
+      
     },
     edit(row){
       this.newDataBase = JSON.parse(JSON.stringify(row));
@@ -227,8 +257,9 @@ export default {
       this.editForm = true;
     },
     editSave(){
-      var url = '/api/show/databaseUpdate';
-      this.$axios.put(url,this.newDataBase).then((res) => {
+      this.$refs['dbForm'].validate((valid)=>{
+        var url = '/api/show/databaseUpdate';
+        this.$axios.put(url,this.newDataBase).then((res) => {
           if(res.data.code != 1){
             this.$message({
               type: 'error',
@@ -244,12 +275,13 @@ export default {
           }
           this.reset();
           this.requestData();
+        });
       }).catch((err) => {
-          this.$message({
-              type: 'error',
-              message: '网络错误，请重试',
-              showClose: true
-          })
+        this.$message({
+            type: 'error',
+            message: '网络错误，请重试',
+            showClose: true
+        })
       })
     }
   },
