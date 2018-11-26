@@ -15,13 +15,13 @@
           </p>
           <el-row :gutter="20" style="display: flex;align-items:center;border-bottom: 1px solid #ccc; margin-left: 0px;margin-right: 0px;height: 60px;">
             <el-col :span="6"> 
-              <el-input placeholder="请输入名称" v-model="searchData.dashboardname"></el-input>
+              <el-input placeholder="请输入名称" v-model="searchData.dashboardname" @keyup.enter.native="search"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-input placeholder="请输入描述" v-model="searchData.dashboarddescription"></el-input>
+              <el-input placeholder="请输入描述" v-model="searchData.dashboarddescription" @keyup.enter.native="search"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-input placeholder="请输入菜单编组" v-model="searchData.businesscategory"></el-input>
+              <el-input placeholder="请输入菜单编组" v-model="searchData.businesscategory" @keyup.enter.native="search"></el-input>
             </el-col>
             <el-col :span="6">
               <el-button icon="el-icon-search" @click="search"></el-button>
