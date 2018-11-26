@@ -513,6 +513,7 @@ export default {
 			return res;
 		},
     	initEchart(){
+    		console.log('initEchart');
 			var myChart = this.$echarts.init(document.getElementById('echart-box'));
 			var param = this.visualParam;
 			var echartData = this.echartData;
@@ -575,7 +576,8 @@ export default {
 			    };
 			    ySet = {
 			    	name: param.yname,
-			        type: param.ytype,
+			        // type: param.ytype,
+			        type: 'value',
 			        splitLine: {show: param.ySplitLine},
 		            inverse: param.yInverse,
 		            axisLine: {
@@ -726,7 +728,6 @@ export default {
 		        	}
 		        	this.columnList = data.columnList;
 		        	this.visualParam.columnList = this.columnList;
-		        	console.log(this.columnList);
 		        }).catch((err) => {
 		            this.$message({
 		                type: 'error',
