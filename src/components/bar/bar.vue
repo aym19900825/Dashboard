@@ -8,7 +8,7 @@
      </header>
 		<div id="content">
 			<div class="left">
-				<h4>table表名</h4>
+				<h4>{{visualParam.tablename}}</h4>
 				<ul class="tab-list">
 					<li @click="tabSwitch(0)" :class=" tabIndex == 0 ? 'selected' : '' ">数据设置</li>
 					<li @click="tabSwitch(1)" :class=" tabIndex == 1 ? 'selected' : '' ">样式设置</li>
@@ -101,6 +101,9 @@
 							            <el-option label="柱状图" value="bar"></el-option>
 							          </el-select>
 							        </el-form-item>
+							        <el-form-item label="对应Y轴">
+							          <el-input v-model="colData.colYIndex"></el-input>
+							        </el-form-item>
 								</div>
 							</el-form>
 						</div>
@@ -148,32 +151,9 @@
 									<el-form-item label="轴线居中">
 										<el-switch v-model="visualParam.alignWithLabel"></el-switch>
 							        </el-form-item>
-							         <el-form-item label="X->Y">
+							         <el-form-item label="X->Y" v-show="orientYList.length==1">
 							          	<el-switch v-model="visualParam.xToy"></el-switch>
 							        </el-form-item>
-						        </div>
-						         <div>
-						        	<h5>Y轴设置
-										<el-button size="mini" type="primary" style="float: right;" @click="addYSet()">+</el-button>
-						        	</h5>
-						        	<div class="y-axios column-set">
-						        		<el-form-item label="y轴标注">
-								          <el-input v-model="visualParam.yname"></el-input>
-								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
-								        </el-form-item>
-								        <el-form-item label="y轴单位">
-								          <el-input v-model="visualParam.yAxisLabel"></el-input>
-								        </el-form-item>
-								        <el-form-item label="轴线">
-								          <el-switch v-model="visualParam.yAxisLine"></el-switch>
-								        </el-form-item>
-								        <el-form-item label="分隔线">
-								          <el-switch v-model="visualParam.ySplitLine"></el-switch>
-								        </el-form-item>
-								        <el-form-item label="翻转">
-									       <el-switch v-model="visualParam.yInverse"></el-switch>
-								        </el-form-item>
-						        	</div>
 						        </div>
 								<div class="x-axios">
 									<h5>图例设置</h5>
@@ -215,6 +195,34 @@
 							        </el-form-item>
 						        </div>
 							</el-form>
+							<el-form ref="option-set" :model="orientYList" label-width="80px">
+								<div>
+						        	<h5>Y轴设置
+										<el-button size="mini" type="primary" style="float: right;" @click="addYSet">+</el-button>
+						        	</h5>
+
+						        	<div class="y-axios column-set y-set" style="position:relative;padding-top: 25px;" v-for="yItem in orientYList">
+						        		<i class="data-show icon iconfont db--close" @click="closeSet(yItem)"></i>
+						        		<el-form-item label="y轴标注">
+								          <el-input v-model="yItem.yname"></el-input>
+								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
+								          
+								        </el-form-item>
+								        <el-form-item label="y轴单位">
+								          <el-input v-model="yItem.yAxisLabel"></el-input>
+								        </el-form-item>
+								        <el-form-item label="轴线">
+								          <el-switch v-model="yItem.yAxisLine"></el-switch>
+								        </el-form-item>
+								        <el-form-item label="分隔线">
+								          <el-switch v-model="yItem.ySplitLine"></el-switch>
+								        </el-form-item>
+								        <el-form-item label="翻转">
+									       <el-switch v-model="yItem.yInverse"></el-switch>
+								        </el-form-item>
+						        	</div>
+						        </div>
+					        </el-form>
 						</div>
 					</div>
 				</div>
@@ -325,18 +333,34 @@ export default {
       		},
 
       		columnList: [],
+      		orientYList: [],
       		colstacks:[],
       		colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3']
     	}
     },
     methods: {
-    	addYSet(){
+    	closeSet(yItem){
+    		// if(yItem.orientyid){
+    			
+    		// }
     		
+    	},
+    	addYSet(){
+    		var newObj = {
+    			yAxisLabel:  '',
+        		yAxisLine: true,
+        		yInverse: false,
+        		ySplitLine: false,
+        		yaxisLabelPos: '',
+        		ylineColor: '',
+        		yname: '',
+    		};
+    		this.orientYList.push(newObj);
     	},
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
-    		if(h != 680){
-				$(e.target).parents(".y-axios").height("680");
+    		if(h != 730){
+				$(e.target).parents(".y-axios").height("730");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
 	    		$(e.target).parents(".y-axios").height("60");
@@ -384,7 +408,6 @@ export default {
 					        right: 'auto'
 						};
 					}
-					
 					break;
 				case 'topRight':
 					res = {
@@ -449,10 +472,9 @@ export default {
 			var colSets = this.columnList;
 			var lengdData = [];
 			var colors = [];
-
-			var xSet = {};
-			var ySet = {};
 			if(param.xToy){
+				var xSet = {};
+				var ySet = {};
 				xSet = {
 			    	name: param.yname,
 			        type: 'value',
@@ -482,6 +504,8 @@ export default {
 		            }
 			    };
 			}else{
+				var xSet = {};
+				var ySet = [];
 				xSet = {
 			    	name: param.xname,
 			        type: 'category',
@@ -498,23 +522,29 @@ export default {
 		                formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
 		            }
 			    };
-			    ySet = {
-			    	name: param.yname,
-			        type: 'value',
-			        splitLine: {show: param.ySplitLine},
-		            inverse: param.yInverse,
-		            axisLine: {
-			            show: param.yAxisLine
-			        },
-			        axisLabel: {
-		                formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
-		            }
-			    };
+			    for(var k=0; k<this.orientYList.length; k++ ){
+			    	var thisY = this.orientYList[k];
+					var ySetObj = {
+				    	name: thisY.yname,
+				        type: 'value',
+				        splitLine: {show: thisY.ySplitLine},
+			            inverse: thisY.yInverse,
+			            axisLine: {
+				            show: thisY.yAxisLine
+				        },
+				        axisLabel: {
+			                formatter: '{value}'+(!!thisY.yAxisLabel&&thisY.yAxisLabel!='null'?thisY.yAxisLabel:'')
+			            },
+			            offset: 40*(k-1<0?0:k-1),
+				    };
+				    ySet.push(ySetObj);
+			    }
+			    
 			}
 
 			for(var i=0; i<echartData.showValue.length; i++){
 				var obj = {
-					'data': echartData.showValue[i],
+					data: echartData.showValue[i],
 					type: !!colSets[i].colType ? colSets[i].colType : 'bar',
 					name: colSets[i].colName,
 					label: {
@@ -524,7 +554,8 @@ export default {
 					barWidth: colSets[i].colWidth,
 					markPoint: {
 						data: []
-					}
+					},
+					yAxisIndex: colSets[i].colYIndex
 				};
 				lengdData.push(colSets[i].colName);
 				if(!!colSets[i].colColor){
@@ -640,8 +671,18 @@ export default {
 		        		}
 		        	}
 		        	this.columnList = data.columnList;
-		        	this.visualParam.columnList = this.columnList;
-		        	console.log(this.columnList);
+		        	this.orientYList = data.orientYList;
+		        	this.visualParam.columnList =this.columnList;
+		        	var obj = {
+		        		yAxisLabel:  this.visualParam.yAxisLabel,
+		        		yAxisLine: this.visualParam.yAxisLine,
+		        		yInverse: this.visualParam.yInverse,
+		        		ySplitLine: this.visualParam.ySplitLine,
+		        		yaxisLabelPos: this.visualParam.yaxisLabelPos,
+		        		ylineColor: this.visualParam.ylineColor,
+		        		yname: this.visualParam.yname,
+		        	};
+		        	this.orientYList.unshift(obj);
 		        }).catch((err) => {
 		            this.$message({
 		                type: 'error',
@@ -665,7 +706,8 @@ export default {
 			var url = '/api/show/visualize?vid='+this.vid;
 			var obj = {
 				'columnMaps': this.columnList,
-				'visualize': this.visualParam
+				'visualize': this.visualParam,
+				'yList': this.orientYList.splice(0,1)
 			};
 			this.$axios.put(url,obj
 	        ).then((res) => {

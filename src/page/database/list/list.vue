@@ -38,7 +38,7 @@
         <el-form-item label="连接名" prop="datasourcename">
           <el-input v-model="newDataBase.datasourcename"></el-input>
         </el-form-item>
-        <el-form-item label="IP地址" prop="ip">
+        <el-form-item label="主机名或IP地址" prop="ip">
           <el-input v-model="newDataBase.ip"></el-input>
         </el-form-item>
         <el-form-item label="端口号" prop="port">

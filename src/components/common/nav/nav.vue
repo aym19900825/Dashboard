@@ -57,6 +57,10 @@ export default {
     },
     mounted(){
       $(".nav").height($(window).height());
+      window.onresize = function() {
+        var h = $("#app").height() - $(window).height() > 0 ? $("#app").height() : $(window).height();
+        $(".nav").height(h);
+      }
     }
 }
 </script>

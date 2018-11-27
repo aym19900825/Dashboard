@@ -8,7 +8,7 @@
      </header>
 		<div id="content">
 			<div class="left">
-				<h4>table表名</h4>
+				<h4>{{visualParam.tablename}}</h4>
 				<ul class="tab-list">
 					<li @click="tabSwitch(0)" :class=" tabIndex == 0 ? 'selected' : '' ">数据设置</li>
 					<li @click="tabSwitch(1)" :class=" tabIndex == 1 ? 'selected' : '' ">样式设置</li>
@@ -449,7 +449,7 @@ export default {
 					bottom: this.dealTitPos.bottom,
 					right: this.dealTitPos.right,
 					textStyle: {
-						color: this.echartTitColor
+						color: param.echartTitColor
 					}
 				},
 	         	tooltip: {

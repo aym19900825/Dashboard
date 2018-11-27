@@ -188,3 +188,15 @@ label.el-checkbox:nth-child(1){
 .el-checkbox-group:hover::-webkit-scrollbar-track {
     background: hsla(0,0%,53%,.1)
 }
+.db--close{
+    top: -1px;
+    position: absolute;
+    right: 0px;
+    z-index: 100004;
+    color: #ccc;
+    font-size: 22px;
+    cursor: pointer;
+}
+.y-set{
+    height: 85px;
+}
