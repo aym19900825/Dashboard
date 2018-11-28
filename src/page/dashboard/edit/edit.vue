@@ -652,12 +652,24 @@ export default {
             var colors = [];
 
             myChart.clear();
+            var orientYList = echartData.orientYList;
+            orientYList.unshift({
+              yAxisLabel:  param.yAxisLabel,
+              yAxisLine: param.yAxisLine,
+              yInverse: param.yInverse,
+              ySplitLine: param.ySplitLine,
+              yaxisLabelPos: param.yaxisLabelPos,
+              ylineColor: param.ylineColor,
+              yname: param.yname,
+              ytype: param.ytype
+            });
 
-            var xSet = {};
-            var ySet = {};
+            
             if(echartData.xToy){
+              var xSet = {};
+              var ySet = {};
               xSet = {
-              name: echartData.yname,
+                name: echartData.yname,
                 type: 'value',
                 splitLine: {show: echartData.ySplitLine},
                   inverse: echartData.yInverse,
@@ -685,35 +697,41 @@ export default {
                   }
                 };
               }else{
-                  xSet = {
-                    name: echartData.xname,
-                    type: 'category',
-                    data: echartData.showKey,
-                    axisTick: {
-                          alignWithLabel: echartData.alignWithLabel
-                      },
-                      splitLine: {show: echartData.xSplitLine},
-                      inverse: echartData.xInverse,
-                      axisLine: {
-                        show: echartData.xAxisLine
-                    },
-                    axisLabel: {
-                      formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel != 'null' ? echartData.xAxisLabel : '')
-                    },
-                    boundaryGap: echartData.xBoundaryGap
-                  };
-                  ySet = {
-                    name: echartData.yname,
+                var xSet = {};
+                var ySet = [];
+                xSet = {
+                  name: echartData.xname,
+                  type: 'category',
+                  data: echartData.showKey,
+                  axisTick: {
+                      alignWithLabel: echartData.alignWithLabel
+                  },
+                  splitLine: {show: echartData.xSplitLine},
+                  inverse: echartData.xInverse,
+                  axisLine: {
+                    show: echartData.xAxisLine
+                  },
+                  axisLabel: {
+                    formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel != 'null' ? echartData.xAxisLabel : '')
+                  },
+                };
+                for(var k=0; k<orientYList.length; k++ ){
+                  var thisY = orientYList[k];
+                  var ySetObj = {
+                    name: thisY.yname,
                     type: 'value',
-                    splitLine: {show: echartData.ySplitLine},
-                    inverse: echartData.yInverse,
-                    axisLine: {
-                      show: echartData.yAxisLine
+                    splitLine: {show: thisY.ySplitLine},
+                      inverse: thisY.yInverse,
+                      axisLine: {
+                        show: thisY.yAxisLine
                     },
                     axisLabel: {
-                      formatter: '{value}'+(!!echartData.yAxisLabel&&echartData.yAxisLabel!='null'?echartData.yAxisLabel:'')
-                    }
+                          formatter: '{value}'+(!!thisY.yAxisLabel&&thisY.yAxisLabel!='null'?thisY.yAxisLabel:'')
+                      },
+                    offset: 40*(k-1<0?0:k-1),
                   };
+                  ySet.push(ySetObj);
+                }
               }
 
               for(var i=0; i<echartData.showValue.length; i++){
@@ -731,13 +749,17 @@ export default {
                   smooth: colSets[i].colSmooth,
                   step: colSets[i].colstep
                 };
-                console.log('echart图类型：'+colSets[i].colType);
-                if(!!colSets[i].colType){
-                  obj.type = colSets[i].colType;
-                }else{
-                  obj.type = type;
-                }
+                
+              if(!!colSets[i].colType){
+                obj.type = colSets[i].colType;
+              }else{
+                obj.type = type;
+              }
               lengdData.push(colSets[i].colName);
+              if(colSets[i].colYIndex&&colSets[i].colYIndex>orientYList.length-1){
+                colSets[i].colYIndex = 0;
+              }
+              obj.yAxisIndex =  colSets[i].colYIndex;
               if(!!colSets[i].colColor){
                 colors.push(colSets[i].colColor);
               }else{
@@ -835,6 +857,7 @@ export default {
                 ],
                 series: seriesData
               };
+              console.log(option);
               myChart.setOption(option);
               myChart.resize();
           }).catch((err) => {
@@ -854,13 +877,25 @@ export default {
           var lengdData = [];
           var colors = [];
 
+          var orientYList = param.orientYList;
+          orientYList.unshift({
+            yAxisLabel:  param.yAxisLabel,
+            yAxisLine: param.yAxisLine,
+            yInverse: param.yInverse,
+            ySplitLine: param.ySplitLine,
+            yaxisLabelPos: param.yaxisLabelPos,
+            ylineColor: param.ylineColor,
+            yname: param.yname,
+            ytype: param.ytype
+          });
+
           myChart.clear();
 
-          var xSet = {};
-          var ySet = {};
           if(param.xToy){
+            var xSet = {};
+            var ySet = {};
             xSet = {
-            name: param.yname,
+              name: param.yname,
               type: 'value',
               splitLine: {show: param.ySplitLine},
                 inverse: param.yInverse,
@@ -868,11 +903,11 @@ export default {
                   show: param.yAxisLine
               },
               axisLabel: {
-                  formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
-                }
-          };
-          ySet = {
-            name: param.xname,
+                formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
+              }
+            };
+            ySet = {
+              name: param.xname,
               type: 'category',
               data: param.showKey,
               axisTick: {
@@ -888,6 +923,8 @@ export default {
                 }
           };
         }else{
+          var xSet = {};
+          var ySet = [];
           xSet = {
             name: param.xname,
             type: 'category',
@@ -904,18 +941,23 @@ export default {
               formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
             }
           };
-          ySet = {
-            name: param.yname,
-            type: 'value',
-            splitLine: {show: param.ySplitLine},
-            inverse: param.yInverse,
-            axisLine: {
-              show: param.yAxisLine
-            },
-            axisLabel: {
-              formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
-            }
-          };
+          for(var k=0; k<orientYList.length; k++ ){
+            var thisY = orientYList[k];
+            var ySetObj = {
+                name: thisY.yname,
+                type: 'value',
+                splitLine: {show: thisY.ySplitLine},
+                  inverse: thisY.yInverse,
+                  axisLine: {
+                    show: thisY.yAxisLine
+                },
+                axisLabel: {
+                      formatter: '{value}'+(!!thisY.yAxisLabel&&thisY.yAxisLabel!='null'?thisY.yAxisLabel:'')
+                  },
+                  offset: 40*(k-1<0?0:k-1),
+            };
+            ySet.push(ySetObj);
+          }
         }
 
         for(var i=0; i<echartData.showValue.length; i++){
@@ -934,6 +976,12 @@ export default {
             smooth: colSets[i].colSmooth,
             step: colSets[i].colstep    
           };
+
+          if(colSets[i].colYIndex&&colSets[i].colYIndex>orientYList.length-1){
+            colSets[i].colYIndex = 0;
+          }
+          obj.yAxisIndex =  colSets[i].colYIndex;
+
           if(!!colSets[i].colType){
             obj.type = colSets[i].colType;
           }else{
@@ -1037,6 +1085,7 @@ export default {
           ],
           series: seriesData
         };
+        console.log(option);
         myChart.setOption(option);
         myChart.resize();
       }
