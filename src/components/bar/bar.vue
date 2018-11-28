@@ -131,30 +131,7 @@
 								 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
 								 	</el-form-item>
 								</div>
-								 <div class="x-axios">
-							        <h5>x轴设置</h5>
-						        	<el-form-item label="x轴标注">
-							          	<el-input v-model="visualParam.xname"></el-input>
-							        </el-form-item>
-							        <el-form-item label="x轴单位">
-							          	<el-input v-model="visualParam.xAxisLabel"></el-input>
-							        </el-form-item>
-							        <el-form-item label="轴线">
-							          	<el-switch v-model="visualParam.xAxisLine"></el-switch>
-							        </el-form-item>
-							        <el-form-item label="分割线">
-							          	<el-switch v-model="visualParam.xSplitLine"></el-switch>
-							        </el-form-item>
-							        <!-- <el-form-item label="x轴数据">
-							          	<el-input></el-input>
-							        </el-form-item> -->
-									<el-form-item label="轴线居中">
-										<el-switch v-model="visualParam.alignWithLabel"></el-switch>
-							        </el-form-item>
-							         <el-form-item label="X->Y" v-show="orientYList.length==1">
-							          	<el-switch v-model="visualParam.xToy"></el-switch>
-							        </el-form-item>
-						        </div>
+								 
 								<div class="x-axios">
 									<h5>图例设置</h5>
 								 	<el-form-item label="显示图例">
@@ -194,6 +171,30 @@
 								    	<el-color-picker v-model="visualParam.background" size="medium"></el-color-picker>
 							        </el-form-item>
 						        </div>
+						        <div class="x-axios">
+							        <h5>x轴设置</h5>
+						        	<el-form-item label="x轴标注">
+							          	<el-input v-model="visualParam.xname"></el-input>
+							        </el-form-item>
+							        <el-form-item label="x轴单位">
+							          	<el-input v-model="visualParam.xAxisLabel"></el-input>
+							        </el-form-item>
+							        <el-form-item label="轴线">
+							          	<el-switch v-model="visualParam.xAxisLine"></el-switch>
+							        </el-form-item>
+							        <el-form-item label="分割线">
+							          	<el-switch v-model="visualParam.xSplitLine"></el-switch>
+							        </el-form-item>
+							        <!-- <el-form-item label="x轴数据">
+							          	<el-input></el-input>
+							        </el-form-item> -->
+									<el-form-item label="轴线居中">
+										<el-switch v-model="visualParam.alignWithLabel"></el-switch>
+							        </el-form-item>
+							         <el-form-item label="X->Y" v-show="orientYList.length==1">
+							          	<el-switch v-model="visualParam.xToy"></el-switch>
+							        </el-form-item>
+						        </div>
 							</el-form>
 							<el-form ref="option-set" :model="orientYList" label-width="80px">
 								<div>
@@ -201,8 +202,8 @@
 										<el-button size="mini" type="primary" style="float: right;" @click="addYSet">+</el-button>
 						        	</h5>
 
-						        	<div class="y-axios column-set y-set" style="position:relative;padding-top: 25px;" v-for="yItem in orientYList">
-						        		<i class="data-show icon iconfont db--close" @click="closeSet(yItem)"></i>
+						        	<div class="y-axios column-set y-set" style="position:relative;padding-top: 25px;" v-for="(yItem, index) in orientYList">
+						        		<i class="data-show icon iconfont db--close" @click="closeSet(index,yItem)"></i>
 						        		<el-form-item label="y轴标注">
 								          <el-input v-model="yItem.yname"></el-input>
 								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
@@ -335,15 +336,30 @@ export default {
       		columnList: [],
       		orientYList: [],
       		colstacks:[],
+      		yDeleteList: [],
       		colors: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3']
     	}
     },
     methods: {
-    	closeSet(yItem){
-    		// if(yItem.orientyid){
-    			
-    		// }
-    		
+    	closeSet(index, yItem){
+    		if(index==0){
+    			this.$message({
+		            message: '此y轴不可删除',
+		            type: 'error'
+		        });
+    		}else{
+    			this.$confirm('确定删除此Y轴设置吗?', '提示', {
+			        confirmButtonText: '确定',
+			        cancelButtonText: '取消',
+			        type: 'warning'
+			    }).then(() => {
+			        if(yItem.orientyid){
+						this.yDeleteList.push(yItem.orientyid);
+	    			}
+	    			this.orientYList.splice(index,1);
+	    			console.log(this.orientYList);
+			    }).catch(() => {})
+    		}
     	},
     	addYSet(){
     		var newObj = {
@@ -554,9 +570,13 @@ export default {
 					barWidth: colSets[i].colWidth,
 					markPoint: {
 						data: []
-					},
-					yAxisIndex: colSets[i].colYIndex
+					}
 				};
+				if(colSets[i].colYIndex&&colSets[i].colYIndex>this.orientYList.length-1){
+					colSets[i].colYIndex = 0;
+				}
+				obj.yAxisIndex =  colSets[i].colYIndex;
+
 				lengdData.push(colSets[i].colName);
 				if(!!colSets[i].colColor){
 					colors.push(colSets[i].colColor);
@@ -704,10 +724,13 @@ export default {
 		},
 		save(){
 			var url = '/api/show/visualize?vid='+this.vid;
+			this.orientYList.splice(0,1);
+			
 			var obj = {
 				'columnMaps': this.columnList,
 				'visualize': this.visualParam,
-				'yList': this.orientYList.splice(0,1)
+				'yList': this.orientYList,
+				'yDeleteList': this.yDeleteList
 			};
 			this.$axios.put(url,obj
 	        ).then((res) => {
