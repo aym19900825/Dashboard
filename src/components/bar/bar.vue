@@ -357,7 +357,6 @@ export default {
 						this.yDeleteList.push(yItem.orientyid);
 	    			}
 	    			this.orientYList.splice(index,1);
-	    			console.log(this.orientYList);
 			    }).catch(() => {})
     		}
     	},
