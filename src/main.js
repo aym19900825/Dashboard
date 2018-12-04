@@ -19,8 +19,10 @@ Vue.config.productionTip = false
 Vue.prototype.$echarts = echarts 
 Vue.prototype.$axios= axios
 Vue.use(ElementUI)
-Vue.use(vueGridLayout);
+Vue.use(vueGridLayout)
 Vue.use(VueClipboard)
+
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /* eslint-disable no-new */
 new Vue({

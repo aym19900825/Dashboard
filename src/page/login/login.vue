@@ -25,12 +25,15 @@
 </template>
 
 <script>
+    import Config from '../../config.js'
     export default {
         name: 'login',
         methods: {
             login() {
                 this.$refs.loginForm.validate((valid) => {
                     var url = '/api/system/login';
+                    // var url = 'http://192.168.1.168:8080/system/login';
+                    // var url = 'http://203.93.173.179:8888/api/login';
                     if (valid) {
                         this.$axios.post(url,{
                             name: this.user.name,
@@ -61,6 +64,7 @@
         },
         data () {
             return {
+                basic_url: Config.dev_url,
                 user: {
                     name: '',
                     pass: ''

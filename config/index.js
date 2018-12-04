@@ -13,8 +13,8 @@ module.exports = {
     proxyTable: {
         '/api': {
             // target: 'http://192.168.1.140:8090/',//本地地址
-            // target: 'http://203.93.173.179:8665/Dashboard/',//远端地址
-            target: 'http://spark2:8090/',//设置你调用的接口域名和端口号 别忘了加http
+            target: 'http://203.93.173.179:8665/Dashboard/',//远端地址
+            // target: 'http://spark2:8090/',//设置你调用的接口域名和端口号 别忘了加http
             changeOrigin: true,
             pathRewrite: {
               '^/api': '/'
@@ -25,7 +25,7 @@ module.exports = {
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
-    autoOpenBrowser: false,
+    autoOpenBrowser: true,
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
@@ -54,7 +54,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

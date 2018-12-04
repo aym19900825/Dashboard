@@ -11,7 +11,7 @@
 import Nav from '../../../components/common/nav/nav.vue'
 import Bar from '../../../components/bar/bar.vue'
 export default {
-  name: 'edit',
+  name: 'bar',
   data () {
     return {
       vid: '',
