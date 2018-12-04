@@ -134,6 +134,7 @@ export default {
   data () {
     return {
       config: Config,
+      basic_url: Config.dev_url,
 
       refreshOpt: [0,3,5,8,10],
       shareShow: false,
@@ -189,7 +190,7 @@ export default {
       this.getVisualList();
     },
     editDashboard(){
-      var url = '/api/show/dashboard/?bid=' + this.bid ;
+      var url = this.basic_url + '/show/dashboard/?bid=' + this.bid ;
       this.$axios.put(url,this.newDashboard).then((res) => {
         if(res.data.code == 1){
           this.$message({
@@ -232,7 +233,7 @@ export default {
           'locationList': this.layout
         };
       }
-      var url = '/api/show/dashboardVisualize'
+      var url = this.basic_url + '/show/dashboardVisualize'
       this.$axios.post(url, param).then((res) => {
         if(res.data.code == 1){
           this.$message({
@@ -438,7 +439,7 @@ export default {
       echartData = echartData || {};
       //如果对象是空对象
       if(JSON.stringify(echartData) == "{}"){
-        var url1 = '/api/show/visualizeData';
+        var url1 = this.basic_url + '/show/visualizeData';
         this.$axios.post(url1,{
             integerId: vid,
         }).then((res) => {
@@ -637,7 +638,7 @@ export default {
         echartData = echartData || {};
         //如果对象是空对象
         if(JSON.stringify(echartData) == "{}"){
-          var url1 = '/api/show/visualizeData';
+          var url1 = this.basic_url + '/show/visualizeData';
           this.$axios.post(url1,{
               integerId: vid,
           }).then((res) => {
@@ -1118,7 +1119,7 @@ export default {
       $(".el-pagination").hide();
       var _this = this;
       var page =  _this.page.currentPage - 1;
-      var url = '/api/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
+      var url = this.basic_url + '/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
       this.$axios.post(url,{}).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
@@ -1178,7 +1179,7 @@ export default {
       this.refresh = this.$route.query.refresh || 0;
     },
     editInfo(){
-      var url = '/api/show/dashboard/'+ this.bid;
+      var url = this.basic_url + '/show/dashboard/'+ this.bid;
       this.$axios.post(url,{
         
       }).then((res) => {
@@ -1255,7 +1256,7 @@ export default {
     },
     getDashboardData(){
       var _this = this;
-      var url = '/api/show/dashboardData';
+      var url = this.basic_url + '/show/dashboardData';
       this.$axios.post(url,{
         'integerId': _this.bid,
       }).then((res) => {

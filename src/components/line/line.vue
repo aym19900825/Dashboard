@@ -266,11 +266,13 @@
 
 <script>
 import { Chrome } from 'vue-color'
+import Config from '../../config.js'
 export default {
   	name: 'bar',
   	props: ['vid','businessCats','bid'],
  	data(){
    		return {
+   			basic_url: Config.dev_url,
    			visualizename: '',
    			tabIndex: '0',
    			legendOpt:[
@@ -750,13 +752,13 @@ export default {
 			myChart.resize();
 		},
 		requestData(){
-			var url = '/api/show/visualize';
+			var url = this.basic_url + '/show/visualize';
 			this.$axios.post(url,{
 	            integerId: this.vid,
 	        }).then((res) => {
 	        	var data = res.data;
 	        	this.visualParam = JSON.parse(JSON.stringify(data));
-	        	var url1 = '/api/show/visualizeData';
+	        	var url1 = this.basic_url + '/show/visualizeData';
 		        this.$axios.post(url1,{
 		            integerId: this.vid,
 		        }).then((res) => {
@@ -804,7 +806,7 @@ export default {
 			this.initEchart();
 		},
 		save(){
-			var url = '/api/show/visualize?vid='+this.vid;
+			var url = this.basic_url + '/show/visualize?vid='+this.vid;
 			this.orientYList.splice(0,1);
 			var obj = {
 				'columnMaps': this.columnList,

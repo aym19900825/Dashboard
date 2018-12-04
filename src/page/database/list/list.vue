@@ -70,10 +70,12 @@
 
 <script>
 import Nav from '../../../components/common/nav/nav.vue'
+import Config from '../../../config.js'
 export default {
   name: 'list',
   data () {
     return {
+      basic_url: Config.dev_url,
       editForm: false,
       page:{
         currentPage: 1,
@@ -124,7 +126,7 @@ export default {
   },
   methods: {
     test(row){
-      var url = '/api/show/validateDatabase?dbid=' + row.dbid;
+      var url = this.basic_url + '/show/validateDatabase?dbid=' + row.dbid;
       this.$axios.get(url,{}).then((res) => {
           if(res.data.code == 1){
             this.$message({
@@ -155,7 +157,7 @@ export default {
     },
     del(row){
       var _this = this;
-      var url = '/api/show/database/'+row.dbid;
+      var url = this.basic_url + '/show/database/'+row.dbid;
       this.$confirm('确定删除此数据库连接吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -188,7 +190,7 @@ export default {
     requestData(){
       var _this = this;
       var page =  _this.page.currentPage - 1;
-      var url = '/api/show/databaseList?page=' +  page +'&size=' + _this.page.pageSize;
+      var url = this.basic_url + '/show/databaseList?page=' +  page +'&size=' + _this.page.pageSize;
       this.$axios.get(url,{}).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
@@ -223,7 +225,7 @@ export default {
     add(){
       this.$refs['dbForm'].validate((valid)=>{
         if(valid){
-          var url = '/api/show/databaseAdd';
+          var url = this.basic_url + '/show/databaseAdd';
           this.$axios.post(url,this.newDataBase).then((res) => {
             if(res.data.code != 1){
               this.$message({
@@ -258,7 +260,7 @@ export default {
     },
     editSave(){
       this.$refs['dbForm'].validate((valid)=>{
-        var url = '/api/show/databaseUpdate';
+        var url = this.basic_url + '/show/databaseUpdate';
         this.$axios.put(url,this.newDataBase).then((res) => {
           if(res.data.code != 1){
             this.$message({

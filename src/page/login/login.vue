@@ -31,8 +31,8 @@
         methods: {
             login() {
                 this.$refs.loginForm.validate((valid) => {
-                    var url = '/api/system/login';
-                    // var url = 'http://192.168.1.168:8080/system/login';
+                    // var url = '/api/system/login';
+                    var url = this.basic_url + '/system/login';
                     // var url = 'http://203.93.173.179:8888/api/login';
                     if (valid) {
                         this.$axios.post(url,{

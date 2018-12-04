@@ -112,10 +112,12 @@
 
 <script>
 import Nav from '../../../components/common/nav/nav.vue'
+import Config from '../../../config.js'
 export default {
   name: 'list',
   data () {
     return {
+      basic_url: Config.dev_url,
       databaseList: [],
       tableList: [],
       columnList: [],
@@ -177,7 +179,7 @@ export default {
     choose(){
       this.visualizeForm = true;
       if(this.databaseList.length == 0){
-        var url = '/api/show/databaseList?valid=1';
+        var url = this.basic_url + '/show/databaseList?valid=1';
         this.$axios.get(url,{}).then((res) => {
           this.databaseList = res.data;
         }).catch((err) => {
@@ -193,7 +195,7 @@ export default {
       this.newVisualize.sourcetablename = [];
       this.newVisualize.columnList = [];
 
-      var testUrl = '/api/show/validateDatabase?dbid=' + this.newVisualize.dbid;
+      var testUrl = this.basic_url + '/show/validateDatabase?dbid=' + this.newVisualize.dbid;
       this.$axios.get(testUrl,{}).then((res) => {
           if(res.data.code == 1){
             this.dbTest = '1';
@@ -222,7 +224,7 @@ export default {
     getCol(val){
       this.columnList = [];
       this.newVisualize.columnList = [];
-      var url = '/api/show/columnList?tablename=' + val + '&dbid=' + this.newVisualize.dbid;
+      var url = this.basic_url + '/show/columnList?tablename=' + val + '&dbid=' + this.newVisualize.dbid;
       this.$axios.get(url,{}).then((res) => {
         this.columnList = res.data;
       }).catch((err) => {
@@ -256,7 +258,7 @@ export default {
     },
     delVisual(index,row){
       var _this = this;
-      var url = '/api/show/visualize/'+row.vid;
+      var url = this.basic_url + '/show/visualize/'+row.vid;
       this.$confirm('确定删除此视图?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -293,7 +295,7 @@ export default {
     requestData(){
       var _this = this;
       var page =  _this.page.currentPage - 1;
-      var url = '/api/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
+      var url = this.basic_url + '/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
       this.$axios.post(url,_this.searchData).then((res) => {
           if(res.data.totalPages == 0 && _this.searchData.visualizename == '' && _this.searchData.type == ''){
             $('.empty-content').show();
@@ -327,7 +329,7 @@ export default {
       this.$refs['visualForm'].resetFields();
     },
     addVisual(){
-      var url = '/api/show/visualizeAdd';
+      var url = this.basic_url + '/show/visualizeAdd';
       this.$refs['visualForm'].validate((valid)=>{
         if (valid) {
           var obj = {

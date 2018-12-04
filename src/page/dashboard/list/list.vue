@@ -87,10 +87,12 @@
 
 <script>
 import Nav from '../../../components/common/nav/nav.vue'
+import Config from '../../../config.js'
 export default {
   name: 'list',
   data () {
     return {
+      basic_url: Config.dev_url,
       page: {
         currentPage: 1,
         pageSize: 10,
@@ -121,7 +123,7 @@ export default {
     addDashboard(){
       this.$refs['dashboardForm'].validate((valid)=>{
         if(valid){
-          var url = '/api/show/dashboardAdd';
+          var url = this.basic_url + '/show/dashboardAdd';
           this.$axios.post(url,{
             "dashboardname": this.newDashboard.dashboardname,
             "dashboardshowname": this.newDashboard.dashboardshowname,
@@ -178,7 +180,7 @@ export default {
     },
     delDashboard(index,row){
       var _this = this;
-      var url = '/api/show/dashboard/'+row.bid;
+      var url = this.basic_url + '/show/dashboard/'+row.bid;
       this.$confirm('确定删除此视图?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -215,7 +217,7 @@ export default {
     requestData(){
       var _this = this;
       var page = _this.page.currentPage - 1;
-      var url = '/api/show/dashboardList2?page=' + page + '&size=' + _this.page.pageSize;
+      var url = this.basic_url + '/show/dashboardList2?page=' + page + '&size=' + _this.page.pageSize;
       this.$axios.post(url,this.searchData).then((res) => {
           if(res.data.totalPages == 0 && _this.searchData.dashboardname == '' && _this.searchData.dashboarddescription == ''){
             $('.empty-content').show();
