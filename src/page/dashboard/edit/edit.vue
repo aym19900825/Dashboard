@@ -364,6 +364,7 @@ export default {
     },
     del(visualize){
       var index;
+      var selIndex;
       if(visualize.did){
         this.deleteList.push(visualize.did);
       }
@@ -372,8 +373,15 @@ export default {
             index = i;
           }
       }
+      for(var j = 0; j < this.selVisuaList.length; j++){
+          if(this.selVisuaList[j].vid == visualize.vid){
+            selIndex = j;
+          }
+      }
       this.layout.splice(index,1);
+      this.selVisuaList.splice(selIndex,1);
       this.rerenderEchart('edit');
+      console.log(this.selVisuaList);
     },
     dealLegendPos(data,type){
       var res = {};
@@ -871,7 +879,6 @@ export default {
                 ],
                 series: seriesData
               };
-              console.log(option);
               myChart.setOption(option);
               myChart.resize();
           }).catch((err) => {
@@ -1099,7 +1106,6 @@ export default {
           ],
           series: seriesData
         };
-        console.log(option);
         myChart.setOption(option);
         myChart.resize();
       }
