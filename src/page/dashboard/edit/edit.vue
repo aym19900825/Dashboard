@@ -105,7 +105,7 @@
           placeholder="请选择刷新时间(s)">
             <el-option
               v-for="item in refreshOpt"
-              :label="item"
+              :label="item+'min'"
               :value="item"
               :key="item">
             </el-option>
