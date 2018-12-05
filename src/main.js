@@ -22,7 +22,7 @@ Vue.use(ElementUI)
 Vue.use(vueGridLayout)
 Vue.use(VueClipboard)
 
-axios.defaults.headers.post['Content-Type'] = 'application/json';
+// axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /* eslint-disable no-new */
 new Vue({

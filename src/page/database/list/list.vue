@@ -51,7 +51,7 @@
           <el-input v-model="newDataBase.user"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="newDataBase.password"></el-input>
+          <el-input v-model="newDataBase.password" type="password"></el-input>
         </el-form-item>
         <el-form-item label="数据库类型" prop="dbtype">
           <el-select v-model="newDataBase.dbtype" placeholder="请选择数据库" width="100%">

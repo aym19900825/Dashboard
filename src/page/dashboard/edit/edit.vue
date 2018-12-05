@@ -12,6 +12,14 @@
         </header>
         <el-button size="small" @click="returnEdit" v-if="isPreview&&!isShare" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
         <div class="visualizeList" v-show="isAddVisual && !isPreview" >
+          <el-row :gutter="20" style="padding-top: 20px;">
+            <el-col :span="16" style="margin-left: 8%;"> 
+              <el-input placeholder="请输入名称" v-model="searchData.visualizename" @keyup.enter.native="searchVisual"></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-input placeholder="请输入类型" v-model="searchData.type" @keyup.enter.native="searchVisual"></el-input>
+            </el-col>
+          </el-row>
           <el-table ref="visualizeTable" :data="visualizeList" tooltip-effect="dark" style="width: 95%;margin: 20px auto 20px auto;" @selection-change="selectVisual">
             <el-table-column type="selection" width="55" disabled></el-table-column>
             <el-table-column prop="visualizename" label="名称"  show-overflow-tooltip>
@@ -135,6 +143,11 @@ export default {
     return {
       config: Config,
       basic_url: Config.dev_url,
+      searchData: {
+        'type': '',
+        'visualizename': '',
+        'businesscategory': ''
+      },
 
       refreshOpt: [0,3,5,8,10],
       shareShow: false,
@@ -1115,12 +1128,16 @@ export default {
           break;
       }
     },
+    searchVisual(){
+      this.page.currentPage = 1;
+      this.getVisualList();
+    },
     getVisualList(){
       $(".el-pagination").hide();
       var _this = this;
       var page =  _this.page.currentPage - 1;
       var url = this.basic_url + '/show/visualizeList2?page=' +  page +'&size=' + _this.page.pageSize;
-      this.$axios.post(url,{}).then((res) => {
+      this.$axios.post(url,_this.searchData).then((res) => {
           if(res.data.totalPages == 0){
             $('.empty-content').show();
             _this.page.totalCount = res.data.total;
@@ -1241,7 +1258,7 @@ export default {
     exportPage(){
       var url = window.location.href;
       var domain = window.location.host;
-      url = url.replace(domain,this.config.export_url);
+      // url = url.replace(domain,this.config.export_url);
       url = url + '&isPreview=true&isShare=true&refresh=' + this.refresh;
       this.shareForm.link = url;
       this.shareForm.iframeLink = '<iframe src="' + url + '" height="600" width="800"></iframe>';

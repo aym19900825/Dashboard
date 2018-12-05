@@ -58,7 +58,7 @@
        </div>
     </div>
     <el-dialog title="视图" :visible.sync="visualizeForm" width="560px" :before-close="resetVisual">
-      <el-form ref="visualForm" :model="newVisualize" :rules="rules"  label-position="top" label-width="120px">
+      <el-form ref="visualForm" :model="newVisualize" :rules="rules"  label-position="right" label-width="120px">
         <el-form-item label="名称" prop="visualizename">
           <el-input v-model="newVisualize.visualizename"></el-input>
         </el-form-item>
@@ -199,7 +199,7 @@ export default {
       this.$axios.get(testUrl,{}).then((res) => {
           if(res.data.code == 1){
             this.dbTest = '1';
-            var url = '/api/show/tableList?dbid=' + this.newVisualize.dbid;
+            var url = this.basic_url + '/show/tableList?dbid=' + this.newVisualize.dbid;
             this.$axios.get(url,{}).then((res) => {
               this.tableList = res.data;
               this.columnList = [];
