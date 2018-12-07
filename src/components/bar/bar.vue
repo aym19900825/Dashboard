@@ -435,9 +435,7 @@ export default {
 	            cancelButtonText: '取消',
 	            type: 'warning'
 	        }).then(() => {
-	        	console.log(index);
 	        	this.columnList.splice(index,1);
-	        	console.log(this.columnList);
 	        	if(colData.columnmid){
 	    			this.deleteColumnList.push(colData.columnmid);
 	    		}
@@ -447,6 +445,7 @@ export default {
     	saveAddCol(){
     		this.columnList.push(JSON.parse(JSON.stringify(this.colData)));
     		this.resetNewCol();
+    		this.save();
     	},
     	resetNewCol(){
     		this.colData = {
@@ -471,8 +470,7 @@ export default {
     	},
     	getCols(){
     		var url = this.basic_url + '/show/columnList?tablename=' + this.visualParam.sourcetablename +'&dbid='+ this.visualParam.dbid +'&vid=' + this.visualParam.vid;
-    		this.$axios.get(url, {}
-	        ).then((res) => {
+    		this.$axios.get(url, {}).then((res) => {
 	        	this.colDatas = res.data;
 	        }).catch((err) => {
 	            this.$message({
@@ -889,10 +887,7 @@ export default {
 			                showClose: true
 			            })
 	        		}
-	        		this.requestData();
-	        		setTimeout(function(){
-						_this.initEchart();
-			    	},1000);
+	        		this.$router.go(0);
 	        	}else{
 	        		this.$message({
 		                type: 'error',
