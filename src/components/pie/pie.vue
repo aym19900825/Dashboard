@@ -48,7 +48,7 @@
 							</el-form>
 							<el-form ref="option-set" :model="columnList" label-width="100px">
 								<h5>数据列设置</h5>
-							  	<div class="y-axios column-set" v-for="colData in columnList">
+							  	<div class="y-axios column-set" v-for="colData in columnList" style="position:relative; padding-top:20px; height: 80px; border-bottom: none;">
 							        <el-form-item label="数据列">
 							          <el-select v-model="colData.field" filterable allow-create default-first-option disabled>
 							            <el-option
@@ -276,8 +276,8 @@ export default {
     methods: {
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
-    		if(h != 680){
-				$(e.target).parents(".y-axios").height("680");
+    		if(h != 400){
+				$(e.target).parents(".y-axios").height("400");
 				$(e.target).parents(".y-axios").find(".db--right").removeClass("db--right").addClass("db--down");
     		}else{
 	    		$(e.target).parents(".y-axios").height("60");
