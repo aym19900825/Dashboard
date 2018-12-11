@@ -2,9 +2,10 @@
   <div>
      <header>
      	<span>{{visualParam.visualizename}}</span>
+     	<el-button type="info" size="small" @click="returnVisual">返回视图列表</el-button>
 		<el-button type="warning" size="small" v-if="!bid" @click="reset">取消</el-button>
 		<el-button type="info" size="small" v-if="bid" @click="returnDb">返回Dashboard</el-button>
-		<el-button type="primary" size="small" @click="save">保存</el-button>
+		<el-button type="primary" size="small" @click="save" style="margin-right: 0px;">保存</el-button>
      </header>
 		<div id="content">
 			<div class="left">
@@ -50,7 +51,7 @@
 								<h5>数据列设置
 									<el-button size="mini" type="primary" style="float: right;" @click="addcol">+</el-button>
 					        	</h5>
-							  	<div class="y-axios column-set" v-for="colData in columnList" style="position:relative;padding-top: 25px;">
+							  	<div class="y-axios column-set" v-for="(colData, index) in columnList" style="position:relative;padding-top: 25px;">
 							  		<i class="data-show icon iconfont db--close" @click="closeCol(index,colData)"></i>
 							        <el-form-item label="数据列">
 							          <el-select v-model="colData.field" filterable allow-create default-first-option disabled>
@@ -237,7 +238,7 @@
 		</div>
 
 		<el-dialog title="新增数据列" :visible.sync="colForm" width="560px" :before-close="resetNewCol">
-	        <div class="y-axios column-set" style="position:relative; height: 730px; border-bottom: none;">
+	        <div class="y-axios column-set" style="position:relative; height: 50px; border-bottom: none;">
 	        	<el-form label-position="right" label-width="120px" :model="colData">
 			        <el-form-item label="数据列">
 			          	<el-select v-model="colData.field" filterable allow-create default-first-option>
@@ -248,50 +249,6 @@
 				              :key="it.field">
 				            </el-option>
 			            </el-select>
-			        </el-form-item>
-			        <el-form-item label="数据颜色">
-			   		    <el-input v-model="colData.colColor"></el-input>
-			   		    <el-color-picker v-model="colData.colColor" size="medium"></el-color-picker>
-			        </el-form-item>
-			        <el-form-item label="数据说明">
-			          <el-input v-model="colData.colName"></el-input>
-			        </el-form-item>
-			        <el-form-item label="数据宽度">
-			          <el-input v-model="colData.colWidth"></el-input>
-			        </el-form-item>
-			        <el-form-item label="堆叠数据">
-			          <el-input v-model="colData.colStack"></el-input>
-			        </el-form-item>
-			        <el-form-item label="label">
-				        <el-switch v-model="colData.colLabel"></el-switch>
-			        </el-form-item>
-			        <el-form-item label="label位置" v-show="colData.colLabel">
-			            <el-select v-model="colData.colLabelPos" filterable allow-create default-first-option>
-				            <el-option
-				              v-for="it in labelPos"
-				              :label="it.txt"
-				              :value="it.value"
-				              :key="it.value">
-				            </el-option>
-			            </el-select>
-			        </el-form-item>
-			        <el-form-item label="最大值">
-			          <el-switch v-model="colData.colMax"></el-switch>
-			        </el-form-item>
-			        <el-form-item label="最小值">
-			          <el-switch v-model="colData.colMin"></el-switch>
-			        </el-form-item>
-			        <el-form-item label="平均值">
-			          <el-switch v-model="colData.colAverage"></el-switch>
-			        </el-form-item>
-			        <el-form-item label="类型">
-			          <el-select v-model="colData.colType" placeholder="请选择数据类型" width="100%">
-			            <el-option label="折线图" value="line"></el-option>
-			            <el-option label="柱状图" value="bar"></el-option>
-			          </el-select>
-			        </el-form-item>
-			        <el-form-item label="对应Y轴">
-			          <el-input v-model="colData.colYIndex"></el-input>
 			        </el-form-item>
 			    </el-form>
 			</div>
@@ -429,20 +386,37 @@ export default {
     	}
     },
     methods: {
+    	returnVisual(){
+    		this.$router.push({
+	        	path: '/visualizeList', 
+	        })
+    	},
     	closeCol(index,colData){
-    		this.$confirm('确认将删除此数据列设置吗？删除后视图设置会自动保存', '提示', {
-	            confirmButtonText: '确定',
-	            cancelButtonText: '取消',
-	            type: 'warning'
-	        }).then(() => {
-	        	this.columnList.splice(index,1);
-	        	if(colData.columnmid){
-	    			this.deleteColumnList.push(colData.columnmid);
-	    		}
-	    		this.save('del');
-	        }).catch(() => {});
+    		if(this.columnList.length == 1){
+    			this.$message({
+		            message: '数据列不可为空',
+		            type: 'warning'
+		        });
+    		}else{
+    			this.$confirm('确认将删除此数据列设置吗？删除后视图设置会自动保存', '提示', {
+		            confirmButtonText: '确定',
+		            cancelButtonText: '取消',
+		            type: 'warning'
+		        }).then(() => {
+		        	this.columnList.splice(index,1);
+		        	if(colData.columnmid){
+		    			this.deleteColumnList.push(colData.columnmid);
+		    		}
+		    		this.save('del');
+		        }).catch(() => {});
+    		}
     	},
     	saveAddCol(){
+    		for(var i=0; i<this.colDatas.length; i++){
+    			if(this.colDatas[i].field == this.colData.field){
+    				this.colData.type = this.colDatas[i].type;
+    			}
+    		}
     		this.columnList.push(JSON.parse(JSON.stringify(this.colData)));
     		this.resetNewCol();
     		this.save();
@@ -450,6 +424,7 @@ export default {
     	resetNewCol(){
     		this.colData = {
 				'field': '',
+				'type': '',
 				'colColor': '',	
 				'colName': '',
 				'colWidth': '',
@@ -863,7 +838,6 @@ export default {
 		save(opt){
 			var url = this.basic_url + '/show/visualize?vid='+this.vid;
 			this.orientYList.splice(0,1);
-			
 			var obj = {
 				'columnMaps': this.columnList,
 				'visualize': this.visualParam,

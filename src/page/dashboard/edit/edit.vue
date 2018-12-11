@@ -4,6 +4,7 @@
     <div class="list-content">
         <header v-if="!isPreview">
             <span>{{dashboardshowname}}</span>
+            <el-button type="info" size="small" @click="returnDb" style="margin-left: 10px;">返回仪表板列表</el-button>
             <el-button type="warning" size="small" @click="exportPage">分享</el-button>
             <el-button type="warning" size="small" @click="preview">预览</el-button>
             <el-button type="warning" size="small" @click="editInfo">修改信息</el-button>
@@ -194,6 +195,11 @@ export default {
     }
   },
   methods: {
+    returnDb(){
+      this.$router.push({
+        path: '/dashboardList', 
+      });
+    },
     handleSizeChange(val) {
       this.page.pageSize = val;
       this.getVisualList();

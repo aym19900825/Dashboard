@@ -2,9 +2,10 @@
   <div>
      <header>
      	<span>{{visualParam.visualizename}}</span>
+     	<el-button type="info" size="small" @click="returnVisual">返回视图列表</el-button>
 		<el-button type="warning" size="small" v-if="!bid" @click="reset">取消</el-button>
 		<el-button type="info" size="small" v-if="bid" @click="returnDb">返回Dashboard</el-button>
-		<el-button type="primary" size="small" @click="save">保存</el-button>
+		<el-button type="primary" size="small" @click="save" style="margin-right: 0px;">保存</el-button>
      </header>
 		<div id="content">
 			<div class="left">
@@ -274,6 +275,11 @@ export default {
     	}
     },
     methods: {
+    	returnVisual(){
+    		this.$router.push({
+	        	path: '/visualizeList', 
+	        })
+    	},
     	showYSet(e){
     		var h = $(e.target).parents(".y-axios").height();
     		if(h != 400){
