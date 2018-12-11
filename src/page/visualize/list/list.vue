@@ -91,7 +91,7 @@
           <i v-if="dbTest=='0'" class="el-icon-warning"></i>
         </el-form-item>
         <el-form-item label="数据表" prop="sourcetablename">
-          <el-select v-model="newVisualize.sourcetablename" placeholder="请选择数据表" width="100%" @change="getCol">
+          <el-select v-model="newVisualize.sourcetablename" filterable placeholder="请选择数据表" width="100%" @change="getCol">
             <el-option :label="item" :value="item" v-for="item in tableList"></el-option>
           </el-select>
         </el-form-item>
