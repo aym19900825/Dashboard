@@ -742,6 +742,7 @@ export default {
                   axisLabel: {
                     formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel != 'null' ? echartData.xAxisLabel : '')
                   },
+                  boundaryGap: echartData.xBoundaryGap
                 };
                 for(var k=0; k<orientYList.length; k++ ){
                   var thisY = orientYList[k];
@@ -966,7 +967,8 @@ export default {
             },
             axisLabel: {
               formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
-            }
+            },
+            boundaryGap: param.xBoundaryGap
           };
           for(var k=0; k<orientYList.length; k++ ){
             var thisY = orientYList[k];

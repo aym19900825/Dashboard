@@ -605,15 +605,15 @@ export default {
 				var xSet = {};
 				var ySet = {};
 				xSet = {
-			    	name: param.yname,
+			    	name: this.orientYList[0].yname,
 			        type: 'value',
-			        splitLine: {show: param.ySplitLine},
-		            inverse: param.yInverse,
+			        splitLine: {show: this.orientYList[0].ySplitLine},
+		            inverse: this.orientYList[0].yInverse,
 		            axisLine: {
-			            show: param.yAxisLine
+			            show: this.orientYList[0].yAxisLine
 			        },
 			        axisLabel: {
-		                formatter: '{value}'+(!!param.yAxisLabel&&param.yAxisLabel!='null'?param.yAxisLabel:'')
+		                formatter: '{value}'+(!!this.orientYList[0].yAxisLabel&&this.orientYList[0].yAxisLabel!='null'?this.orientYList[0].yAxisLabel:'')
 		            }
 			    };
 			    ySet = {
@@ -837,6 +837,13 @@ export default {
 		},
 		save(opt){
 			var url = this.basic_url + '/show/visualize?vid='+this.vid;
+
+			this.visualParam.yname = this.orientYList[0].yname;
+			this.visualParam.yAxisLabel = this.orientYList[0].yAxisLabel;
+			this.visualParam.yAxisLine = this.orientYList[0].yAxisLine;
+			this.visualParam.ySplitLine = this.orientYList[0].ySplitLine;
+			this.visualParam.yInverse = this.orientYList[0].yInverse;
+
 			this.orientYList.splice(0,1);
 			var obj = {
 				'columnMaps': this.columnList,
