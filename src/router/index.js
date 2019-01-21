@@ -7,6 +7,7 @@ import Detail from '@/page/visualize/detail/detail'
 import EditLine from '@/page/visualize/edit/edit'
 import EditBar from '@/page/visualize/edit/bar'
 import EditPie from '@/page/visualize/edit/pie'
+import EditText from '@/page/visualize/edit/text'
 import DashboardEdit from '@/page/dashboard/edit/edit'
 import Login from '@/page/login/login'
 import User from '@/page/sys/user/user'
@@ -60,6 +61,10 @@ export default new Router({
 	  path: '/editpie',
 	  name: 'EditPie',
 	  component: EditPie
+	},{
+	  path: '/edittext',
+	  name: 'EditText',
+	  component: EditText
 	},
 	{
 	  path: '/dashboardList',

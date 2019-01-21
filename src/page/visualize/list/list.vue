@@ -70,6 +70,7 @@
             <el-option label="折线图" value="line"></el-option>
             <el-option label="饼图" value="pie"></el-option>
             <el-option label="柱状图" value="bar"></el-option>
+            <el-option label="文本/数值图" value="text"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="菜单编组" prop="businesscategory">
@@ -156,13 +157,13 @@ export default {
           { required: true, message: '请选择视图类型', trigger: 'change' }
         ],
         dbid: [
-          { required: true, message: '请选择连接', trigger: 'change' }
+          { required: false, message: '请选择连接', trigger: 'change' }
         ],
         sourcetablename: [
-          { required: true, message: '请选择数据表', trigger: 'change' }
+          { required: false, message: '请选择数据表', trigger: 'change' }
         ],
         columnList: [
-          { required: true, message: '请选择数据列', trigger: 'change' }
+          { required: false, message: '请选择数据列', trigger: 'change' }
         ]
       }
     }
@@ -243,6 +244,9 @@ export default {
           break;
         case  'pie':
           url = '/editpie';
+          break;
+        case  'text':
+          url = '/edittext';
           break;
         default:
           url = '/editbar';
@@ -378,7 +382,7 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
-        var url = '/api/show/excel/export';
+        var url = this.basic_url + '/show/excel/export';
         window.open(url) 
       }).catch(() => {});
     }

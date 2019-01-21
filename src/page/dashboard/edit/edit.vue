@@ -742,8 +742,11 @@ export default {
                   axisLabel: {
                     formatter: '{value}'+(!!echartData.xAxisLabel&&echartData.xAxisLabel != 'null' ? echartData.xAxisLabel : '')
                   },
-                  boundaryGap: echartData.xBoundaryGap
+                  // boundaryGap: echartData.xBoundaryGap
                 };
+                if(type=='line'){
+                  xSet.boundaryGap = echartData.xBoundaryGap;
+                }
                 for(var k=0; k<orientYList.length; k++ ){
                   var thisY = orientYList[k];
                   var ySetObj = {
@@ -968,8 +971,11 @@ export default {
             axisLabel: {
               formatter: '{value}'+(!!param.xAxisLabel&&param.xAxisLabel!='null'?param.xAxisLabel:'')
             },
-            boundaryGap: param.xBoundaryGap
+            // boundaryGap: param.xBoundaryGap
           };
+          if(type=='line'){
+            xSet.boundaryGap = param.xBoundaryGap;
+          }
           for(var k=0; k<orientYList.length; k++ ){
             var thisY = orientYList[k];
             var ySetObj = {
