@@ -70,7 +70,8 @@
             <el-option label="折线图" value="line"></el-option>
             <el-option label="饼图" value="pie"></el-option>
             <el-option label="柱状图" value="bar"></el-option>
-            <el-option label="文本/数值图" value="text"></el-option>
+            <el-option label="文本图" value="text"></el-option>
+            <el-option label="数值图" value="number"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="菜单编组" prop="businesscategory">
@@ -84,19 +85,19 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="连接名" prop="dbid">
+        <el-form-item label="连接名" prop="dbid" v-show="newVisualize.type!='text'">
           <el-select v-model="newVisualize.dbid" placeholder="请选择数据库" width="100%" @change="getTable">
             <el-option :label="item.datasourcename" :value="item.dbid" v-for="item in databaseList"></el-option>
           </el-select>
           <i v-if="dbTest=='1'" class="el-icon-success"></i>
           <i v-if="dbTest=='0'" class="el-icon-warning"></i>
         </el-form-item>
-        <el-form-item label="数据表" prop="sourcetablename">
+        <el-form-item label="数据表" prop="sourcetablename"  v-show="newVisualize.type!='text'">
           <el-select v-model="newVisualize.sourcetablename" filterable placeholder="请选择数据表" width="100%" @change="getCol">
             <el-option :label="item" :value="item" v-for="item in tableList"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据列" prop="columnList">
+        <el-form-item label="数据列" prop="columnList"  v-show="newVisualize.type!='text'">
           <el-select v-model="newVisualize.columnList" placeholder="请选择数据列" width="100%" multiple>
             <el-option :label="item.field" :value="item.field"  v-for="item in columnList"></el-option>
           </el-select>
@@ -247,6 +248,9 @@ export default {
           break;
         case  'text':
           url = '/edittext';
+          break;
+        case  'number':
+          url = '/editnumber';
           break;
         default:
           url = '/editbar';
