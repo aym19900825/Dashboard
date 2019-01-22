@@ -71,6 +71,29 @@
 							        <el-form-item label="数据说明">
 							          <el-input v-model="colData.colName"></el-input>
 							        </el-form-item>
+									<el-form-item label="范围说明">
+							          <el-switch v-model="isRangeDesc"></el-switch>
+									  <el-button type="primary" icon="el-icon-plus" size="mini" style="float: right;" @click="addRange" v-show="isRangeDesc"></el-button>
+									  <div v-for="item in rangeDesc" class="rangeDesc">
+										    <el-row :gutter="20" style="margin-top: 10px;margin-bottom: 10px;">
+											    <el-col :span="7">
+												    <el-input v-model="item.min"></el-input>
+											    </el-col>
+											    <el-col :span="2">
+													-
+											  	</el-col>
+											  	<el-col :span="7" >
+												  	<el-input v-model="item.max"></el-input>
+											 	</el-col>
+											 	<el-col :span="6">
+												 	 <el-color-picker v-model="item.color" size="medium"></el-color-picker>
+												</el-col>
+										    </el-row>
+											<el-row>
+												 <el-input v-model="item.desc"></el-input>
+											</el-row>
+									  </div>
+							        </el-form-item>
 							        <el-form-item label="数据宽度">
 							          <el-input v-model="colData.colWidth"></el-input>
 							        </el-form-item>
@@ -268,6 +291,9 @@ export default {
   	props: ['vid','businessCats','bid'],
  	data(){
    		return {
+			isRangeDesc: false,
+			rangeDesc:[],
+
    			basic_url: Config.dev_url,
    			visualizename: '',
    			tabIndex: '0',
@@ -386,6 +412,21 @@ export default {
     	}
     },
     methods: {
+		addRange(){
+			if(this.columnList.length > 1){
+				this.$message({
+		            message: '多数据列时不可添加范围说明',
+		            type: 'warning'
+		        });
+			}else{
+				this.rangeDesc.push({
+					min: '',
+					max: '',
+					color: '',
+					desc: ''
+				});
+			}
+		},
     	returnVisual(){
     		this.$router.push({
 	        	path: '/visualizeList', 
@@ -591,6 +632,7 @@ export default {
 			return res;
 		},
     	initEchart(){
+			var _this = this;
 			var myChart = this.$echarts.init(document.getElementById('echart-box'));
 			var param = this.visualParam;
 			var echartData = this.echartData;
@@ -683,8 +725,9 @@ export default {
 					barWidth: colSets[i].colWidth,
 					markPoint: {
 						data: []
-					}
+					},
 				};
+
 				if(colSets[i].colYIndex&&colSets[i].colYIndex>this.orientYList.length-1){
 					colSets[i].colYIndex = 0;
 				}
@@ -731,7 +774,44 @@ export default {
 						}
 					}
 				}
-			    seriesData.push(obj);
+
+				//设置范围说明
+				if(this.isRangeDesc){
+					var rangeDesc = this.rangeDesc;
+					obj.itemStyle = {
+						normal:{
+		                    color:function(params){
+								for(let d=0; d<rangeDesc.length; d++){
+									if(params.value > rangeDesc[d].min && params.value <rangeDesc[d].max){
+										return rangeDesc[d].color;
+									}
+								}
+								return "#9BCA63";
+		                    }
+		                }
+					};
+					obj.stack = 'bar1';
+					var rangeDesc = this.rangeDesc;
+					lengdData = [];
+					for(let d=0; d<rangeDesc.length; d++){
+						var objtmp = {
+							type: 'bar',
+							label: false,
+							data: [0, 0, 0, 0, 0],
+							stack: 'bar1',
+						};
+						objtmp.name = 'bar'+d;
+						seriesData.push(objtmp);
+						lengdData.push('bar'+d);
+					}
+				}
+			}
+			seriesData.push(obj);
+			if(_this.isRangeDesc){
+				colors = [];
+				for(let d=0; d<rangeDesc.length; d++){
+					colors.push(rangeDesc[d].color);
+				}
 			}
 			myChart.clear();
 			var option = {
@@ -754,7 +834,20 @@ export default {
 					top: this.dealPos.top,
 					bottom: this.dealPos.bottom,
 					right: this.dealPos.right,
-			        data: lengdData
+					data: lengdData,
+					//范围说明图例添加
+					formatter: function(name){
+						console.log(_this.isRangeDesc);
+						if(_this.isRangeDesc){
+							var rangeDesc = _this.rangeDesc;
+							for(let d=0; d<rangeDesc.length; d++){
+								var valName = 'bar' + d;
+								if(name==valName){
+									return rangeDesc[d].desc;
+								}
+							}
+						}
+					}
 			    },
 			    tooltip: {
 	   				show: param.tooltipShow,
