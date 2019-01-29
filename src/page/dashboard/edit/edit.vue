@@ -841,6 +841,47 @@ export default {
                   }
                 }
               }
+
+              //设置数据范围
+              if(type=='bar'){
+                var colors = [];
+                if(echartData.israngeDesc){
+                    var rangeDesc = echartData.rangeDesc;
+                    obj.itemStyle = {
+                        normal:{
+                            color:function(params){
+                                for(let d=0; d<rangeDesc.length; d++){
+                                    if(params.value > rangeDesc[d].min && params.value <rangeDesc[d].max){
+                                        return rangeDesc[d].color;
+                                    }
+                                }
+                                return "#9BCA63";
+                            }
+                        }
+                    };
+                    obj.stack = 'bar1';
+                    var rangeDesc = echartData.rangeDesc;
+                    lengdData = [];
+                    for(let d=0; d<rangeDesc.length; d++){
+                        var objtmp = {
+                            type: 'bar',
+                            label: false,
+                            data: [0, 0, 0, 0, 0],
+                            stack: 'bar1',
+                        };
+                        objtmp.name = 'bar'+d;
+                        seriesData.push(objtmp);
+                        lengdData.push('bar'+d);
+                    }
+                }
+
+                if(echartData.israngeDesc){
+                    colors = [];
+                    for(let d=0; d<rangeDesc.length; d++){
+                      colors.push(rangeDesc[d].color);
+                    }
+                }
+              }
               seriesData.push(obj);
             }
             var option = {
@@ -863,7 +904,20 @@ export default {
                   top: dealPos.top,
                   bottom: dealPos.bottom,
                   right: dealPos.right,
-                  data: lengdData
+                  data: lengdData,
+                  formatter: function(name){
+                    if(param.israngeDesc){
+                      var rangeDesc = param.rangeDesc;
+                      for(let d=0; d<rangeDesc.length; d++){
+                        var valName = 'bar' + d;
+                        if(name==valName){
+                          return rangeDesc[d].description;
+                        }
+                      }
+                    }else{
+                      return name;
+                    }
+                  }
                 },
                 tooltip: {
                   show: param.tooltipShow,
@@ -1072,6 +1126,46 @@ export default {
               }
             }
           }
+
+          if(type=='bar'){
+              var colors = [];
+              if(param.israngeDesc){
+                  var rangeDesc = param.rangeDesc;
+                  obj.itemStyle = {
+                      normal:{
+                          color:function(params){
+                              for(let d=0; d<rangeDesc.length; d++){
+                                  if(params.value > rangeDesc[d].min && params.value <rangeDesc[d].max){
+                                      return rangeDesc[d].color;
+                                  }
+                              }
+                              return "#9BCA63";
+                          }
+                      }
+                  };
+                  obj.stack = 'bar1';
+                  var rangeDesc = param.rangeDesc;
+                  lengdData = [];
+                  for(let d=0; d<rangeDesc.length; d++){
+                      var objtmp = {
+                          type: 'bar',
+                          label: false,
+                          data: [0, 0, 0, 0, 0],
+                          stack: 'bar1',
+                      };
+                      objtmp.name = 'bar'+d;
+                      seriesData.push(objtmp);
+                      lengdData.push('bar'+d);
+                  }
+              }
+
+              if(param.israngeDesc){
+                  colors = [];
+                  for(let d=0; d<rangeDesc.length; d++){
+                    colors.push(rangeDesc[d].color);
+                  }
+              }
+            }
           seriesData.push(obj);
         }
         var option = {
@@ -1094,7 +1188,20 @@ export default {
             top: dealPos.top,
             bottom: dealPos.bottom,
             right: dealPos.right,
-            data: lengdData
+            data: lengdData,
+            formatter: function(name){
+              if(param.israngeDesc){
+                var rangeDesc = param.rangeDesc;
+                for(let d=0; d<rangeDesc.length; d++){
+                  var valName = 'bar' + d;
+                  if(name==valName){
+                    return rangeDesc[d].description;
+                  }
+                }
+              }else{
+                return name;
+              }
+            }
           },
           tooltip: {
             show: param.tooltipShow,

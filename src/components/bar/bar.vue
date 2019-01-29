@@ -75,6 +75,7 @@
 							          <el-switch v-model="isRangeDesc"></el-switch>
 									  <el-button type="primary" icon="el-icon-plus" size="mini" style="float: right;" @click="addRange" v-show="isRangeDesc"></el-button>
 									  <div v-for="item in rangeDesc" class="rangeDesc">
+										    <i class="data-show icon iconfont db--close" @click="closeRange(index,item)"></i>
 										    <el-row :gutter="20" style="margin-top: 10px;margin-bottom: 10px;">
 											    <el-col :span="7">
 												    <el-input v-model="item.min"></el-input>
@@ -85,12 +86,12 @@
 											  	<el-col :span="7" >
 												  	<el-input v-model="item.max"></el-input>
 											 	</el-col>
-											 	<el-col :span="6">
-												 	 <el-color-picker v-model="item.color" size="medium"></el-color-picker>
+											 	<el-col :span="3">
+												 	<el-color-picker v-model="item.color" size="medium"></el-color-picker>
 												</el-col>
 										    </el-row>
 											<el-row>
-												 <el-input v-model="item.desc"></el-input>
+												<el-input v-model="item.description"></el-input>
 											</el-row>
 									  </div>
 							        </el-form-item>
@@ -234,7 +235,6 @@
 						        		<el-form-item label="y轴标注">
 								          <el-input v-model="yItem.yname"></el-input>
 								          <i class="data-show icon iconfont db--right" @click="showSet($event)"></i>
-								          
 								        </el-form-item>
 								        <el-form-item label="y轴单位">
 								          <el-input v-model="yItem.yAxisLabel"></el-input>
@@ -408,10 +408,17 @@ export default {
 				'colYIndex': 0,
 			},
 			colDatas: [],
-			deleteColumnList: []
+			deleteColumnList: [],
+			colorDeleteList: []
     	}
     },
     methods: {
+		closeRange(index,itemData){
+			if(itemData.valuecolorid){
+				this.colorDeleteList.push(itemData.valuecolorid);
+			}
+			this.rangeDesc.splice(index,1);
+		},
 		addRange(){
 			if(this.columnList.length > 1){
 				this.$message({
@@ -423,7 +430,7 @@ export default {
 					min: '',
 					max: '',
 					color: '',
-					desc: ''
+					description: ''
 				});
 			}
 		},
@@ -843,9 +850,11 @@ export default {
 							for(let d=0; d<rangeDesc.length; d++){
 								var valName = 'bar' + d;
 								if(name==valName){
-									return rangeDesc[d].desc;
+									return rangeDesc[d].description;
 								}
 							}
+						}else{
+							return name;
 						}
 					}
 			    },
@@ -882,13 +891,15 @@ export default {
 	            integerId: this.vid,
 	        }).then((res) => {
 	        	var data = res.data;
-	        	this.visualParam = JSON.parse(JSON.stringify(data));
+				this.visualParam = JSON.parse(JSON.stringify(data));
+				this.isRangeDesc = data.israngeDesc;
 	        	var url1 = this.basic_url + '/show/visualizeData';
 		        this.$axios.post(url1,{
 		            integerId: this.vid,
 		        }).then((res) => {
 		        	var data = res.data;
-		        	this.echartData = JSON.parse(JSON.stringify(data));
+					this.echartData = JSON.parse(JSON.stringify(data));
+					this.rangeDesc = data.rangeDesc || [];
 		        	for(var i=0; i<data.columnList.length;i++){
 		        		if(data.columnList[i].colLabel=='true'){
 		        			data.columnList[i].colLabel = true;
@@ -936,14 +947,16 @@ export default {
 			this.visualParam.yAxisLine = this.orientYList[0].yAxisLine;
 			this.visualParam.ySplitLine = this.orientYList[0].ySplitLine;
 			this.visualParam.yInverse = this.orientYList[0].yInverse;
-
+			this.visualParam.israngeDesc = this.isRangeDesc;
 			this.orientYList.splice(0,1);
 			var obj = {
 				'columnMaps': this.columnList,
 				'visualize': this.visualParam,
+				'rangeDesc': this.rangeDesc,
 				'yList': this.orientYList,
 				'yDeleteList': this.yDeleteList,
-				'deleteColumnList': this.deleteColumnList
+				'deleteColumnList': this.deleteColumnList,
+				'colorDeleteList': this.colorDeleteList
 			};
 			this.$axios.put(url,obj
 	        ).then((res) => {
