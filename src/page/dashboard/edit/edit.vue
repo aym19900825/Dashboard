@@ -11,7 +11,9 @@
             <el-button type="warning" size="small" @click="save">保存</el-button>
             <el-button type="primary" size="small" @click="showVisualize">配置视图</el-button>
         </header>
-        <el-button size="small" @click="returnEdit" v-if="isPreview&&!isShare" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
+        <span class="returnBtnBox">
+          <el-button size="small" @click="returnEdit" v-if="isPreview&&!isShare" :class = "isPreview? 'returnBtn' : ''"  icon="el-icon-back"></el-button>
+        </span>
         <div class="visualizeList" v-show="isAddVisual && !isPreview" >
           <el-row :gutter="20" style="padding-top: 20px;">
             <el-col :span="16" style="margin-left: 8%;"> 

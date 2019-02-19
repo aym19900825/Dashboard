@@ -419,7 +419,7 @@ export default {
     },
     methods: {
 		valdateSql(){
-			var url = this.basic_url + '/show/sqlCountValid';
+			var url = this.basic_url + '/show/sqlValid';
 			this.$axios.post(url,{
 				vid: this.vid,
 				vwhere: this.visualParam.vwhere,

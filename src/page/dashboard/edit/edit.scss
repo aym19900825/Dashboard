@@ -113,3 +113,19 @@ div.list{
       font-weight: bold;
   }
 }
+.returnBtn{
+  display: none;
+}
+.returnBtnBox:hover .returnBtn{
+  display: block;
+}
+.returnBtnBox{
+  display: block;
+  width: 60px;
+  height: 35px;
+  position: absolute;
+  z-index: 100004;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+}
