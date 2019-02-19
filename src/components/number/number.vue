@@ -166,9 +166,7 @@ export default {
 				vwhere: this.visualParam.vwhere,
 				dbid: this.visualParam.dbid
 	        }).then((res) => {
-	        	// var data = res.data;
-				// this.visualParam = JSON.parse(JSON.stringify(data));
-				if(res.data.code == 0){
+				if(res.data.message.indexOf('不')==-1){
 					this.save();
 				}else{
 					this.$message({
