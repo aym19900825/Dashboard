@@ -460,13 +460,18 @@ export default {
     },
     methods: {
 		valdateSql(){
-			var url = this.basic_url + '/show/sqlCountValid';
+			var url = this.basic_url + '/show/sqlValid';
 			this.$axios.post(url,{
 				vid: this.vid,
 				vwhere: this.visualParam.vwhere,
 				dbid: this.visualParam.dbid
 	        }).then((res) => {
 				if(res.data.message.indexOf('不')==-1){
+					this.$message({
+						type: 'success',
+						message: res.data.message,
+						showClose: true
+					});
 					this.save();
 				}else{
 					this.$message({

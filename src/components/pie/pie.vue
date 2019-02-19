@@ -45,6 +45,11 @@
 							            </el-option>
 							          </el-select>
 							        </el-form-item>
+									<el-form-item label="sql语句">
+							            <el-input v-model="visualParam.vwhere">
+											<el-button slot="append" icon="el-icon-setting" @click="valdateSql"></el-button>
+										</el-input>
+							        </el-form-item>
 								</div>
 							</el-form>
 							<el-form ref="option-set" :model="columnList" label-width="100px">
@@ -275,6 +280,35 @@ export default {
     	}
     },
     methods: {
+		valdateSql(){
+			var url = this.basic_url + '/show/sqlValid';
+			this.$axios.post(url,{
+				vid: this.vid,
+				vwhere: this.visualParam.vwhere,
+				dbid: this.visualParam.dbid
+	        }).then((res) => {
+				if(res.data.message.indexOf('不')==-1){
+					this.$message({
+						type: 'success',
+						message: res.data.message,
+						showClose: true
+					});
+					this.save();
+				}else{
+					this.$message({
+						type: 'error',
+						message: res.data.message,
+						showClose: true
+					})
+				}
+	        }).catch((err) => {
+	            this.$message({
+	                type: 'error',
+	                message: '网络错误，请重试',
+	                showClose: true
+	            })
+			});
+		},
     	returnVisual(){
     		this.$router.push({
 	        	path: '/visualizeList', 

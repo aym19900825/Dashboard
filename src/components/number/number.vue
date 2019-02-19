@@ -36,6 +36,9 @@
 										<el-option label="数值图" value="number"></el-option>
 							          </el-select>
 							        </el-form-item>
+									<el-form-item label="数据库">
+							          <el-input v-model="visualParam.datasourcename" disabled></el-input>
+							        </el-form-item>
 							        <el-form-item label="菜单编组">
 							          <el-select v-model="visualParam.businesscategory" filterable allow-create default-first-option
 							            placeholder="请选择或输入菜单编组">
@@ -64,7 +67,7 @@
 									<el-form-item label="文本内容">
 								   		<el-input v-model="visualParam.vwheredesc"></el-input>
 								 	</el-form-item>
-								 	<el-form-item label="文本位置">
+								 	<!-- <el-form-item label="文本位置">
 								    	<el-select v-model="visualParam.legendPos" placeholder="请选择文本位置">
 									    	<el-option
 										      v-for="item in legendPos"
@@ -73,7 +76,7 @@
 										      :value="item.value">
 										    </el-option>
 								    	</el-select>
-								    </el-form-item>
+								    </el-form-item> -->
 									<el-form-item label="前缀">
 								   		<el-input v-model="visualParam.prefixwhere"></el-input>
 								 	</el-form-item>
@@ -91,7 +94,7 @@
 					<div class="txtPos" :style="{transform: 'translateY('+textPos+')',textAlign: txtalign}">
 						<h5 style="font-size: 30px;" v-text="show.countValue"></h5>
 						<span v-text="show.prefixwhere"></span>
-						<span v-text="show.vwheredesc" style="font-size: 24px;font-weight: bold;"></span>
+						<span v-text="show.vwheredesc" style="font-size: 24px;font-weight: bold;display: block; textalign: center;"></span>
 						<span v-text="show.suffixwhere"></span>
 						<span class="clearfix"></span>
 					</div>
@@ -167,6 +170,11 @@ export default {
 				dbid: this.visualParam.dbid
 	        }).then((res) => {
 				if(res.data.message.indexOf('不')==-1){
+					this.$message({
+						type: 'success',
+						message: res.data.message,
+						showClose: true
+					});
 					this.save();
 				}else{
 					this.$message({
@@ -251,7 +259,8 @@ export default {
 					integerId: this.vid,
 		        }).then((res) => {
 		        	var data = res.data;
-		        	this.echartData = JSON.parse(JSON.stringify(data));
+					this.echartData = JSON.parse(JSON.stringify(data));
+					this.visualParam.datasourcename = this.echartData.datasourcename;
 		        }).catch((err) => {
 		            this.$message({
 		                type: 'error',

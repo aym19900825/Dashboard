@@ -426,6 +426,11 @@ export default {
 				dbid: this.visualParam.dbid
 	        }).then((res) => {
 				if(res.data.message.indexOf('不')==-1){
+					this.$message({
+						type: 'success',
+						message: res.data.message,
+						showClose: true
+					});
 					this.save();
 				}else{
 					this.$message({
