@@ -99,3 +99,17 @@ div.list{
 .content-layout,.empty-layout{
   display: none;
 }
+.txtPos{
+  text-align: center; 
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  span{
+    display: inline-block;
+  }
+  span:nth-child(2){
+      font-size: 30px;
+      font-weight: bold;
+  }
+}

@@ -59,26 +59,6 @@
 					<div class="tab-content-two" v-show="tabIndex == 1">
 						<div class="panl-setting">
 							<el-form ref="option-set" :model="visualParam" label-width="80px">
-							  	<!-- <div class="y-axios" style="padding-top: 0px; border-bottom: 0px;">
-								  	<h5>标题设置</h5>
-								  	<el-form-item label="标题">
-								   		<el-input v-model="visualParam.echarttitle"></el-input>
-								 	</el-form-item>
-								 	<el-form-item label="标题位置" v-show="visualParam.echarttitle">
-								 		<el-select v-model="visualParam.echartTitPos" placeholder="请选择标题位置">
-									    	<el-option
-										      v-for="item in legendPos"
-										      :key="item.value"
-										      :label="item.txt"
-										      :value="item.value">
-										    </el-option>
-								    	</el-select>
-								 	</el-form-item>
-								 	<el-form-item label="标题颜色" v-show="visualParam.echarttitle" >
-								 		<el-input v-model="visualParam.echartTitColor"></el-input>
-								 		<el-color-picker v-model="visualParam.echartTitColor" size="medium"></el-color-picker>
-								 	</el-form-item>
-								</div> -->
 								<div class="x-axios">
 									<h5>文本内容</h5>
 									<el-form-item label="文本内容">
@@ -109,8 +89,9 @@
 			<div class="right">
 				<div id="echart-box">
 					<div class="txtPos" :style="{transform: 'translateY('+textPos+')',textAlign: txtalign}">
+						<h5 style="font-size: 30px;" v-text="show.countValue"></h5>
 						<span v-text="show.prefixwhere"></span>
-						<span v-text="show.vwheredesc"></span>
+						<span v-text="show.vwheredesc" style="font-size: 24px;font-weight: bold;"></span>
 						<span v-text="show.suffixwhere"></span>
 						<span class="clearfix"></span>
 					</div>
@@ -172,7 +153,8 @@ export default {
 			show: {
 				'vwheredesc': '',
 				'prefixwhere': '',
-				'suffixwhere': ''
+				'suffixwhere': '',
+				'countValue': ''
 			}
     	}
     },
@@ -182,10 +164,11 @@ export default {
 			this.$axios.post(url,{
 				vid: this.vid,
 				vwhere: this.visualParam.vwhere,
+				dbid: this.visualParam.dbid
 	        }).then((res) => {
 	        	// var data = res.data;
 				// this.visualParam = JSON.parse(JSON.stringify(data));
-				if(res.data.code == 1){
+				if(res.data.code == 0){
 					this.save();
 				}else{
 					this.$message({
@@ -255,45 +238,22 @@ export default {
 			this.show.vwheredesc = this.visualParam.vwheredesc;
 			this.show.prefixwhere = this.visualParam.prefixwhere;
 			this.show.suffixwhere = this.visualParam.suffixwhere;
+			this.show.countValue = this.echartData.countValue;
 			this.dealLegendPos(this.visualParam.legendPos);
 		},
 		requestData(){
 			var url = this.basic_url + '/show/visualize';
 			this.$axios.post(url,{
 				integerId: this.vid,
-				// integerId: 115,
 	        }).then((res) => {
 	        	var data = res.data;
 				this.visualParam = JSON.parse(JSON.stringify(data));
-				console.log(url);
 	        	var url1 = this.basic_url + '/show/visualizeData';
 		        this.$axios.post(url1,{
 					integerId: this.vid,
-					// integerId: 115
 		        }).then((res) => {
 		        	var data = res.data;
 		        	this.echartData = JSON.parse(JSON.stringify(data));
-		        	for(var i=0; i<data.columnList.length;i++){
-		        		if(data.columnList[i].colLabel=='true'){
-		        			data.columnList[i].colLabel = true;
-		        		}else{
-							data.columnList[i].colLabel = false;
-		        		}
-		        	}
-		        	this.columnList = data.columnList;
-		        	this.visualParam.columnList = this.columnList;
-		        	this.orientYList = data.orientYList;
-		        	var obj = {
-		        		yAxisLabel:  this.visualParam.yAxisLabel,
-		        		yAxisLine: this.visualParam.yAxisLine,
-		        		yInverse: this.visualParam.yInverse,
-		        		ySplitLine: this.visualParam.ySplitLine,
-		        		yaxisLabelPos: this.visualParam.yaxisLabelPos,
-		        		ylineColor: this.visualParam.ylineColor,
-		        		yname: this.visualParam.yname,
-		        		ytype: this.visualParam.ytype
-		        	};
-		        	this.orientYList.unshift(obj);
 		        }).catch((err) => {
 		            this.$message({
 		                type: 'error',

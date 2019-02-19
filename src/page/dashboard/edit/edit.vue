@@ -233,7 +233,6 @@ export default {
               showClose: true
           })
       })
-      
     },
     resetDashboard(){
       this.dashboardForm = false;
@@ -339,6 +338,12 @@ export default {
             case  'pie':
               _this.initPie(echartId,vid,param); 
               break;
+            case  'text':
+              _this.initTxtVis(echartId,vid,param); 
+              break;
+            case 'number':
+              _this.initNumVis(echartId,vid,param);
+              break;
             default:
               _this.initLine(echartId,vid,type,param);
               break;
@@ -387,7 +392,6 @@ export default {
       this.layout.splice(index,1);
       this.selVisuaList.splice(selIndex,1);
       this.rerenderEchart('edit');
-      console.log(this.selVisuaList);
     },
     dealLegendPos(data,type){
       var res = {};
@@ -461,6 +465,118 @@ export default {
           break;
       }
       return res;
+    },
+    dealTxtPos(data){
+      var textPos = '';
+      var txtalign = '';
+			switch(data){
+				case 'topCenter':
+					textPos = '-300%';
+          txtalign = 'center';
+					break;
+				case 'topRight':
+					textPos = '-300%';
+					txtalign = 'right';
+					break;
+				case 'topLeft':
+					textPos = '-300%';
+					txtalign = 'left';
+					break;
+				case 'bottomCenter':
+					textPos = '200%';
+					txtalign = 'center';
+					break;
+				case 'bottomLeft':
+					textPos = '200%';
+					txtalign = 'left';
+					break;
+				case 'centerCenter':
+					textPos = '-50%';
+					txtalign = 'center';
+					break;
+				default:
+				  textPos = '200%';
+				  txtalign = 'right';
+					break;
+      }
+      return {
+        textPos:  textPos,
+        txtalign: txtalign
+      };
+		},
+    initTxtVis(echartId,vid,param,echartData){
+      var url = this.basic_url + '/show/visualize';
+			this.$axios.post(url,{
+          integerId: vid,
+      }).then((res) => {
+        var data = res.data;
+        var tmpHtml = '<div class="txtPos"><span>'
+                    + data.prefixwhere + '</span><span>'
+                    + data.vwheredesc + '</span><span>'
+                    + data.suffixwhere + '</span><span class="clearfix"></span></div>';
+        var posObj = this.dealTxtPos(res.data.legendPos);
+        $("#"+echartId).html(tmpHtml);
+        var tranStyle = 'translateY(' + posObj.textPos + ')';
+        var txtPosStyle = {
+          textAlign: 'center',
+          position: 'relative',
+          top: '50%',
+          transform: 'translateY(-50%)',
+        };
+        var txtStyle = {
+          fontSize: '30px',
+          fontWeight: 'bold'
+        };
+        $("#"+echartId).css('background-color','#fff');
+        $("#"+echartId).find(".txtPos").css(txtPosStyle);
+        $("#"+echartId).find(".txtPos").css("transform",tranStyle);
+        $("#"+echartId).find(".txtPos").css("textAlign",posObj.txtalign);
+        $("#"+echartId).find(".txtPos span").eq(1).css(txtStyle);
+      }).catch((err) => {
+        this.$message({
+            type: 'error',
+            message: '网络错误，请重试',
+            showClose: true
+        })
+      });
+    },
+    initNumVis(echartId,vid,param,echartData){
+      var url = this.basic_url + '/show/visualizeData';
+			this.$axios.post(url,{
+          integerId: vid,
+      }).then((res) => {
+        var data = res.data;
+        var tmpHtml = '<div class="txtPos"><h5 style="font-size:30px;">' 
+                    + data.countValue + '</h5><span>'
+                    + data.prefixwhere + '</span><span>'
+                    + data.vwheredesc + '</span><span>'
+                    + data.suffixwhere + '</span><span class="clearfix"></span></div>';
+        var posObj = this.dealTxtPos(res.data.legendPos);
+        $("#"+echartId).html(tmpHtml);
+        var tranStyle = 'translateY(' + posObj.textPos + ')';
+        var txtPosStyle = {
+          textAlign: 'center',
+          position: 'relative',
+          top: '50%',
+          transform: 'translateY(-50%)',
+        };
+        var txtStyle = {
+          fontSize: '30px',
+          fontWeight: 'bold'
+        };
+        $("#"+echartId).css('background-color','#fff');
+         $("#"+echartId).width('100%');
+        $("#"+echartId).find(".txtPos").css(txtPosStyle);
+        $("#"+echartId).find(".txtPos").css("transform",tranStyle);
+        $("#"+echartId).find(".txtPos").css("textAlign",posObj.txtalign);
+        $("#"+echartId).find(".txtPos span").eq(1).css(txtStyle);
+      }).catch((err) => {
+        this.$message({
+            type: 'error',
+            message: '网络错误，请重试',
+            showClose: true
+        })
+      });
     },
     initPie(echartId,vid,param,echartData){
       echartData = echartData || {};
@@ -1250,6 +1366,12 @@ export default {
         case  'pie':
           this.initPie(selData.echartId,selData.vid,selData,echartData);
           break;
+        case 'text':
+          this.initTxtVis(selData.echartId,selData.vid,selData,echartData);
+          break;
+        case 'number':
+          this.initNumVis(selData.echartId,selData.vid,selData,echartData);
+          break;
         default:
           this.initLine(selData.echartId,selData.vid,selData.type,selData,echartData);
           break;
@@ -1359,6 +1481,12 @@ export default {
             case  'pie':
               _this.initPie(id,vid,item,echartData);
               break;
+            case  'text':
+              _this.initTxtVis(id,vid,item,echartData);
+              break;
+            case 'number':
+              _this.initNumVis(id,vid,item,echartData);
+              break;
             default:
               _this.initLine(id,vid,item.type,item,echartData);
               break;
@@ -1434,6 +1562,12 @@ export default {
               switch(item.type){
                 case  'pie':
                   _this.initPie(id,vid,item,echartData);
+                  break;
+                case  'text':
+                  _this.initTxtVis(id,vid,item,echartData);
+                  break;
+                case 'number':
+                  _this.initNumVis(id,vid,item,echartData);
                   break;
                 default:
                   _this.initLine(id,vid,item.type,item,echartData);
