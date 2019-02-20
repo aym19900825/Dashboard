@@ -283,22 +283,21 @@ export default {
 		valdateSql(){
 			var url = this.basic_url + '/show/sqlValid';
 			this.$axios.post(url,{
-				vid: this.vid,
-				vwhere: this.visualParam.vwhere,
-				dbid: this.visualParam.dbid
+				'visualize': {
+					'vid': this.vid,
+					'vwhere': this.visualizename.vwhere
+				}
 	        }).then((res) => {
-				if(res.data.message.indexOf('不')==-1){
+				if(res.data.code==1){
 					this.$message({
 						type: 'success',
 						message: res.data.message,
-						showClose: true
 					});
 					this.save();
 				}else{
 					this.$message({
 						type: 'error',
 						message: res.data.message,
-						showClose: true
 					})
 				}
 	        }).catch((err) => {
@@ -573,11 +572,12 @@ export default {
 		                message: '保存成功！',
 		                showClose: true
 		            })
-		            if(!this.bid){
-		            	this.$router.push({
-					        path: '/visualizeList'
-					    })
-		            }
+		            // if(!this.bid){
+		            // 	this.$router.push({
+					//         path: '/visualizeList'
+					//     })
+					// }
+					this.$router.go(0);
 	        	}else{
 	        		this.$message({
 		                type: 'error',

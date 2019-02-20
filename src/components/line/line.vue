@@ -462,10 +462,11 @@ export default {
 		valdateSql(){
 			var url = this.basic_url + '/show/sqlValid';
 			this.$axios.post(url,{
-				vid: this.vid,
-				vwhere: this.visualParam.vwhere,
-				dbid: this.visualParam.dbid
-	        }).then((res) => {
+				'visualize': {
+					'vid': this.vid,
+					'vwhere': this.visualizename.vwhere
+				}
+			}).then((res) => {
 				if(res.data.message.indexOf('不')==-1){
 					this.$message({
 						type: 'success',

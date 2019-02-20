@@ -421,22 +421,21 @@ export default {
 		valdateSql(){
 			var url = this.basic_url + '/show/sqlValid';
 			this.$axios.post(url,{
-				vid: this.vid,
-				vwhere: this.visualParam.vwhere,
-				dbid: this.visualParam.dbid
+				'visualize': {
+					'vid': this.vid,
+					'vwhere': this.visualizename.vwhere
+				}
 	        }).then((res) => {
 				if(res.data.message.indexOf('不')==-1){
 					this.$message({
 						type: 'success',
 						message: res.data.message,
-						showClose: true
 					});
 					this.save();
 				}else{
 					this.$message({
 						type: 'error',
 						message: res.data.message,
-						showClose: true
 					})
 				}
 	        }).catch((err) => {
@@ -975,12 +974,13 @@ export default {
 		},
 		save(opt){
 			var url = this.basic_url + '/show/visualize?vid='+this.vid;
-
-			this.visualParam.yname = this.orientYList[0].yname;
-			this.visualParam.yAxisLabel = this.orientYList[0].yAxisLabel;
-			this.visualParam.yAxisLine = this.orientYList[0].yAxisLine;
-			this.visualParam.ySplitLine = this.orientYList[0].ySplitLine;
-			this.visualParam.yInverse = this.orientYList[0].yInverse;
+			if(this.orientYList.length>0){
+				this.visualParam.yname = this.orientYList[0].yname;
+				this.visualParam.yAxisLabel = this.orientYList[0].yAxisLabel;
+				this.visualParam.yAxisLine = this.orientYList[0].yAxisLine;
+				this.visualParam.ySplitLine = this.orientYList[0].ySplitLine;
+				this.visualParam.yInverse = this.orientYList[0].yInverse;
+			}
 			this.visualParam.israngeDesc = this.isRangeDesc;
 			this.orientYList.splice(0,1);
 			var obj = {

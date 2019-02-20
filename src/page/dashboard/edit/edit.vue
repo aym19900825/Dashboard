@@ -362,6 +362,12 @@ export default {
         case  'pie':
           url = '/editpie';
           break;
+        case  'text':
+          url = '/edittext';
+          break;
+        case 'number':
+          url = '/editnumber';
+          break;
         default:
           url = '/editbar';
           break;
@@ -507,7 +513,7 @@ export default {
       };
 		},
     initTxtVis(echartId,vid,param,echartData){
-      var url = this.basic_url + '/show/visualize';
+      var url = this.basic_url + '/show/visualizeData';
 			this.$axios.post(url,{
           integerId: vid,
       }).then((res) => {
@@ -526,7 +532,7 @@ export default {
           transform: 'translateY(-50%)',
         };
         var txtStyle = {
-          fontSize: '30px',
+          fontSize: '24px',
           fontWeight: 'bold'
         };
         $("#"+echartId).css('background-color','#fff');
@@ -548,9 +554,12 @@ export default {
           integerId: vid,
       }).then((res) => {
         var data = res.data;
+        data.prefixwhere = !!data.prefixwhere ? data.prefixwhere : '';
+        data.vwheredesc = !!data.vwheredesc ? data.vwheredesc : '';
+        data.suffixwhere = !!data.suffixwhere ? data.suffixwhere : '';
         var tmpHtml = '<div class="txtPos"><h5 style="font-size:30px;">' 
                     + data.countValue + '</h5><span>'
-                    + data.prefixwhere + '</span><span>'
+                    + data.prefixwhere + '</span><span  style="font-size: 24px;font-weight: bold;display: block; textalign: center;">'
                     + data.vwheredesc + '</span><span>'
                     + data.suffixwhere + '</span><span class="clearfix"></span></div>';
         var posObj = this.dealTxtPos(res.data.legendPos);
@@ -561,16 +570,18 @@ export default {
           position: 'relative',
           top: '50%',
           transform: 'translateY(-50%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column'
         };
         var txtStyle = {
-          fontSize: '30px',
+          fontSize: '24px',
           fontWeight: 'bold'
         };
         $("#"+echartId).css('background-color','#fff');
-         $("#"+echartId).width('100%');
+        $("#"+echartId).width('100%');
         $("#"+echartId).find(".txtPos").css(txtPosStyle);
-        $("#"+echartId).find(".txtPos").css("transform",tranStyle);
-        $("#"+echartId).find(".txtPos").css("textAlign",posObj.txtalign);
         $("#"+echartId).find(".txtPos span").eq(1).css(txtStyle);
       }).catch((err) => {
         this.$message({
@@ -899,7 +910,6 @@ export default {
                   smooth: colSets[i].colSmooth,
                   step: colSets[i].colstep
                 };
-                
               if(!!colSets[i].colType){
                 obj.type = colSets[i].colType;
               }else{
@@ -1024,8 +1034,8 @@ export default {
                   right: dealPos.right,
                   data: lengdData,
                   formatter: function(name){
-                    if(param.israngeDesc){
-                      var rangeDesc = param.rangeDesc;
+                    if(echartData.israngeDesc){
+                      var rangeDesc = echartData.rangeDesc;
                       for(let d=0; d<rangeDesc.length; d++){
                         var valName = 'bar' + d;
                         if(name==valName){
@@ -1061,6 +1071,8 @@ export default {
                 ],
                 series: seriesData
               };
+              console.log("=============option=================");
+              console.log(option);
               myChart.setOption(option);
               myChart.resize();
           }).catch((err) => {
@@ -1560,7 +1572,7 @@ export default {
                 yname: item.yname
               };
               var h = $("#"+id).parent('.vue-grid-item').height();
-              $("#"+id).height(h)
+              $("#"+id).height(h);
               switch(item.type){
                 case  'pie':
                   _this.initPie(id,vid,item,echartData);

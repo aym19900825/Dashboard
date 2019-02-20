@@ -77,12 +77,12 @@
 										    </el-option>
 								    	</el-select>
 								    </el-form-item> -->
-									<el-form-item label="前缀">
+									<!-- <el-form-item label="前缀">
 								   		<el-input v-model="visualParam.prefixwhere"></el-input>
 								 	</el-form-item>
 									 <el-form-item label="后缀">
 								   		<el-input v-model="visualParam.suffixwhere"></el-input>
-								 	</el-form-item>
+								 	</el-form-item> -->
 							    </div>
 							</el-form>
 						</div>
@@ -91,8 +91,9 @@
 			</div>
 			<div class="right">
 				<div id="echart-box">
-					<div class="txtPos" :style="{transform: 'translateY('+textPos+')',textAlign: txtalign}">
-						<h5 style="font-size: 30px;" v-text="show.countValue"></h5>
+					<!-- <div class="txtPos" :style="{transform: 'translateY('+textPos+')',textAlign: txtalign}"> -->
+					<div class="txtPos" style=" display: flex;align-items: center;justify-content: center;flex-direction:column;">
+						<h5 style="font-size: 30px;color: #000;" v-text="show.countValue"></h5>
 						<span v-text="show.prefixwhere"></span>
 						<span v-text="show.vwheredesc" style="font-size: 24px;font-weight: bold;display: block; textalign: center;"></span>
 						<span v-text="show.suffixwhere"></span>
